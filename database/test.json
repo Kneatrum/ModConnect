@@ -15,7 +15,7 @@
             "access": "read-only"
         },
         "current": {
-            "address": 100,
+            "address": 200,
             "units": "A",
             "gain": 10,
             "function_code": 3,
@@ -23,8 +23,26 @@
             "quantity": 1,
             "access": "read-only"
         },
-        "power": {
-            "address": 100,
+        "active_power": {
+            "address": 300,
+            "units": "W",
+            "gain": 10,
+            "function_code": 3,
+            "data_type": "uint16",
+            "quantity": 1,
+            "access": "read-only"
+        },
+        "reactive_power": {
+            "address": 400,
+            "units": "W",
+            "gain": 10,
+            "function_code": 3,
+            "data_type": "uint16",
+            "quantity": 1,
+            "access": "read-only"
+        },
+        "apparent_power": {
+            "address": 300,
             "units": "W",
             "gain": 10,
             "function_code": 3,
