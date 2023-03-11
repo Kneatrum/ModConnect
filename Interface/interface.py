@@ -36,13 +36,14 @@ print()
 
 
 
-
-
+print( "Modbus TCP devices" )
+# Connecting to the Modbus TCP devices
 for device in modbus_device_settings['devices']['modbus_tcp_devices']:   
     unit_id = modbus_device_settings['devices']['modbus_tcp_devices'][device]['unit_id']
     ip_address = modbus_device_settings['devices']['modbus_tcp_devices'][device]['host']
     port = modbus_device_settings['devices']['modbus_tcp_devices'][device]['port']
     print(unit_id, ip_address, port)
+
     '''
     try:
         client = ModbusTcpClient(ip_address, port)
@@ -52,6 +53,33 @@ for device in modbus_device_settings['devices']['modbus_tcp_devices']:
     except ConnectionException:
         print(f'Failed to connect to {device["host"]}:{device["port"]}')
     '''
+
+print()
+
+print( "Modbus RTU devices" )
+# Connecting to the Modbus RTU devices
+for device in modbus_device_settings['devices']['modbus_rtu_devices']:   
+    unit_id = modbus_device_settings['devices']['modbus_rtu_devices'][device]['unit_id']
+    port = modbus_device_settings['devices']['modbus_rtu_devices'][device]['port']
+    baudrate = modbus_device_settings['devices']['modbus_rtu_devices'][device]['baudrate']
+    parity = modbus_device_settings['devices']['modbus_rtu_devices'][device]['parity']
+    stopbits = modbus_device_settings['devices']['modbus_rtu_devices'][device]['stopbits']
+    bytesize = modbus_device_settings['devices']['modbus_rtu_devices'][device]['bytesize']
+    timeout = modbus_device_settings['devices']['modbus_rtu_devices'][device]['timeout']
+
+    print(unit_id, port, baudrate, parity, stopbits, bytesize, timeout)
+    
+    '''
+    try:
+        client = ModbusTcpClient(ip_address, port)
+        response = client.read_holding_registers(0, 10, unit= unit_id)
+        print(f'Response from {device["host"]}:{device["port"]} - {response.registers}')
+        client.close()
+    except ConnectionException:
+        print(f'Failed to connect to {device["host"]}:{device["port"]}')
+    '''
+
+    
 
 
 
