@@ -30,10 +30,10 @@ else:
 
 
 #print(modbus_device_settings)
-print( "There are " + str(len(modbus_device_settings['devices'])) + " modbus device types connected:" )
-print( "-> ", str(len(modbus_device_settings['devices']['modbus_rtu_devices'])) + " modbus RTU devices" )
-print( "-> ", str(len(modbus_device_settings['devices']['modbus_tcp_devices'])) + " modbus TCP devices" )
-print()
+#print( "There are " + str(len(modbus_device_settings['devices'])) + " modbus device types connected:" )
+#print( "-> ", str(len(modbus_device_settings['devices']['modbus_rtu_devices'])) + " modbus RTU devices" )
+#print( "-> ", str(len(modbus_device_settings['devices']['modbus_tcp_devices'])) + " modbus TCP devices" )
+#print()
 
 
 
@@ -86,7 +86,6 @@ def read_tcp_registers(client):
     UNIT_ID = data['slave_address']['address']
     print("Slave ID", UNIT_ID)
 
-
     for variable in data['registers']:
         if data['registers'][variable]['function_code'] == 1:     
             response = client.read_coils(0, 10, unit= UNIT_ID)
@@ -99,6 +98,8 @@ def read_tcp_registers(client):
             response = client.read_input_registers(0, 10, unit= UNIT_ID)
         else:
             print("Unknown function_code")
+
+
 
 def read_rtu_registers(client):
     with open(database_path, 'r') as f:
@@ -107,14 +108,13 @@ def read_rtu_registers(client):
     UNIT_ID = data['slave_address']['address']
     print("Slave ID", UNIT_ID)
 
-
     for variable in data['registers']:
         if data['registers'][variable]['function_code'] == 1:     
             response = client.read_coils(0, 10, unit= UNIT_ID)
         elif data['registers'][variable]['function_code'] == 2:
             response = client.read_discrete_inputs(0, 10, unit= UNIT_ID)
         elif data['registers'][variable]['function_code'] == 3:
-            print("Reading ", variable, ". \nAddress is ", data['registers'][variable]['address'], ". \nFunction_code is ", data['registers'][variable]['function_code'],"\n")       
+            print("Reading ", variable, ". \nAddress is ",       data['registers'][variable]['address'], ". \nFunction_code is ", data['registers'][variable]['function_code'], "\nQuantity is ",  data['registers'][variable]['quantity'],"\n")              
             #response = client.read_holding_registers(0, 10, unit= UNIT_ID)
         elif data['registers'][variable]['function_code'] == 4:
             response = client.read_input_registers(0, 10, unit= UNIT_ID)
@@ -122,9 +122,6 @@ def read_rtu_registers(client):
             print("Unknown function_code")
 
             
-
-
-
 
 
 '''
@@ -148,34 +145,6 @@ def read_rtu_registers(client):
 '''
 read_tcp_registers(tcp_client)
 #read_rtu_registers(rtu_client)
-
-
-
-
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
