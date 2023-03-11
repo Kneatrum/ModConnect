@@ -6,6 +6,10 @@ import  sys
 
 
 modbus_device_settings = ""
+rtu_client = ""
+tcp_client = ""
+
+database_path = os.path.join(os.getcwd(), 'database','test.json')
 
 
 if sys.platform.startswith('win'): # Check if we are running on Windows
@@ -41,8 +45,8 @@ for device in modbus_device_settings['devices']['modbus_tcp_devices']:
     TCP_PORT = modbus_device_settings['devices']['modbus_tcp_devices'][device]['port']        # Get the port number
     print(IP_ADDRESS, TCP_PORT)   # Print the device information to the console
     try:
-        client = ModbusTcpClient(IP_ADDRESS, TCP_PORT)
-        connection = client.connect()
+        tcp_client = ModbusTcpClient(IP_ADDRESS, TCP_PORT)
+        connection = tcp_client.connect()
         if connection == True: print("Connected to " + IP_ADDRESS + ":" + str(TCP_PORT))
         else: raise Exception('Connection to ' + IP_ADDRESS + ':' + str(TCP_PORT) + 'failed')
     except Exception as e:
@@ -61,14 +65,28 @@ for device in modbus_device_settings['devices']['modbus_rtu_devices']:
     TIMEOUT = modbus_device_settings['devices']['modbus_rtu_devices'][device]['timeout']
     print(SERIAL_PORT, BAUDRATE, PARITY, STOPBITS, BYTESIZE, TIMEOUT)
     try:
-        client = ModbusSerialClient(method='rtu',port=SERIAL_PORT,baudrate=BAUDRATE,parity=PARITY,stopbits=STOPBITS,bytesize=BYTESIZE,timeout=TIMEOUT)
-        connection = client.connect()
+        rtu_client = ModbusSerialClient(method='rtu',port=SERIAL_PORT,baudrate=BAUDRATE,parity=PARITY,stopbits=STOPBITS,bytesize=BYTESIZE,timeout=TIMEOUT)
+        connection = rtu_client.connect()
         if connection is True:
             print("Connected to Modbus RTU device successfully!")
         else:
             raise Exception("Connection failed!")
     except Exception as e:
         print(e)
+
+
+def read_registers(client):
+    with open(database_path, 'r') as f:
+          data = json.load(f)
+    UNIT_ID = data['slave_address']['address']
+    print(UNIT_ID)
+    for variable in data['registers']:
+        print(variable)
+        print(client)
+            #response = client.read_holding_registers(0, 10, unit= UNIT_ID)
+
+
+
 
 
 '''

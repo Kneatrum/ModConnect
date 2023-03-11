@@ -1,0 +1,37 @@
+{
+    "slave_address":{
+        "address": 1
+    },
+
+    "registers":{
+        
+        "voltage": {
+            "address": 100,
+            "units": "V",
+            "gain": 10,
+            "function_code": 3,
+            "data_type": "uint16",
+            "quantity": 1,
+            "access": "read-only"
+        },
+        "current": {
+            "address": 100,
+            "units": "A",
+            "gain": 10,
+            "function_code": 3,
+            "data_type": "uint16",
+            "quantity": 1,
+            "access": "read-only"
+        },
+        "power": {
+            "address": 100,
+            "units": "W",
+            "gain": 10,
+            "function_code": 3,
+            "data_type": "uint16",
+            "quantity": 1,
+            "access": "read-only"
+        }
+    }
+    
+}
