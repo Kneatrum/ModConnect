@@ -5,9 +5,6 @@ import os
 import  sys
 
 
-
-
-
 modbus_device_settings = ""
 
 
@@ -58,14 +55,6 @@ for device in modbus_device_settings['devices']['modbus_tcp_devices']:
         print(f'Response from {device["host"]}:{device["port"]} - {response.registers}')
     '''
 
-    
-
-
-
-
-
-
-
 
 print( "Modbus RTU devices" )
 # Connecting to the Modbus RTU devices
@@ -82,22 +71,14 @@ for device in modbus_device_settings['devices']['modbus_rtu_devices']:
     
     
     try:
-        client = ModbusSerialClient(
-        method='rtu',
-        port=SERIAL_PORT,
-        baudrate=BAUDRATE,
-        parity=PARITY,
-        stopbits=STOPBITS,
-        bytesize=BYTESIZE
-    )
-        response = client.read_holding_registers(0, 10, unit= UNIT_ID)
-        print(f'Response from {device["host"]}:{device["port"]} - {response.registers}')
-        client.close()
-    except ConnectionException:
-        print(f'Failed to connect to {device["host"]}:{device["port"]}')
-
-
-
+        client = ModbusSerialClient(method='rtu',port=SERIAL_PORT,baudrate=BAUDRATE,parity=PARITY,stopbits=STOPBITS,bytesize=BYTESIZE,timeout=TIMEOUT)
+        connection = client.connect()
+        if connection is True:
+            print("Connected to Modbus RTU device successfully!")
+        else:
+            raise Exception("Connection failed!")
+    except Exception as e:
+        print(e)
 
 
 '''
