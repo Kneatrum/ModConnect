@@ -37,10 +37,9 @@ print( "Modbus TCP devices" )
 # Connecting to the Modbus TCP devices
 # Loop through the registered Modbus TCP devices and connect to them
 for device in modbus_device_settings['devices']['modbus_tcp_devices']:   
-    UNIT_ID = modbus_device_settings['devices']['modbus_tcp_devices'][device]['unit_id']  # Get the unit id
     IP_ADDRESS = modbus_device_settings['devices']['modbus_tcp_devices'][device]['host']  # Get the IP address
     TCP_PORT = modbus_device_settings['devices']['modbus_tcp_devices'][device]['port']        # Get the port number
-    print(UNIT_ID, IP_ADDRESS, TCP_PORT)   # Print the device information to the console
+    print(IP_ADDRESS, TCP_PORT)   # Print the device information to the console
     try:
         client = ModbusTcpClient(IP_ADDRESS, TCP_PORT)
         connection = client.connect()
@@ -51,6 +50,8 @@ for device in modbus_device_settings['devices']['modbus_tcp_devices']:
 
     
     '''
+        UNIT_ID = modbus_device_settings['devices']['modbus_tcp_devices'][device]['unit_id']  # Get the unit id
+        UNIT_ID = modbus_device_settings['devices']['modbus_rtu_devices'][device]['unit_id']
         response = client.read_holding_registers(0, 10, unit= unit_id)
         print(f'Response from {device["host"]}:{device["port"]} - {response.registers}')
     '''
@@ -59,7 +60,6 @@ for device in modbus_device_settings['devices']['modbus_tcp_devices']:
 print( "Modbus RTU devices" )
 # Connecting to the Modbus RTU devices
 for device in modbus_device_settings['devices']['modbus_rtu_devices']:   
-    UNIT_ID = modbus_device_settings['devices']['modbus_rtu_devices'][device]['unit_id']
     SERIAL_PORT = modbus_device_settings['devices']['modbus_rtu_devices'][device]['port']
     BAUDRATE = modbus_device_settings['devices']['modbus_rtu_devices'][device]['baudrate']
     PARITY = modbus_device_settings['devices']['modbus_rtu_devices'][device]['parity']
@@ -67,7 +67,7 @@ for device in modbus_device_settings['devices']['modbus_rtu_devices']:
     BYTESIZE = modbus_device_settings['devices']['modbus_rtu_devices'][device]['bytesize']
     TIMEOUT = modbus_device_settings['devices']['modbus_rtu_devices'][device]['timeout']
 
-    print(UNIT_ID, SERIAL_PORT, BAUDRATE, PARITY, STOPBITS, BYTESIZE, TIMEOUT)
+    print(SERIAL_PORT, BAUDRATE, PARITY, STOPBITS, BYTESIZE, TIMEOUT)
     
     
     try:

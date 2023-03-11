@@ -2,24 +2,20 @@
   "devices": {
     "modbus_tcp_devices": {
       "device_1": {
-        "unit_id": 1,
         "host": "192.168.1.100",
         "port": 502
       },
       "device_2":{
-        "unit_id": 2,
         "host": "192.168.1.101",
         "port": 502
       },
       "device_3":{
-        "unit_id": 3,
         "host": "192.168.1.102",
         "port": 502
       }
     },
     "modbus_rtu_devices": {
       "device_1": {
-        "unit_id": 1,
         "port": "/dev/ttyUSB0",
         "baudrate": 9600,
         "parity": "N",
@@ -28,7 +24,6 @@
         "timeout": 1
       },
       "device_2": {
-        "unit_id": 2,
         "port": "/dev/ttyUSB1",
         "baudrate": 9600,
         "parity": "N",
@@ -37,7 +32,6 @@
         "timeout": 1
       },
       "device_3": {
-        "unit_id": 3,
         "port": "/dev/ttyUSB2",
         "baudrate": 9600,
         "parity": "N",
