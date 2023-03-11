@@ -44,6 +44,7 @@ for device in modbus_device_settings['devices']['modbus_tcp_devices']:
     IP_ADDRESS = modbus_device_settings['devices']['modbus_tcp_devices'][device]['host']  # Get the IP address
     TCP_PORT = modbus_device_settings['devices']['modbus_tcp_devices'][device]['port']        # Get the port number
     print(IP_ADDRESS, TCP_PORT)   # Print the device information to the console
+    '''
     try:
         tcp_client = ModbusTcpClient(IP_ADDRESS, TCP_PORT)
         connection = tcp_client.connect()
@@ -51,6 +52,7 @@ for device in modbus_device_settings['devices']['modbus_tcp_devices']:
         else: raise Exception('Connection to ' + IP_ADDRESS + ':' + str(TCP_PORT) + 'failed')
     except Exception as e:
         print(e)
+    '''
 
 
 
@@ -64,6 +66,7 @@ for device in modbus_device_settings['devices']['modbus_rtu_devices']:
     BYTESIZE = modbus_device_settings['devices']['modbus_rtu_devices'][device]['bytesize']
     TIMEOUT = modbus_device_settings['devices']['modbus_rtu_devices'][device]['timeout']
     print(SERIAL_PORT, BAUDRATE, PARITY, STOPBITS, BYTESIZE, TIMEOUT)
+    '''
     try:
         rtu_client = ModbusSerialClient(method='rtu',port=SERIAL_PORT,baudrate=BAUDRATE,parity=PARITY,stopbits=STOPBITS,bytesize=BYTESIZE,timeout=TIMEOUT)
         connection = rtu_client.connect()
@@ -73,6 +76,7 @@ for device in modbus_device_settings['devices']['modbus_rtu_devices']:
             raise Exception("Connection failed!")
     except Exception as e:
         print(e)
+    '''
 
 
 def read_registers(client):
