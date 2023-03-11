@@ -69,7 +69,7 @@ for device in modbus_device_settings['devices']['modbus_rtu_devices']:
 
     print(unit_id, port, baudrate, parity, stopbits, bytesize, timeout)
     
-    '''
+    
     try:
         client = ModbusTcpClient(ip_address, port)
         response = client.read_holding_registers(0, 10, unit= unit_id)
@@ -77,7 +77,7 @@ for device in modbus_device_settings['devices']['modbus_rtu_devices']:
         client.close()
     except ConnectionException:
         print(f'Failed to connect to {device["host"]}:{device["port"]}')
-    '''
+    
 
     
 
