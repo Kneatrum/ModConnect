@@ -92,7 +92,7 @@ def read_tcp_registers(client):
         elif data['registers'][variable]['function_code'] == 2:
             response = client.read_discrete_inputs(0, 10, unit= UNIT_ID)
         elif data['registers'][variable]['function_code'] == 3:
-            print("Reading ", variable, ". \nAddress is ", data['registers'][variable]['address'], ". \nFunction_code is ", data['registers'][variable]['function_code'],"\n")       
+            print("Reading ", variable, ". \nAddress is ",       data['registers'][variable]['address'], ". \nFunction_code is ", data['registers'][variable]['function_code'], "\nQuantity is ",  data['registers'][variable]['quantity'],"\n")                     
             #response = client.read_holding_registers(0, 10, unit= UNIT_ID)
         elif data['registers'][variable]['function_code'] == 4:
             response = client.read_input_registers(0, 10, unit= UNIT_ID)
