@@ -1,4 +1,6 @@
 {
+    "slave_address": 1,
+    
     "voltage": {
         "address": 100,
         "units": "V",
