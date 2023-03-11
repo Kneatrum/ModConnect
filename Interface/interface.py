@@ -8,13 +8,13 @@ import  sys
 modbus_device_settings = ""
 
 
-if sys.platform.startswith('win'):
+if sys.platform.startswith('win'): # Check if we are running on Windows
     print('Running on Windows')
     windows_settings_path = os.path.join(os.getcwd(), 'devices','devices_windows.json')
     with open(windows_settings_path, 'r') as f:
           modbus_device_settings = json.load(f)
 
-elif sys.platform.startswith('linux'):
+elif sys.platform.startswith('linux'): # Check if we are running on Linux
     print('Running on Linux')
     linux_settings_path = os.path.join(os.getcwd(), 'devices','devices_linux.json')
     with open(linux_settings_path, 'r') as f:
@@ -48,13 +48,6 @@ for device in modbus_device_settings['devices']['modbus_tcp_devices']:
     except Exception as e:
         print(e)
 
-    
-    '''
-        UNIT_ID = modbus_device_settings['devices']['modbus_tcp_devices'][device]['unit_id']  # Get the unit id
-        UNIT_ID = modbus_device_settings['devices']['modbus_rtu_devices'][device]['unit_id']
-        response = client.read_holding_registers(0, 10, unit= unit_id)
-        print(f'Response from {device["host"]}:{device["port"]} - {response.registers}')
-    '''
 
 
 print( "Modbus RTU devices" )
@@ -66,10 +59,7 @@ for device in modbus_device_settings['devices']['modbus_rtu_devices']:
     STOPBITS = modbus_device_settings['devices']['modbus_rtu_devices'][device]['stopbits']
     BYTESIZE = modbus_device_settings['devices']['modbus_rtu_devices'][device]['bytesize']
     TIMEOUT = modbus_device_settings['devices']['modbus_rtu_devices'][device]['timeout']
-
     print(SERIAL_PORT, BAUDRATE, PARITY, STOPBITS, BYTESIZE, TIMEOUT)
-    
-    
     try:
         client = ModbusSerialClient(method='rtu',port=SERIAL_PORT,baudrate=BAUDRATE,parity=PARITY,stopbits=STOPBITS,bytesize=BYTESIZE,timeout=TIMEOUT)
         connection = client.connect()
@@ -92,6 +82,12 @@ for device in modbus_device_settings['devices']['modbus_rtu_devices']:
     response = client.write_registers(0, 1, unit= unit_id)
     response = client.write_discrete_input(0, 1, unit= unit_id)
     response = client.write_register_input(0, 1, unit= unit_id)
+
+    UNIT_ID = modbus_device_settings['devices']['modbus_tcp_devices'][device]['unit_id']  # Get the unit id
+    UNIT_ID = modbus_device_settings['devices']['modbus_rtu_devices'][device]['unit_id']
+    response = client.read_holding_registers(0, 10, unit= unit_id)
+    print(f'Response from {device["host"]}:{device["port"]} - {response.registers}')
+    
 
 '''
 
