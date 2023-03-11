@@ -1,28 +1,26 @@
 {
-    "modbus_tcp_devices": [
-      {
-        "name": "device_1",
-        "unit_id": 1,
-        "host": "192.168.1.100",
-        "port": 502
-      },
-      {
-        "name": "device_2",
-        "unit_id": 2,
-        "host": "192.168.1.101",
-        "port": 502
-      },
-      {
-        "name": "device_3",
+  "devices": {
+      "modbus_tcp_devices": {
+        "device_1": {
+          "unit_id": 1,
+          "host": "192.168.1.100",
+          "port": 502
+        },
+        "device_2": {
+          "unit_id": 2,
+          "host": "192.168.1.101",
+          "port": 502
+        },
+        "device_3": {
         "unit_id": 3,
         "host": "192.168.1.102",
         "port": 502
-      }
-    ],
-    "modbus_rtu_devices": [
-      { 
-        "name": "device_4",
-        "unit_id": 4,
+        }
+      },
+
+    "modbus_rtu_devices": { 
+      "device_1": {
+        "unit_id": 1,
         "port": "COM1",
         "baudrate": 9600,
         "parity": "N",
@@ -30,9 +28,8 @@
         "bytesize": 8,
         "timeout": 1
       },
-      {
-        "name": "device_5",
-        "unit_id": 5,
+      "device_2":{
+        "unit_id": 2,
         "port": "COM2",
         "baudrate": 9600,
         "parity": "N",
@@ -40,9 +37,8 @@
         "bytesize": 8,
         "timeout": 1
       },
-      {
-        "name": "device_6",
-        "unit_id": 6,
+      "device_3": {
+        "unit_id": 3,
         "port": "COM3",
         "baudrate": 9600,
         "parity": "N",
@@ -50,6 +46,7 @@
         "bytesize": 8,
         "timeout": 1
       }
-    ]
+    }
   }
+}
   
