@@ -37,34 +37,44 @@ else:
 
 
 
-print(modbus_device_settings)
-print( "There are " + str(len(modbus_device_settings['devices'])) + " modbus device types connected:" )
-print( "-> ", str(len(modbus_device_settings['devices']['modbus_rtu_devices'])) + " modbus RTU devices" )
-print( "-> ", str(len(modbus_device_settings['devices']['modbus_tcp_devices'])) + " modbus TCP devices" )
-print()
+# print(modbus_device_settings)
+# print( "There are " + str(len(modbus_device_settings['devices'])) + " modbus device types connected:" )
+# print( "-> ", str(len(modbus_device_settings['devices']['modbus_rtu_devices'])) + " modbus RTU devices" )
+# print( "-> ", str(len(modbus_device_settings['devices']['modbus_tcp_devices'])) + " modbus TCP devices" )
+# print()
 
 
 def get_tcp_clients():
     print( "Modbus TCP devices" )
+    
     # Connecting to the Modbus TCP devices
     # Loop through the registered Modbus TCP devices and connect to them
     for device in modbus_device_settings['devices']['modbus_tcp_devices']:   
-        IP_ADDRESS = modbus_device_settings['devices']['modbus_tcp_devices'][device]['host']  # Get the IP address
-        TCP_PORT = modbus_device_settings['devices']['modbus_tcp_devices'][device]['port']        # Get the port number
+        client_and_register_group_container = {}  # Create a dictionary to temporarrily store the client and register group information
+
+        IP_ADDRESS = modbus_device_settings['devices']['modbus_tcp_devices'][device]['connection_params']['host']       # Get the IP address
+        TCP_PORT = modbus_device_settings['devices']['modbus_tcp_devices'][device]['connection_params']['port']         # Get the port number
+        REGISTER_GROUP = modbus_device_settings['devices']['modbus_tcp_devices'][device]['register_group']['group_id']  # Get the register group ID
         #print(IP_ADDRESS, TCP_PORT)   # Print the device information to the console
         tcp_client = ModbusTcpClient(IP_ADDRESS, TCP_PORT)
         
     
         try:
             tcp_client.connect()
-            tcp_clients_list.append(tcp_client)
+            client_and_register_group_container['client'] = tcp_client
+            client_and_register_group_container['register_group'] = REGISTER_GROUP
+            tcp_clients_list.append(client_and_register_group_container)
             print("Connected to ", tcp_client, "successfully")
         except Exception as e:
             print(f"Connection to ", tcp_client, f"failed {e}")
 
-    print(tcp_clients_list[0])
-    print(tcp_clients_list[1])
-    print(tcp_clients_list[2])
+    print(tcp_clients_list[0].get('client'))
+    print(tcp_clients_list[0].get('register_group'))
+    print(tcp_clients_list[1].get('client'))
+    print(tcp_clients_list[1].get('register_group'))
+    print(tcp_clients_list[2].get('client'))
+    print(tcp_clients_list[2].get('register_group'))
+
     
 
 
@@ -72,26 +82,36 @@ def get_rtu_clients():
     print( "Modbus RTU devices" )
     # Connecting to the Modbus RTU devices
     for device in modbus_device_settings['devices']['modbus_rtu_devices']:   
-        SERIAL_PORT = modbus_device_settings['devices']['modbus_rtu_devices'][device]['port']
-        BAUDRATE = modbus_device_settings['devices']['modbus_rtu_devices'][device]['baudrate']
-        PARITY = modbus_device_settings['devices']['modbus_rtu_devices'][device]['parity']
-        STOPBITS = modbus_device_settings['devices']['modbus_rtu_devices'][device]['stopbits']
-        BYTESIZE = modbus_device_settings['devices']['modbus_rtu_devices'][device]['bytesize']
-        TIMEOUT = modbus_device_settings['devices']['modbus_rtu_devices'][device]['timeout']
+        client_and_register_group_container = {}  # Create a dictionary to temporarrily store the client and register group information
+
+        SERIAL_PORT = modbus_device_settings['devices']['modbus_rtu_devices'][device]['connection_params']['port']
+        BAUDRATE = modbus_device_settings['devices']['modbus_rtu_devices'][device]['connection_params']['baudrate']
+        PARITY = modbus_device_settings['devices']['modbus_rtu_devices'][device]['connection_params']['parity']
+        STOPBITS = modbus_device_settings['devices']['modbus_rtu_devices'][device]['connection_params']['stopbits']
+        BYTESIZE = modbus_device_settings['devices']['modbus_rtu_devices'][device]['connection_params']['bytesize']
+        TIMEOUT = modbus_device_settings['devices']['modbus_rtu_devices'][device]['connection_params']['timeout']
+
+        REGISTER_GROUP = modbus_device_settings['devices']['modbus_rtu_devices'][device]['register_group']['group_id']  # Get the register group ID
+
         print(SERIAL_PORT, BAUDRATE, PARITY, STOPBITS, BYTESIZE, TIMEOUT)
         rtu_client = ModbusSerialClient(method='rtu',port=SERIAL_PORT,baudrate=BAUDRATE,parity=PARITY,stopbits=STOPBITS,bytesize=BYTESIZE,timeout=TIMEOUT)
-        rtu_clients_list.append(rtu_client)
-        
-        # try:
-        #     rtu_client.connect()
-        #     rtu_clients_list.append(rtu_client)
-        #     print("Connected to Modbus RTU device successfully!")
-        # except Exception as e:
-        #     print(f"Failed to connect to Modbus client {device+1}: {e}")
 
-    print(rtu_clients_list[0])
-    print(rtu_clients_list[1])
-    print(rtu_clients_list[2])
+        
+        try:
+            rtu_client.connect()
+            client_and_register_group_container['client'] = rtu_client
+            client_and_register_group_container['register_group'] = REGISTER_GROUP
+            rtu_clients_list.append(client_and_register_group_container)
+            print("Connected to Modbus RTU device successfully!")
+        except Exception as e:
+            print(f"Failed to connect to Modbus client {device+1}: {e}")
+
+    print(rtu_clients_list[0].get('client'))
+    print(rtu_clients_list[0].get('register_group'))
+    print(rtu_clients_list[1].get('client'))
+    print(rtu_clients_list[1].get('register_group'))
+    print(rtu_clients_list[2].get('client'))
+    print(rtu_clients_list[2].get('register_group'))
 
 
     
@@ -233,9 +253,14 @@ def read_rtu_registers(client,group_id):
 '''
 
 get_tcp_clients()
+get_rtu_clients()
 
-# read_tcp_registers(tcp_client,1)
-# read_rtu_registers(rtu_client,1)
+# for client in rtu_clients_list:
+#     read_rtu_registers(client)
+
+# for client in tcp_clients_list:
+#     read_tcp_registers(client)
+
 
 
 
