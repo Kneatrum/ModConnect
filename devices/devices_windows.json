@@ -27,6 +27,15 @@
           "host": "192.168.1.102",
           "port": 502
         }
+      },
+      "device_4": {
+        "register_group": {
+          "group_id": 3
+        },
+        "connection_params": {
+          "host": "192.168.1.103",
+          "port": 502
+        }
       }
     },
     "modbus_rtu_devices": {
