@@ -44,7 +44,7 @@ else:
 # print()
 
 
-def get_tcp_clients():
+def get_tcp_clients() -> list:
     print( "Modbus TCP devices" )
     
     # Connecting to the Modbus TCP devices
@@ -67,20 +67,13 @@ def get_tcp_clients():
             print("Connected to ", tcp_client, "successfully")
         except Exception as e:
             print(f"Connection to ", tcp_client, f"failed {e}")
-
-    print(tcp_clients_list[0].get('client'))
-    print(tcp_clients_list[0].get('register_group'))
-    print(tcp_clients_list[1].get('client'))
-    print(tcp_clients_list[1].get('register_group'))
-    print(tcp_clients_list[2].get('client'))
-    print(tcp_clients_list[2].get('register_group'))
-    print(tcp_clients_list[3].get('client'))
-    print(tcp_clients_list[3].get('register_group'))
+    return tcp_clients_list
+    
 
     
 
 
-def get_rtu_clients():
+def get_rtu_clients() -> list:
     print( "Modbus RTU devices" )
     # Connecting to the Modbus RTU devices
     for device in modbus_device_settings['devices']['modbus_rtu_devices']:   
@@ -107,13 +100,9 @@ def get_rtu_clients():
             print("Connected to Modbus RTU device successfully!")
         except Exception as e:
             print(f"Failed to connect to Modbus client {device+1}: {e}")
+    return rtu_clients_list
 
-    print(rtu_clients_list[0].get('client'))
-    print(rtu_clients_list[0].get('register_group'))
-    print(rtu_clients_list[1].get('client'))
-    print(rtu_clients_list[1].get('register_group'))
-    print(rtu_clients_list[2].get('client'))
-    print(rtu_clients_list[2].get('register_group'))
+    
 
 
 
@@ -255,8 +244,23 @@ def read_rtu_registers(client,group_id):
 
 '''
 
-get_tcp_clients()
-get_rtu_clients()
+my_tcp_list = get_tcp_clients()
+print(my_tcp_list[0].get('client'))
+print(my_tcp_list[0].get('register_group'))
+print(my_tcp_list[1].get('client'))
+print(my_tcp_list[1].get('register_group'))
+print(my_tcp_list[2].get('client'))
+print(my_tcp_list[2].get('register_group'))
+print(my_tcp_list[3].get('client'))
+print(my_tcp_list[3].get('register_group'))
+
+my_rtu_list = get_rtu_clients()
+print(my_rtu_list[0].get('client'))
+print(my_rtu_list[0].get('register_group'))
+print(my_rtu_list[1].get('client'))
+print(my_rtu_list[1].get('register_group'))
+print(my_rtu_list[2].get('client'))
+print(my_rtu_list[2].get('register_group'))
 
 # for client in rtu_clients_list:
 #     read_rtu_registers(client)
