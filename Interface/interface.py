@@ -102,11 +102,6 @@ def get_rtu_clients() -> list:
             print(f"Failed to connect to Modbus client {device+1}: {e}")
     return rtu_clients_list
 
-    
-
-
-
-    
 
 
 def read_tcp_registers(client,group_id):
