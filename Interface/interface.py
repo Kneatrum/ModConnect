@@ -74,7 +74,8 @@ def get_tcp_clients():
     print(tcp_clients_list[1].get('register_group'))
     print(tcp_clients_list[2].get('client'))
     print(tcp_clients_list[2].get('register_group'))
-
+    print(tcp_clients_list[3].get('client'))
+    print(tcp_clients_list[3].get('register_group'))
 
     
 
