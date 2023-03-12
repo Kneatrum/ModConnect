@@ -1,5 +1,9 @@
 from pymodbus.client.sync import ModbusTcpClient, ModbusSerialClient
 from pymodbus.exceptions import ConnectionException
+from pymodbus.payload import BinaryPayloadDecoder
+from pymodbus.payload import BinaryPayloadBuilder
+from pymodbus.constants import Endian
+import numpy as np
 import json
 import os
 import  sys
@@ -8,6 +12,9 @@ import  sys
 modbus_device_settings = ""
 rtu_client = ""
 tcp_client = ""
+device_data = {}
+device_name = ""
+
 
 database_path = os.path.join(os.getcwd(), 'database','test.json')
 
@@ -79,45 +86,115 @@ for device in modbus_device_settings['devices']['modbus_rtu_devices']:
     '''
 
 
-def read_tcp_registers(client):
+def read_tcp_registers(client,group_id):
     with open(database_path, 'r') as f:
           data = json.load(f)
+    
+    register_group_id = "register_group_" + str(group_id) # Get the register group id to identify the registers to read for a specific device
 
-    UNIT_ID = data['slave_address']['address']
+    UNIT_ID = data[register_group_id]['slave_address']['address']
     print("Slave ID", UNIT_ID)
 
-    for variable in data['registers']:
-        if data['registers'][variable]['function_code'] == 1:     
+    for variable in data[register_group_id]['registers']:
+        if data[register_group_id]['registers'][variable]['function_code'] == 1:   
+            address = data[register_group_id]['registers'][variable]['address']
+            quantity = data[register_group_id]['registers'][variable]['quantity']  
+            device_name = device_name+variable 
+
             response = client.read_coils(0, 10, unit= UNIT_ID)
-        elif data['registers'][variable]['function_code'] == 2:
-            response = client.read_discrete_inputs(0, 10, unit= UNIT_ID)
-        elif data['registers'][variable]['function_code'] == 3:
+            decoder = BinaryPayloadDecoder.fromRegisters(response.registers, byteorder=Endian.Big, wordorder=Endian.Big)
+            data = decoder.decode_16bit_uint()
+            device_data.update(device_name=data)
+
+
+        elif data[register_group_id]['registers'][variable]['function_code'] == 2:
+            address = data[register_group_id]['registers'][variable]['address']
+            quantity = data[register_group_id]['registers'][variable]['quantity']  
+            device_name = device_name+variable 
+
+            response = client.read_discrete_inputs(address, quantity, unit= UNIT_ID)
+            decoder = BinaryPayloadDecoder.fromRegisters(response.registers, byteorder=Endian.Big, wordorder=Endian.Big)
+            data = decoder.decode_16bit_uint()
+            device_data.update(device_name=data)
+
+
+        elif data[register_group_id]['registers'][variable]['function_code'] == 3:
             print("Reading ", variable, ". \nAddress is ",       data['registers'][variable]['address'], ". \nFunction_code is ", data['registers'][variable]['function_code'], "\nQuantity is ",  data['registers'][variable]['quantity'],"\n")                     
-            #response = client.read_holding_registers(0, 10, unit= UNIT_ID)
-        elif data['registers'][variable]['function_code'] == 4:
-            response = client.read_input_registers(0, 10, unit= UNIT_ID)
+            address = data[register_group_id]['registers'][variable]['address']
+            quantity = data[register_group_id]['registers'][variable]['quantity']  
+            device_name = device_name+variable 
+
+            response = client.read_holding_registers(address, quantity, unit= UNIT_ID)
+            decoder = BinaryPayloadDecoder.fromRegisters(response.registers, byteorder=Endian.Big, wordorder=Endian.Big)
+            data = decoder.decode_16bit_uint()
+            device_data.update(device_name=data)
+
+
+        elif data[register_group_id]['registers'][variable]['function_code'] == 4:
+            address = data[register_group_id]['registers'][variable]['address']
+            quantity = data[register_group_id]['registers'][variable]['quantity']  
+            device_name = device_name+variable 
+
+            response = client.read_input_registers(address, quantity, unit= UNIT_ID)
+            decoder = BinaryPayloadDecoder.fromRegisters(response.registers, byteorder=Endian.Big, wordorder=Endian.Big)
+            data = decoder.decode_16bit_uint()
+            device_data.update(device_name=data)
+
+
         else:
             print("Unknown function_code")
 
 
 
-def read_rtu_registers(client):
+def read_rtu_registers(client,group_id):
     with open(database_path, 'r') as f:
           data = json.load(f)
 
-    UNIT_ID = data['slave_address']['address']
+    register_group_id = "register_group_" + str(group_id) # Get the register group id to identify the registers to read for a specific device
+
+    UNIT_ID = data[register_group_id]['slave_address']['address']  # Get the slave address
     print("Slave ID", UNIT_ID)
 
-    for variable in data['registers']:
-        if data['registers'][variable]['function_code'] == 1:     
-            response = client.read_coils(0, 10, unit= UNIT_ID)
-        elif data['registers'][variable]['function_code'] == 2:
-            response = client.read_discrete_inputs(0, 10, unit= UNIT_ID)
-        elif data['registers'][variable]['function_code'] == 3:
+    for variable in data[register_group_id]['registers']:
+        if data[register_group_id]['registers'][variable]['function_code'] == 1:
+            address = data[register_group_id]['registers'][variable]['address']
+            quantity = data[register_group_id]['registers'][variable]['quantity']  
+            device_name = device_name+variable 
+
+
+            response = client.read_coils(address, quantity, unit= UNIT_ID)
+            decoder = BinaryPayloadDecoder.fromRegisters(response.registers, byteorder=Endian.Big, wordorder=Endian.Big)
+            data = decoder.decode_16bit_uint()
+            device_data.update(device_name=data)
+
+        elif data[register_group_id]['registers'][variable]['function_code'] == 2:
+            address = data[register_group_id]['registers'][variable]['address']
+            quantity = data[register_group_id]['registers'][variable]['quantity']
+
+            response = client.read_discrete_inputs(address, quantity, unit= UNIT_ID)
+            decoder = BinaryPayloadDecoder.fromRegisters(response.registers, byteorder=Endian.Big, wordorder=Endian.Big)
+            data = decoder.decode_16bit_uint()
+            device_data.update(device_name=data)
+
+        elif data[register_group_id]['registers'][variable]['function_code'] == 3:
             print("Reading ", variable, ". \nAddress is ",       data['registers'][variable]['address'], ". \nFunction_code is ", data['registers'][variable]['function_code'], "\nQuantity is ",  data['registers'][variable]['quantity'],"\n")              
-            #response = client.read_holding_registers(0, 10, unit= UNIT_ID)
-        elif data['registers'][variable]['function_code'] == 4:
-            response = client.read_input_registers(0, 10, unit= UNIT_ID)
+            address = data[register_group_id]['registers'][variable]['address']
+            quantity = data[register_group_id]['registers'][variable]['quantity']
+
+            response = client.read_holding_registers(address, quantity, unit= UNIT_ID)
+            decoder = BinaryPayloadDecoder.fromRegisters(response.registers, byteorder=Endian.Big, wordorder=Endian.Big)
+            data = decoder.decode_16bit_uint()
+            device_data.update(device_name=data)
+
+        elif data[register_group_id]['registers'][variable]['function_code'] == 4:
+            address = data[register_group_id]['registers'][variable]['address']
+            quantity = data[register_group_id]['registers'][variable]['quantity']
+
+            response = client.read_input_registers(address, quantity, unit= UNIT_ID)
+            decoder = BinaryPayloadDecoder.fromRegisters(response.registers, byteorder=Endian.Big, wordorder=Endian.Big)
+            data = decoder.decode_16bit_uint()
+            device_data.update(device_name=data)
+
         else:
             print("Unknown function_code")
 
@@ -143,8 +220,8 @@ def read_rtu_registers(client):
     
 
 '''
-read_tcp_registers(tcp_client)
-#read_rtu_registers(rtu_client)
+read_tcp_registers(tcp_client,1)
+read_rtu_registers(rtu_client,1)
 
 
 
