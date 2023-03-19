@@ -216,6 +216,9 @@ def read_rtu_registers(client,group_id):
         else:
             print("Unknown function_code")
 
+def generate_setup_file():
+    print("Generating setup file")
+
             
 
 
