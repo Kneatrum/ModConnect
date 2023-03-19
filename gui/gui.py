@@ -1,10 +1,11 @@
 import sys,os
 from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QTableWidget, QVBoxLayout, QLabel, QLineEdit, QComboBox, QDialog,QHBoxLayout
+#from Interface import interface
 
-
-interface_module_path = os.path.join(os.getcwd(), 'database')
+interface_module_path = os.path.join(os.getcwd(), 'Interface')
+print (interface_module_path)
 sys.path.append(interface_module_path)
-from Interface import interface
+
 
 
 
@@ -85,7 +86,7 @@ class MainWindow(QWidget):
         r_set_h_layout_4 = QHBoxLayout()
         rset_submit_button = QPushButton("Submit")
         r_set_h_layout_4.addWidget(rset_submit_button)
-        rset_submit_button.clicked.connect(interface.generate_setup_file)
+        #rset_submit_button.clicked.connect(interface.generate_setup_file)
 
 
 
