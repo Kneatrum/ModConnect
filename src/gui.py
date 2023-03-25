@@ -9,10 +9,17 @@ import interface
 
 
 class MainWindow(QWidget):
-    def __init__(self,rows=0,):
+    def __init__(self,rows=0,columns = 3, register_group = 1, units = "N/A", gain = 1, data_type = "N/A", access_type = "RO"):
         super().__init__()
         self.setWindowTitle("Modpoll")
         self.rows = rows
+        self.columns = columns
+        self.register_group = register_group
+        self.units = units
+        self.gain = gain
+        self.data_type = data_type
+        self.access_type = access_type
+        
 
         
 
@@ -26,8 +33,8 @@ class MainWindow(QWidget):
 
         # Create a table to display the registers
         self.reg_tablewidget = QTableWidget()
-        self.reg_tablewidget.setRowCount(rows)
-        self.reg_tablewidget.setColumnCount(3)
+        self.reg_tablewidget.setRowCount(self.rows)
+        self.reg_tablewidget.setColumnCount(self.columns)
         self.reg_tablewidget.setHorizontalHeaderLabels(["Register Name ", "Address", "Value"])
 
         # Create a layout and add widgets to it, then set the layout
@@ -106,7 +113,7 @@ class MainWindow(QWidget):
         function_code = self.function_code.currentText()
         reg_address = self.reg_address.text()
         reg_quantity = self.reg_quantity.text()
-        user_input["register_group"] = 1
+        user_input["register_group"] = self.register_group
         user_input['slave_address'] = slave_id
         user_input['function_code'] = function_code
         user_input['address'] = reg_address
