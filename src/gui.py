@@ -1,5 +1,5 @@
 import sys
-from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QTableWidget, QVBoxLayout, QLabel, QLineEdit, QComboBox, QDialog,QHBoxLayout
+from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QTableWidget,QTableWidgetItem, QVBoxLayout, QLabel, QLineEdit, QComboBox, QDialog,QHBoxLayout
 import interface
 
 
@@ -32,7 +32,7 @@ class MainWindow(QWidget):
 
 
         # Create a table to display the registers
-        self.reg_tablewidget = QTableWidget()
+        self.reg_tablewidget = QTableWidget(self)
         self.reg_tablewidget.setRowCount(self.rows)
         self.reg_tablewidget.setColumnCount(self.columns)
         self.reg_tablewidget.setHorizontalHeaderLabels(["Register Name ", "Address", "Value"])
@@ -106,6 +106,12 @@ class MainWindow(QWidget):
         self.register_setup_dialog.setLayout(rset_main_layout)
         self.register_setup_dialog.exec_()     
 
+    def update_register_table(self):
+        register = int(self.reg_address.text())
+        for row in range (int(self.reg_quantity.text())):
+            str_register = str(register)
+            self.reg_tablewidget.setItem(row, 1, QTableWidgetItem(str_register))
+            register = register + 1
 
     def get_user_input(self):
         user_input = {}
@@ -121,7 +127,11 @@ class MainWindow(QWidget):
         self.rows = int(reg_quantity)
         self.reg_tablewidget.setRowCount(self.rows)
         interface.generate_setup_file(user_input)
+        self.update_register_table()
         self.reg_tablewidget.update()
+
+        
+
         
 
 
