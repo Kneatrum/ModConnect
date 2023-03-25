@@ -36,54 +36,55 @@ class MainWindow(QWidget):
         self.setLayout(layout)
 
     def showMessageBox(self):
-        register_setup_dialog = QDialog(self)
-        register_setup_dialog.setWindowTitle("Register Setup")
+        self.register_setup_dialog = QDialog(self)
+        self.register_setup_dialog.setWindowTitle("Register Setup")
 
         # Create the main Vertical layout
         rset_main_layout = QVBoxLayout()
 
         # Create the first horizontal layout and add Slave ID label and its edit box
         r_set_h_layout_1 = QHBoxLayout()
-        slave_id_label = QLabel("Slave ID")
-        slave_id = QLineEdit()
+        self.slave_id_label = QLabel("Slave ID")
+        self.slave_id = QLineEdit()
+        
 
         # Add label and slave widgets to the first horizontal layout
-        r_set_h_layout_1.addWidget(slave_id_label)
-        r_set_h_layout_1.addWidget(slave_id)
+        r_set_h_layout_1.addWidget(self.slave_id_label)
+        r_set_h_layout_1.addWidget(self.slave_id)
 
 
         # Create a vertical layout and add a dropdown list of the function codes
         r_set_v_layout_1 = QVBoxLayout()
-        fx_code_label = QLabel("Function Code")
-        r_set_v_layout_1.addWidget(fx_code_label) # Add the label to the vertical layout
+        self.fx_code_label = QLabel("Function Code")
+        r_set_v_layout_1.addWidget(self.fx_code_label) # Add the label to the vertical layout
 
 
-        fx_code_items = ["Read Holding Registers", "Read Input registers", "Read Discrete Inputs", "Read Coils"] # Create a list of function codes
-        function_code = QComboBox() # Create a drop down list of function codes
-        function_code.addItems(fx_code_items) # Add function codes to the dropdown list
-        r_set_v_layout_1.addWidget(function_code) # Add function code items to widget
+        self.fx_code_items = ["Read Holding Registers", "Read Input registers", "Read Discrete Inputs", "Read Coils"] # Create a list of function codes
+        self.function_code = QComboBox() # Create a drop down list of function codes
+        self.function_code.addItems(self.fx_code_items) # Add function codes to the dropdown list
+        r_set_v_layout_1.addWidget(self.function_code) # Add function code items to widget
 
         # Create a horizontal layout for Register address label and its edit box
         r_set_h_layout_2 = QHBoxLayout()
-        reg_address_label =  QLabel("Register Address")
-        reg_address = QLineEdit()
-        r_set_h_layout_2.addWidget(reg_address_label)
-        r_set_h_layout_2.addWidget(reg_address)
+        self.reg_address_label =  QLabel("Register Address")
+        self.reg_address = QLineEdit(self)
+        r_set_h_layout_2.addWidget(self.reg_address_label)
+        r_set_h_layout_2.addWidget(self.reg_address)
 
 
         # Create a horizontal layout for Register quantity and its edit box
-        r_set_h_layout_3 = QHBoxLayout()
-        reg_quantity_label = QLabel("Quantity")
-        reg_quantity = QLineEdit()
-        r_set_h_layout_3.addWidget(reg_quantity_label)
-        r_set_h_layout_3.addWidget(reg_quantity)
+        r_set_h_layout_3 = QHBoxLayout(self)
+        self.reg_quantity_label = QLabel("Quantity")
+        self.reg_quantity = QLineEdit(self)
+        r_set_h_layout_3.addWidget(self.reg_quantity_label)
+        r_set_h_layout_3.addWidget(self.reg_quantity)
         
 
         # Create a button to submit the register setup
-        r_set_h_layout_4 = QHBoxLayout()
-        rset_submit_button = QPushButton("Submit")
-        r_set_h_layout_4.addWidget(rset_submit_button)
-        rset_submit_button.clicked.connect(interface.generate_setup_file)
+        r_set_h_layout_4 = QHBoxLayout(self)
+        self.rset_submit_button = QPushButton("Submit")
+        r_set_h_layout_4.addWidget(self.rset_submit_button)
+        self.rset_submit_button.clicked.connect(self.get_user_input)
 
 
 
@@ -94,8 +95,26 @@ class MainWindow(QWidget):
         rset_main_layout.addLayout(r_set_h_layout_2)
         rset_main_layout.addLayout(r_set_h_layout_3)
         rset_main_layout.addLayout(r_set_h_layout_4) 
-        register_setup_dialog.setLayout(rset_main_layout)
-        register_setup_dialog.exec_()      
+        self.register_setup_dialog.setLayout(rset_main_layout)
+        self.register_setup_dialog.exec_()     
+
+
+    def get_user_input(self):
+        user_input = {}
+        slave_id = self.slave_id.text()
+        function_code = self.function_code.currentText()
+        reg_address = self.reg_address.text()
+        reg_quantity = self.reg_quantity.text()
+        user_input['slave_id'] = slave_id
+        user_input['function_code'] = function_code
+        user_input['reg_address'] = reg_address
+        user_input['reg_quantity'] = reg_quantity
+        interface.generate_setup_file(user_input)
+        
+
+
+
+         
 
 
     
