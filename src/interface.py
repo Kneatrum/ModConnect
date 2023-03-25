@@ -217,7 +217,21 @@ def read_rtu_registers(client,group_id):
             print("Unknown function_code")
 
 def generate_setup_file(input_list):
-    print(input_list)
+    ob_1 = iter(input_list)
+    register_group = next(ob_1)
+    slave_address = next(ob_1)
+    
+    
+    data = {
+        register_group + "_" + str(input_list[register_group]) : {
+            slave_address : {
+                "address" : input_list[slave_address] + "," 
+            }
+            
+        }
+
+    }
+    print(data)
     # print("Generating setup file")
 
             
