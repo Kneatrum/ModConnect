@@ -9,9 +9,10 @@ import interface
 
 
 class MainWindow(QWidget):
-    def __init__(self):
+    def __init__(self,rows=0,):
         super().__init__()
         self.setWindowTitle("Modpoll")
+        self.rows = rows
 
         
 
@@ -25,7 +26,7 @@ class MainWindow(QWidget):
 
         # Create a table to display the registers
         self.reg_tablewidget = QTableWidget()
-        self.reg_tablewidget.setRowCount(0)
+        self.reg_tablewidget.setRowCount(rows)
         self.reg_tablewidget.setColumnCount(3)
         self.reg_tablewidget.setHorizontalHeaderLabels(["Register Name ", "Address", "Value"])
 
@@ -110,7 +111,10 @@ class MainWindow(QWidget):
         user_input['function_code'] = function_code
         user_input['address'] = reg_address
         user_input['quantity'] = reg_quantity
+        self.rows = int(reg_quantity)
+        self.reg_tablewidget.setRowCount(self.rows)
         interface.generate_setup_file(user_input)
+        self.reg_tablewidget.update()
         
 
 
