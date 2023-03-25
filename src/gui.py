@@ -105,10 +105,11 @@ class MainWindow(QWidget):
         function_code = self.function_code.currentText()
         reg_address = self.reg_address.text()
         reg_quantity = self.reg_quantity.text()
-        user_input['slave_id'] = slave_id
+        user_input["register_group"] = 1
+        user_input['slave_address'] = slave_id
         user_input['function_code'] = function_code
-        user_input['reg_address'] = reg_address
-        user_input['reg_quantity'] = reg_quantity
+        user_input['address'] = reg_address
+        user_input['quantity'] = reg_quantity
         interface.generate_setup_file(user_input)
         
 
