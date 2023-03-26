@@ -1,0 +1,18 @@
+{
+    "register_group": {
+        "slave_address": {
+            "address": "1"
+        },
+        "registers": {
+            "register_1": {
+                "address": 1000,
+                "Register_name": "N/A",
+                "function_code": "Read Holding Registers",
+                "Units": "N/A",
+                "Gain": 1,
+                "Data_type": "N/A",
+                "Access_type": "RO"
+            }
+        }
+    }
+}
