@@ -217,22 +217,37 @@ def read_rtu_registers(client,group_id):
             print("Unknown function_code")
 
 def generate_setup_file(input_list):
-    ob_1 = iter(input_list)
-    register_group = next(ob_1)
-    slave_address = next(ob_1)
-    
-    
-    data = {
-        register_group + "_" + str(input_list[register_group]) : {
-            slave_address : {
-                "address" : input_list[slave_address] + "," 
-            }
-            
-        }
+    print(input_list)
+    working_directory  = os.getcwd() 
+    folder_path = 'database'
+    filename = 'register_map_file.json'
 
-    }
-    print(data)
-    # print("Generating setup file")
+    filepath = os.path.join(working_directory,folder_path,filename)
+
+    reg_quantity = input_list["quantity"]
+
+    with open(filepath, 'w') as f:
+
+        parent_data = {}
+
+        for i in range(int(reg_quantity)):
+            parent_key = "register_" + str(i+1) 
+            parent_value = {} 
+            parent_value["address"] = int(input_list["registers"]["address"]) + i 
+            parent_value["Register_name"] = input_list["registers"]["Register_name"] 
+            parent_value["function_code"] = input_list["registers"]["function_code"]
+            parent_value["Units"] = input_list["registers"]["Units"]
+            parent_value["Gain"] = input_list["registers"]["Gain"]
+            parent_value["Data_type"] = input_list["registers"]["Data_type"]
+            parent_value["Access_type"] = input_list["registers"]["Access_type"]
+            parent_data[parent_key] = parent_value 
+
+        json.dump({'register_group': {'slave_address':{'address':'1'}, 'registers':parent_data}},f)
+        
+        print("JSON file created!")
+
+
+
 
             
 
