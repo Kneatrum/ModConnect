@@ -9,12 +9,15 @@ import interface
 
 
 class MainWindow(QWidget):
-    def __init__(self,rows=0,columns = 3, register_group = 1, units = "N/A", gain = 1, data_type = "N/A", access_type = "RO"):
+    def __init__(self,rows = 0, columns = 3, register_group = 1, slave_address = 1, register_quantity = 1, register_name = "N/A", units = "N/A", gain = 1, data_type = "N/A", access_type = "RO"):
         super().__init__()
         self.setWindowTitle("Modpoll")
         self.rows = rows
         self.columns = columns
         self.register_group = register_group
+        self.slave_address = slave_address
+        self.register_quantity = register_quantity
+        self.register_name = register_name
         self.units = units
         self.gain = gain
         self.data_type = data_type
@@ -115,20 +118,32 @@ class MainWindow(QWidget):
 
     def get_user_input(self):
         user_input = {}
-        slave_id = self.slave_id.text()
-        function_code = self.function_code.currentText()
-        reg_address = self.reg_address.text()
-        reg_quantity = self.reg_quantity.text()
+        list_register_properties ={}
+        list_register_properties["Register_name"] =self.register_name
+        list_register_properties['address'] = int(self.reg_address.text())
+        list_register_properties['function_code'] = self.function_code.currentText()
+        list_register_properties["Units"] =self.units
+        list_register_properties["Gain"] =self.gain
+        list_register_properties["Data_type"] =self.data_type
+        list_register_properties["Access_type"] =self.access_type
+
+
+
+
+        self.slave_address = self.slave_id.text()
+        self.register_quantity = self.reg_quantity.text()
         user_input["register_group"] = self.register_group
-        user_input['slave_address'] = slave_id
-        user_input['function_code'] = function_code
-        user_input['address'] = reg_address
-        user_input['quantity'] = reg_quantity
-        self.rows = int(reg_quantity)
+        user_input['slave_address'] = self.slave_address
+        user_input['quantity'] = self.register_quantity
+        user_input["registers"] = list_register_properties
+        self.rows = int(self.register_quantity)
         self.reg_tablewidget.setRowCount(self.rows)
         interface.generate_setup_file(user_input)
         self.update_register_table()
         self.reg_tablewidget.update()
+
+
+
 
         
 
