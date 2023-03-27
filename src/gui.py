@@ -12,6 +12,7 @@ class MainWindow(QWidget):
     def __init__(self,rows = 0, columns = 3, register_group = 1, slave_address = 1, register_quantity = 1, register_name = "N/A", units = "N/A", gain = 1, data_type = "N/A", access_type = "RO"):
         super().__init__()
         self.setWindowTitle("Modpoll")
+        # Setting a few default values
         self.rows = rows
         self.columns = columns
         self.register_group = register_group
@@ -116,16 +117,18 @@ class MainWindow(QWidget):
             self.reg_tablewidget.setItem(row, 1, QTableWidgetItem(str_register))
             register = register + 1
 
+
+    # This function gets the user input values and the default values from the constructor function and sends them to interface.py
     def get_user_input(self):
         user_input = {}
         list_register_properties ={}
-        list_register_properties["Register_name"] =self.register_name
+        list_register_properties['Register_name'] =self.register_name   
         list_register_properties['address'] = int(self.reg_address.text())
         list_register_properties['function_code'] = self.function_code.currentText()
-        list_register_properties["Units"] =self.units
-        list_register_properties["Gain"] =self.gain
-        list_register_properties["Data_type"] =self.data_type
-        list_register_properties["Access_type"] =self.access_type
+        list_register_properties['Units'] =self.units
+        list_register_properties['Gain'] =self.gain
+        list_register_properties['Data_type'] =self.data_type
+        list_register_properties['Access_type'] =self.access_type
 
 
 
@@ -144,20 +147,6 @@ class MainWindow(QWidget):
 
 
 
-
-        
-
-        
-
-
-
-         
-
-
-    
-
-
-    
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

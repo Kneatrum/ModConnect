@@ -216,24 +216,29 @@ def read_rtu_registers(client,group_id):
         else:
             print("Unknown function_code")
 
+# This function receives user input and default register parameters from gui.py file as a dictionary
 def generate_setup_file(input_list):
     print(input_list)
+
+    # Creating a path to store our register structure
     working_directory  = os.getcwd() 
     folder_path = 'database'
     filename = 'register_map_file.json'
-
     filepath = os.path.join(working_directory,folder_path,filename)
 
+    # Get the quantity of registers to poll from. 
     reg_quantity = input_list["quantity"]
 
     with open(filepath, 'w') as f:
 
         parent_data = {}
 
+        # Loop through the list of registers entered by the user
         for i in range(int(reg_quantity)):
-            parent_key = "register_" + str(i+1) 
+            parent_key = "register_" + str(i+1)  # This is the initial  name assigned to the variable that will be read from the register. The user will be allowed to rename the register later. 
             parent_value = {} 
-            parent_value["address"] = int(input_list["registers"]["address"]) + i 
+            # Assigning values to all the registr attributes
+            parent_value["address"] = int(input_list["registers"]["address"]) + i # If the user wants to read say 10 registers after register 1000, this line of code increments the addresses to register number 1011
             parent_value["Register_name"] = input_list["registers"]["Register_name"] 
             parent_value["function_code"] = input_list["registers"]["function_code"]
             parent_value["Units"] = input_list["registers"]["Units"]
@@ -242,7 +247,7 @@ def generate_setup_file(input_list):
             parent_value["Access_type"] = input_list["registers"]["Access_type"]
             parent_data[parent_key] = parent_value 
 
-        json.dump({'register_group': {'slave_address':{'address':'1'}, 'registers':parent_data}},f)
+        json.dump({'register_group': {'slave_address':{'address':'1'}, 'registers':parent_data}},f) # Appenining the register attributes with the json structure
         
         print("JSON file created!")
 
