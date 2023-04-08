@@ -11,7 +11,7 @@ import interface
 class MainWindow(QWidget):
     def __init__(self,rows = 0, columns = 3, register_group = 1, slave_address = 1, register_quantity = 1, register_name = "N/A", units = "N/A", gain = 1, data_type = "N/A", access_type = "RO"):
         super().__init__()
-  
+
 
         self.setWindowTitle("Modpoll")
         # Defining the menu bar
@@ -36,8 +36,6 @@ class MainWindow(QWidget):
         editMenu.addAction(cutAction)
         editMenu.addAction(copyAction)
         editMenu.addAction(pasteAction)
-        
-        #self.setGeometry(300, 300, 350, 250)
 
         # Setting a few default values
         self.rows = rows
@@ -51,9 +49,36 @@ class MainWindow(QWidget):
         self.data_type = data_type
         self.access_type = access_type
         
-
+        register_table_widget_1 = TableWidget(self.rows,self.columns)
+        register_table_widget_2 = TableWidget(self.columns,self.columns)
         
+        # Create a layout and add widgets to it, then set the layout
+        main_layout = QVBoxLayout()
+        main_layout.addWidget(menubar)
+        horizontal_layout = QHBoxLayout()
+        horizontal_layout.addWidget(register_table_widget_1)
+        horizontal_layout.addWidget(register_table_widget_2)
+        horizontal_layout.setSpacing(0)
+        main_layout.addLayout(horizontal_layout)
+        self.setLayout(main_layout)
 
+
+
+
+
+class TableWidget(QWidget):
+    def __init__(self, rows, columns):
+        super().__init__()
+
+        # Create a table to display the registers
+        self.table_widget = QTableWidget()
+        self.table_widget.setRowCount(rows)
+        self.table_widget.setColumnCount(columns)
+        self.table_widget.setHorizontalHeaderLabels(["Register Name", "Address", "Value"])
+        self.table_widget.setColumnWidth(0, 200) # Set the width of the "Register Name" column to 200
+        self.table_widget.setColumnWidth(1, 100) # Set the width of the "Address" column to 100
+        self.table_widget.setColumnWidth(2, 100) # Set the width of the "Value" column to 100
+        self.table_widget.setFixedWidth(self.table_widget.horizontalHeader().length()) # Set the maximum width of the qtable widget to the width of the 3 columnns we have ( "Register Name", "Address", "Value" )
 
         # Add a button to add registers
         self.add_reg_button = QPushButton()
@@ -61,27 +86,13 @@ class MainWindow(QWidget):
         self.add_reg_button.setFixedSize(100,25) # Setting the size of the button
         self.add_reg_button.clicked.connect(self.showMessageBox)
 
-
-
-        # Create a table to display the registers
-        self.reg_tablewidget = QTableWidget(self)
-        self.reg_tablewidget.setRowCount(self.rows)
-        self.reg_tablewidget.setColumnCount(self.columns)
-        self.reg_tablewidget.setHorizontalHeaderLabels(["Register Name", "Address", "Value"])
-        self.reg_tablewidget.setColumnWidth(0, 200) # Set the width of the "Register Name" column to 200
-        self.reg_tablewidget.setColumnWidth(1, 100) # Set the width of the "Address" column to 100
-        self.reg_tablewidget.setColumnWidth(2, 100) # Set the width of the "Value" column to 100
-        self.reg_tablewidget.setFixedWidth(self.reg_tablewidget.horizontalHeader().length()) # Set the maximum width of the qtable widget to the width of the 3 columnns we have ( "Register Name", "Address", "Value" )
-                
-        
-
-        # Create a layout and add widgets to it, then set the layout
+        # Create a layout and add the table widget and the button
         layout = QVBoxLayout()
-        layout.addWidget(menubar)
         layout.addWidget(self.add_reg_button)
-        layout.addWidget(self.reg_tablewidget)
-        self.setLayout(layout)
+        layout.addWidget(self.table_widget)
 
+        # Set the layout for the widget
+        self.setLayout(layout)
 
 
 
@@ -97,17 +108,14 @@ class MainWindow(QWidget):
         self.slave_id_label = QLabel("Slave ID")
         self.slave_id = QLineEdit()
         
-
         # Add label and slave widgets to the first horizontal layout
         r_set_h_layout_1.addWidget(self.slave_id_label)
         r_set_h_layout_1.addWidget(self.slave_id)
-
 
         # Create a vertical layout and add a dropdown list of the function codes
         r_set_v_layout_1 = QVBoxLayout()
         self.fx_code_label = QLabel("Function Code")
         r_set_v_layout_1.addWidget(self.fx_code_label) # Add the label to the vertical layout
-
 
         self.fx_code_items = ["Read Holding Registers", "Read Input registers", "Read Discrete Inputs", "Read Coils"] # Create a list of function codes
         self.function_code = QComboBox() # Create a drop down list of function codes
@@ -121,7 +129,6 @@ class MainWindow(QWidget):
         r_set_h_layout_2.addWidget(self.reg_address_label)
         r_set_h_layout_2.addWidget(self.reg_address)
 
-
         # Create a horizontal layout for Register quantity and its edit box
         r_set_h_layout_3 = QHBoxLayout(self)
         self.reg_quantity_label = QLabel("Quantity")
@@ -129,15 +136,11 @@ class MainWindow(QWidget):
         r_set_h_layout_3.addWidget(self.reg_quantity_label)
         r_set_h_layout_3.addWidget(self.reg_quantity)
         
-
         # Create a button to submit the register setup
         r_set_h_layout_4 = QHBoxLayout(self)
         self.rset_submit_button = QPushButton("Submit")
         r_set_h_layout_4.addWidget(self.rset_submit_button)
         self.rset_submit_button.clicked.connect(self.get_user_input)
-
-
-
 
         # Add all the layouts to the main vertical layout
         rset_main_layout.addLayout(r_set_h_layout_1)
@@ -146,42 +149,45 @@ class MainWindow(QWidget):
         rset_main_layout.addLayout(r_set_h_layout_3)
         rset_main_layout.addLayout(r_set_h_layout_4) 
         self.register_setup_dialog.setLayout(rset_main_layout)
-        self.register_setup_dialog.exec_()     
-
-    def update_register_table(self):
-        register = int(self.reg_address.text())
-        for row in range (int(self.reg_quantity.text())):
-            str_register = str(register)
-            self.reg_tablewidget.setItem(row, 1, QTableWidgetItem(str_register))
-            register = register + 1
+        self.register_setup_dialog.exec_() 
 
 
-    # This function gets the user input values and the default values from the constructor function and sends them to interface.py
+        # This function gets the user input values and the default values from the constructor function and sends them to interface.py
     def get_user_input(self):
-        user_input = {}
-        list_register_properties ={}
-        list_register_properties['Register_name'] =self.register_name   
+        main_window = MainWindow()  # Create an instance of the main window to enable us to access some of the default values
+        user_input = {} # An empty dictionary to store user input
+        list_register_properties ={} # Empty dictionary to store register properties
+        list_register_properties['Register_name'] = main_window.register_name   
         list_register_properties['address'] = int(self.reg_address.text())
         list_register_properties['function_code'] = self.function_code.currentText()
-        list_register_properties['Units'] =self.units
-        list_register_properties['Gain'] =self.gain
-        list_register_properties['Data_type'] =self.data_type
-        list_register_properties['Access_type'] =self.access_type
-
-
-
+        list_register_properties['Units'] =main_window.units
+        list_register_properties['Gain'] =main_window.gain
+        list_register_properties['Data_type'] =main_window.data_type
+        list_register_properties['Access_type'] =main_window.access_type
 
         self.slave_address = self.slave_id.text()
         self.register_quantity = self.reg_quantity.text()
-        user_input["register_group"] = self.register_group
+        user_input["register_group"] = main_window.register_group
         user_input['slave_address'] = self.slave_address
         user_input['quantity'] = self.register_quantity
         user_input["registers"] = list_register_properties
         self.rows = int(self.register_quantity)
-        self.reg_tablewidget.setRowCount(self.rows)
+        self.table_widget.setRowCount(self.rows)
         interface.generate_setup_file(user_input)
         self.update_register_table()
-        self.reg_tablewidget.update()
+        self.table_widget.update()
+
+
+        # Add the register addresses to the "Address" column
+    def update_register_table(self):
+        register = int(self.reg_address.text())
+        for row in range (int(self.reg_quantity.text())):
+            str_register = str(register)
+            self.table_widget.setItem(row, 1, QTableWidgetItem(str_register))
+            register = register + 1
+                
+
+
 
 
 
