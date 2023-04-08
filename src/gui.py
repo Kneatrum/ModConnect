@@ -1,5 +1,5 @@
 import sys
-from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QTableWidget,QTableWidgetItem, QVBoxLayout, QLabel, QLineEdit, QComboBox, QDialog,QHBoxLayout
+from PyQt5.QtWidgets import QApplication, QMainWindow,QWidget, QMenu, QAction, QMenuBar, QPushButton, QTableWidget,QTableWidgetItem, QVBoxLayout, QLabel, QLineEdit, QComboBox, QDialog,QHBoxLayout
 import interface
 
 
@@ -11,7 +11,34 @@ import interface
 class MainWindow(QWidget):
     def __init__(self,rows = 0, columns = 3, register_group = 1, slave_address = 1, register_quantity = 1, register_name = "N/A", units = "N/A", gain = 1, data_type = "N/A", access_type = "RO"):
         super().__init__()
+  
+
         self.setWindowTitle("Modpoll")
+        # Defining the menu bar
+        menubar = QMenuBar(self)
+        fileMenu = QMenu('File', self)
+        editMenu = QMenu('Edit', self)
+        menubar.addMenu(fileMenu)
+        menubar.addMenu(editMenu)
+
+        # Add actions to the "File" menu
+        newAction = QAction('New', self)
+        openAction = QAction('Open', self)
+        saveAction = QAction('Save', self)
+        fileMenu.addAction(newAction)
+        fileMenu.addAction(openAction)
+        fileMenu.addAction(saveAction)
+
+        # Add actions to the "Edit" menu
+        cutAction = QAction('Cut', self)
+        copyAction = QAction('Copy', self)
+        pasteAction = QAction('Paste', self)
+        editMenu.addAction(cutAction)
+        editMenu.addAction(copyAction)
+        editMenu.addAction(pasteAction)
+        
+        #self.setGeometry(300, 300, 350, 250)
+
         # Setting a few default values
         self.rows = rows
         self.columns = columns
@@ -31,6 +58,7 @@ class MainWindow(QWidget):
         # Add a button to add registers
         self.add_reg_button = QPushButton()
         self.add_reg_button.setText("Add registers")
+        self.add_reg_button.setFixedSize(100,25) # Setting the size of the button
         self.add_reg_button.clicked.connect(self.showMessageBox)
 
 
@@ -39,13 +67,23 @@ class MainWindow(QWidget):
         self.reg_tablewidget = QTableWidget(self)
         self.reg_tablewidget.setRowCount(self.rows)
         self.reg_tablewidget.setColumnCount(self.columns)
-        self.reg_tablewidget.setHorizontalHeaderLabels(["Register Name ", "Address", "Value"])
+        self.reg_tablewidget.setHorizontalHeaderLabels(["Register Name", "Address", "Value"])
+        self.reg_tablewidget.setColumnWidth(0, 200) # Set the width of the "Register Name" column to 200
+        self.reg_tablewidget.setColumnWidth(1, 100) # Set the width of the "Address" column to 100
+        self.reg_tablewidget.setColumnWidth(2, 100) # Set the width of the "Value" column to 100
+        self.reg_tablewidget.setFixedWidth(self.reg_tablewidget.horizontalHeader().length()) # Set the maximum width of the qtable widget to the width of the 3 columnns we have ( "Register Name", "Address", "Value" )
+                
+        
 
         # Create a layout and add widgets to it, then set the layout
         layout = QVBoxLayout()
+        layout.addWidget(menubar)
         layout.addWidget(self.add_reg_button)
         layout.addWidget(self.reg_tablewidget)
         self.setLayout(layout)
+
+
+
 
     def showMessageBox(self):
         self.register_setup_dialog = QDialog(self)
