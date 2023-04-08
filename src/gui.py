@@ -3,11 +3,6 @@ from PyQt5.QtWidgets import QApplication, QMainWindow,QWidget, QMenu, QAction, Q
 import interface
 
 
-
-
-
-
-
 class MainWindow(QWidget):
     def __init__(self,rows = 0, columns = 3, register_group = 1, slave_address = 1, register_quantity = 1, register_name = "N/A", units = "N/A", gain = 1, data_type = "N/A", access_type = "RO"):
         super().__init__()
@@ -49,26 +44,39 @@ class MainWindow(QWidget):
         self.data_type = data_type
         self.access_type = access_type
         
-        register_table_widget_1 = TableWidget(self.rows,self.columns)
-        register_table_widget_2 = TableWidget(self.columns,self.columns)
+        self.register_table_widget_1 = TableWidget(self.rows,self.columns)
+        self.register_table_widget_2 = TableWidget(self.rows,self.columns)
+        self.register_table_widget_3 = TableWidget(self.rows,self.columns)
+        self.register_table_widget_4 = TableWidget(self.rows,self.columns)
         
-        # Create a layout and add widgets to it, then set the layout
-        main_layout = QVBoxLayout()
-        main_layout.addWidget(menubar)
-        horizontal_layout = QHBoxLayout()
-        horizontal_layout.addWidget(register_table_widget_1)
-        horizontal_layout.addWidget(register_table_widget_2)
-        horizontal_layout.setSpacing(0)
-        main_layout.addLayout(horizontal_layout)
-        self.setLayout(main_layout)
+        # Create a vertical layout and add widgets to it
+        self.main_layout = QVBoxLayout()
+        self.main_layout.addWidget(menubar)
 
-
-
+        # Create a horizontal layout and add widgets to it
+        self.horizontal_layout = QHBoxLayout()
+        self.horizontal_layout.addWidget(self.register_table_widget_1)
+        self.horizontal_layout.addWidget(self.register_table_widget_2)
+        self.horizontal_layout.addWidget(self.register_table_widget_3)
+        self.horizontal_layout.addWidget(self.register_table_widget_4)
+        self.main_layout.addLayout(self.horizontal_layout)
+        self.horizontal_layout.setSpacing(0)
+        self.horizontal_layout.setContentsMargins(0, 0, 0, 0)
+        self.setLayout(self.main_layout)
 
 
 class TableWidget(QWidget):
     def __init__(self, rows, columns):
         super().__init__()
+
+        # Create a layout and add the table widget and the button
+        self.layout = QVBoxLayout()
+
+        # Add a button to add registers
+        self.add_reg_button = QPushButton()
+        self.add_reg_button.setText("Add registers")
+        self.add_reg_button.setFixedSize(100,25) # Setting the size of the button
+        self.add_reg_button.clicked.connect(self.showMessageBox)
 
         # Create a table to display the registers
         self.table_widget = QTableWidget()
@@ -78,21 +86,15 @@ class TableWidget(QWidget):
         self.table_widget.setColumnWidth(0, 200) # Set the width of the "Register Name" column to 200
         self.table_widget.setColumnWidth(1, 100) # Set the width of the "Address" column to 100
         self.table_widget.setColumnWidth(2, 100) # Set the width of the "Value" column to 100
-        self.table_widget.setFixedWidth(self.table_widget.horizontalHeader().length()) # Set the maximum width of the qtable widget to the width of the 3 columnns we have ( "Register Name", "Address", "Value" )
+        #self.table_widget.setFixedWidth(400)
+        #self.table_widget.setFixedWidth(self.table_widget.horizontalHeader().length()) # Set the maximum width of the qtable widget to the width of the 3 columnns we have ( "Register Name", "Address", "Value" )
 
-        # Add a button to add registers
-        self.add_reg_button = QPushButton()
-        self.add_reg_button.setText("Add registers")
-        self.add_reg_button.setFixedSize(100,25) # Setting the size of the button
-        self.add_reg_button.clicked.connect(self.showMessageBox)
-
-        # Create a layout and add the table widget and the button
-        layout = QVBoxLayout()
-        layout.addWidget(self.add_reg_button)
-        layout.addWidget(self.table_widget)
+        self.layout.addWidget(self.add_reg_button)
+        self.layout.addWidget(self.table_widget)
+        
 
         # Set the layout for the widget
-        self.setLayout(layout)
+        self.setLayout(self.layout)
 
 
 
@@ -186,10 +188,6 @@ class TableWidget(QWidget):
             self.table_widget.setItem(row, 1, QTableWidgetItem(str_register))
             register = register + 1
                 
-
-
-
-
 
 
 if __name__ == "__main__":
