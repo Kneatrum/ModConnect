@@ -38,40 +38,66 @@ class MainWindow(QWidget):
 
         if register_setup_file_exists == True:
             print ("Register setup file exists")
+            data = interface.read_register_setup_file()
+            num_register_tables = 0
+            for key in data.keys():
+                if "register_group_" in key:
+                    num_register_tables += 1
+            print (num_register_tables)
+
+            self.main_layout = QVBoxLayout()
+            self.main_layout.addWidget(menubar)
+
+            self.register_table_widgets = []
+            self.horizontal_layout = QHBoxLayout()
+
+            for i in range(num_register_tables):
+                self.register_group = i+1
+                self.horizontal_layout.addWidget(TableWidget(rows, columns, self.register_group))
+
+            self.main_layout.addLayout(self.horizontal_layout)
+            self.horizontal_layout.setSpacing(0)
+            self.horizontal_layout.setContentsMargins(0, 0, 0, 0)
+            self.setLayout(self.main_layout)
+            
+
+                
+            
         else:
             print ("Register setup file does not exist")
 
-        # Setting a few default values
-        self.rows = rows
-        self.columns = columns
-        self.register_group = register_group
-        self.slave_address = slave_address
-        self.register_quantity = register_quantity
-        self.register_name = register_name
-        self.units = units
-        self.gain = gain
-        self.data_type = data_type
-        self.access_type = access_type
+            # Setting a few default values
+            self.rows = rows
+            self.columns = columns
+            self.register_group = register_group
+            self.slave_address = slave_address
+            self.register_quantity = register_quantity
+            self.register_name = register_name
+            self.units = units
+            self.gain = gain
+            self.data_type = data_type
+            self.access_type = access_type
         
-        self.register_table_widget_1 = TableWidget(self.rows,self.columns,self.register_group)
-        self.register_table_widget_2 = TableWidget(self.rows,self.columns,self.register_group)
-        self.register_table_widget_3 = TableWidget(self.rows,self.columns,self.register_group)
-        self.register_table_widget_4 = TableWidget(self.rows,self.columns,self.register_group)
+        # self.register_table_widget_1 = TableWidget(self.rows,self.columns,self.register_group)
+        # self.register_table_widget_2 = TableWidget(self.rows,self.columns,self.register_group)
+        # self.register_table_widget_3 = TableWidget(self.rows,self.columns,self.register_group)
+        # self.register_table_widget_4 = TableWidget(self.rows,self.columns,self.register_group)
         
         # Create a vertical layout and add widgets to it
-        self.main_layout = QVBoxLayout()
-        self.main_layout.addWidget(menubar)
+        # self.main_layout = QVBoxLayout()
+        # self.main_layout.addWidget(menubar)
 
         # Create a horizontal layout and add widgets to it
-        self.horizontal_layout = QHBoxLayout()
-        self.horizontal_layout.addWidget(self.register_table_widget_1)
-        self.horizontal_layout.addWidget(self.register_table_widget_2)
-        self.horizontal_layout.addWidget(self.register_table_widget_3)
-        self.horizontal_layout.addWidget(self.register_table_widget_4)
-        self.main_layout.addLayout(self.horizontal_layout)
-        self.horizontal_layout.setSpacing(0)
-        self.horizontal_layout.setContentsMargins(0, 0, 0, 0)
-        self.setLayout(self.main_layout)
+        # self.horizontal_layout = QHBoxLayout()
+        # self.horizontal_layout.addWidget(self.register_table_widget_1)
+        # self.horizontal_layout.addWidget(self.register_table_widget_2)
+        # self.horizontal_layout.addWidget(self.register_table_widget_3)
+        # self.horizontal_layout.addWidget(self.register_table_widget_4)
+        # self.horizontal_layout.addWidget(self.register_table_widgets)
+        # self.main_layout.addLayout(self.horizontal_layout)
+        # self.horizontal_layout.setSpacing(0)
+        # self.horizontal_layout.setContentsMargins(0, 0, 0, 0)
+        # self.setLayout(self.main_layout)
 
 
 
