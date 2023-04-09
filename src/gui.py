@@ -32,6 +32,10 @@ class MainWindow(QWidget):
         editMenu.addAction(copyAction)
         editMenu.addAction(pasteAction)
 
+
+        # First check if there is a register setup file in the database
+        self.check_for_existing_register_setup()
+
         # Setting a few default values
         self.rows = rows
         self.columns = columns
@@ -63,6 +67,11 @@ class MainWindow(QWidget):
         self.horizontal_layout.setSpacing(0)
         self.horizontal_layout.setContentsMargins(0, 0, 0, 0)
         self.setLayout(self.main_layout)
+
+    def check_for_existing_register_setup(self):
+        data_path = interface.database_path
+        print(data_path)
+
 
 
 class TableWidget(QWidget):
@@ -210,8 +219,6 @@ class TableWidget(QWidget):
         print("Delete register")
         pass
 
-    def check_for_existing_register_setup(self):
-        
                 
 
 
