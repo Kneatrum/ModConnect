@@ -81,16 +81,16 @@ class MainWindow(QWidget):
             print ("Register setup file does not exist")
 
             # Setting a few default values
-            self.rows = rows
-            self.columns = columns
-            self.register_group = register_group
-            self.slave_address = slave_address
-            self.register_quantity = register_quantity
-            self.register_name = register_name
-            self.units = units
-            self.gain = gain
-            self.data_type = data_type
-            self.access_type = access_type
+        self.rows = rows
+        self.columns = columns
+        self.register_group = register_group
+        self.slave_address = slave_address
+        self.register_quantity = register_quantity
+        self.register_name = register_name
+        self.units = units
+        self.gain = gain
+        self.data_type = data_type
+        self.access_type = access_type
 
 
     def on_new_button_clicked(self):
