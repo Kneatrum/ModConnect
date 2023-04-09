@@ -1,5 +1,6 @@
 import sys
-from PyQt5.QtWidgets import QApplication, QMainWindow,QWidget, QMenu, QAction, QMenuBar, QPushButton, QTableWidget,QTableWidgetItem, QVBoxLayout, QLabel, QLineEdit, QComboBox, QDialog,QHBoxLayout
+from PyQt5.QtCore import Qt
+from PyQt5.QtWidgets import QApplication, QScrollArea, QMainWindow, QWidget, QMenu, QAction, QMenuBar, QPushButton, QTableWidget,QTableWidgetItem, QVBoxLayout, QLabel, QLineEdit, QComboBox, QDialog,QHBoxLayout
 import interface
 
 
@@ -37,6 +38,7 @@ class MainWindow(QWidget):
         self.main_layout.addWidget(menubar)
 
 
+
         # First check if there is a register setup file in the database
         register_setup_file_exists = interface.check_for_existing_register_setup()
 
@@ -57,10 +59,17 @@ class MainWindow(QWidget):
                 self.register_group = i+1
                 self.horizontal_layout.addWidget(TableWidget(rows, columns, self.register_group)) # Create table widhets and add them in the horizontal layout
 
-            self.main_layout.addLayout(self.horizontal_layout) # Add the horizontal layout to the main layout
-            self.horizontal_layout.setSpacing(0)
-            self.horizontal_layout.setContentsMargins(0, 0, 0, 0)
-            self.setLayout(self.main_layout) # Set the main layout
+
+            # Create a scroll area widget and add the horizontal layout to it
+            scroll_area = QScrollArea()
+            scroll_area.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
+            scroll_area.setWidgetResizable(True)
+            scroll_area.setWidget(QWidget())
+            scroll_area.widget().setLayout(self.horizontal_layout)
+
+            # Add the scroll area widget to the main layout
+            self.main_layout.addWidget(scroll_area)
+            self.setLayout(self.main_layout)  # Set the main layout
             
 
                 
@@ -115,8 +124,7 @@ class TableWidget(QWidget):
         self.table_widget.setColumnWidth(0, 200) # Set the width of the "Register Name" column to 200
         self.table_widget.setColumnWidth(1, 100) # Set the width of the "Address" column to 100
         self.table_widget.setColumnWidth(2, 100) # Set the width of the "Value" column to 100
-        #self.table_widget.setFixedWidth(400)
-        #self.table_widget.setFixedWidth(self.table_widget.horizontalHeader().length()) # Set the maximum width of the qtable widget to the width of the 3 columnns we have ( "Register Name", "Address", "Value" )
+        self.table_widget.setFixedWidth(self.table_widget.horizontalHeader().length()) # Set the maximum width of the qtable widget to the width of the 3 columnns we have ( "Register Name", "Address", "Value" )
 
         # Create a layout and add the table widget and the button buttons. 
         self.layout = QVBoxLayout()
