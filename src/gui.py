@@ -34,7 +34,12 @@ class MainWindow(QWidget):
 
 
         # First check if there is a register setup file in the database
-        self.check_for_existing_register_setup()
+        register_setup_file_exists = interface.check_for_existing_register_setup()
+
+        if register_setup_file_exists == True:
+            print ("Register setup file exists")
+        else:
+            print ("Register setup file does not exist")
 
         # Setting a few default values
         self.rows = rows
@@ -68,9 +73,7 @@ class MainWindow(QWidget):
         self.horizontal_layout.setContentsMargins(0, 0, 0, 0)
         self.setLayout(self.main_layout)
 
-    def check_for_existing_register_setup(self):
-        data_path = interface.database_path
-        print(data_path)
+
 
 
 
