@@ -228,6 +228,10 @@ def generate_setup_file(input_list):
 
     # Get the quantity of registers to poll from. 
     reg_quantity = input_list["quantity"]
+    group_id = input_list["register_group"]
+    register_group = "register_group_" + str(group_id)
+    unit_id = str(input_list["slave_address"])
+    
 
     with open(filepath, 'w') as f:
 
@@ -247,7 +251,7 @@ def generate_setup_file(input_list):
             parent_value["Access_type"] = input_list["registers"]["Access_type"]
             parent_data[parent_key] = parent_value 
 
-        json.dump({'register_group': {'slave_address':{'address':'1'}, 'registers':parent_data}},f) # Appenining the register attributes with the json structure
+        json.dump({register_group: {'slave_address':unit_id, 'registers':parent_data}},f) # Appenining the register attributes with the json structure
         
         print("JSON file created!")
 
