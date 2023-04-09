@@ -32,33 +32,35 @@ class MainWindow(QWidget):
         editMenu.addAction(copyAction)
         editMenu.addAction(pasteAction)
 
+        # Create a vertical layout  and add the menu bar
+        self.main_layout = QVBoxLayout()
+        self.main_layout.addWidget(menubar)
+
 
         # First check if there is a register setup file in the database
         register_setup_file_exists = interface.check_for_existing_register_setup()
 
         if register_setup_file_exists == True:
             print ("Register setup file exists")
-            data = interface.read_register_setup_file()
-            num_register_tables = 0
+            data = interface.read_register_setup_file() # read the register setup
+            num_register_groups = 0 # Variable to store the number of register groups
+            # Find out how many register groups there are in the register setup file
             for key in data.keys():
                 if "register_group_" in key:
-                    num_register_tables += 1
-            print (num_register_tables)
+                    num_register_groups += 1
+            print (num_register_groups)
 
-            self.main_layout = QVBoxLayout()
-            self.main_layout.addWidget(menubar)
-
-            self.register_table_widgets = []
+            # Create a horizontal layout to add the table widgets
             self.horizontal_layout = QHBoxLayout()
 
-            for i in range(num_register_tables):
+            for i in range(num_register_groups):
                 self.register_group = i+1
-                self.horizontal_layout.addWidget(TableWidget(rows, columns, self.register_group))
+                self.horizontal_layout.addWidget(TableWidget(rows, columns, self.register_group)) # Create table widhets and add them in the horizontal layout
 
-            self.main_layout.addLayout(self.horizontal_layout)
+            self.main_layout.addLayout(self.horizontal_layout) # Add the horizontal layout to the main layout
             self.horizontal_layout.setSpacing(0)
             self.horizontal_layout.setContentsMargins(0, 0, 0, 0)
-            self.setLayout(self.main_layout)
+            self.setLayout(self.main_layout) # Set the main layout
             
 
                 
