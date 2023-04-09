@@ -15,10 +15,11 @@ tcp_clients_list = []
 
 #device_data = {}
 device_name = ""
+register_map_file = 'register_map_file.json'
 
 
 database_path = os.path.join(os.getcwd(), 'database','test.json')
-path_to_register_setup = os.path.join(os.getcwd(), 'database','register_map_file.json')
+path_to_register_setup = os.path.join(os.getcwd(), 'database',register_map_file)
 
 
 if sys.platform.startswith('win'): # Check if we are running on Windows
@@ -261,6 +262,12 @@ def check_for_existing_register_setup() -> bool:
             return True
         else:
             return False
+        
+def read_register_setup_file():
+    with open(path_to_register_setup, 'r') as file:
+        data = json.load(file)
+    print(json.dumps(data, indent=4))
+    return data
 
 
 
