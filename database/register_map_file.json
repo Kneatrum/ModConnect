@@ -1,11 +1,9 @@
 {
-    "register_group": {
-        "slave_address": {
-            "address": "1"
-        },
+    "register_group_1": {
+        "slave_address": "2",
         "registers": {
             "register_1": {
-                "address": 5,
+                "address": 400,
                 "Register_name": "N/A",
                 "function_code": "Read Holding Registers",
                 "Units": "N/A",
@@ -14,7 +12,7 @@
                 "Access_type": "RO"
             },
             "register_2": {
-                "address": 6,
+                "address": 401,
                 "Register_name": "N/A",
                 "function_code": "Read Holding Registers",
                 "Units": "N/A",
@@ -23,7 +21,7 @@
                 "Access_type": "RO"
             },
             "register_3": {
-                "address": 7,
+                "address": 402,
                 "Register_name": "N/A",
                 "function_code": "Read Holding Registers",
                 "Units": "N/A",
@@ -32,7 +30,7 @@
                 "Access_type": "RO"
             },
             "register_4": {
-                "address": 8,
+                "address": 403,
                 "Register_name": "N/A",
                 "function_code": "Read Holding Registers",
                 "Units": "N/A",
@@ -41,7 +39,21 @@
                 "Access_type": "RO"
             },
             "register_5": {
-                "address": 9,
+                "address": 404,
+                "Register_name": "N/A",
+                "function_code": "Read Holding Registers",
+                "Units": "N/A",
+                "Gain": 1,
+                "Data_type": "N/A",
+                "Access_type": "RO"
+            }
+        }
+    },
+    "register_group_2": {
+        "slave_address": "2",
+        "registers": {
+            "register_1": {
+                "address": 400,
                 "Register_name": "N/A",
                 "function_code": "Read Holding Registers",
                 "Units": "N/A",
@@ -49,8 +61,8 @@
                 "Data_type": "N/A",
                 "Access_type": "RO"
             },
-            "register_6": {
-                "address": 10,
+            "register_2": {
+                "address": 401,
                 "Register_name": "N/A",
                 "function_code": "Read Holding Registers",
                 "Units": "N/A",
@@ -58,8 +70,8 @@
                 "Data_type": "N/A",
                 "Access_type": "RO"
             },
-            "register_7": {
-                "address": 11,
+            "register_3": {
+                "address": 402,
                 "Register_name": "N/A",
                 "function_code": "Read Holding Registers",
                 "Units": "N/A",
@@ -67,8 +79,8 @@
                 "Data_type": "N/A",
                 "Access_type": "RO"
             },
-            "register_8": {
-                "address": 12,
+            "register_4": {
+                "address": 403,
                 "Register_name": "N/A",
                 "function_code": "Read Holding Registers",
                 "Units": "N/A",
@@ -76,8 +88,22 @@
                 "Data_type": "N/A",
                 "Access_type": "RO"
             },
-            "register_9": {
-                "address": 13,
+            "register_5": {
+                "address": 404,
+                "Register_name": "N/A",
+                "function_code": "Read Holding Registers",
+                "Units": "N/A",
+                "Gain": 1,
+                "Data_type": "N/A",
+                "Access_type": "RO"
+            }
+        }
+    },
+    "register_group_3": {
+        "slave_address": "2",
+        "registers": {
+            "register_1": {
+                "address": 400,
                 "Register_name": "N/A",
                 "function_code": "Read Holding Registers",
                 "Units": "N/A",
@@ -85,8 +111,85 @@
                 "Data_type": "N/A",
                 "Access_type": "RO"
             },
-            "register_10": {
-                "address": 14,
+            "register_2": {
+                "address": 401,
+                "Register_name": "N/A",
+                "function_code": "Read Holding Registers",
+                "Units": "N/A",
+                "Gain": 1,
+                "Data_type": "N/A",
+                "Access_type": "RO"
+            },
+            "register_3": {
+                "address": 402,
+                "Register_name": "N/A",
+                "function_code": "Read Holding Registers",
+                "Units": "N/A",
+                "Gain": 1,
+                "Data_type": "N/A",
+                "Access_type": "RO"
+            },
+            "register_4": {
+                "address": 403,
+                "Register_name": "N/A",
+                "function_code": "Read Holding Registers",
+                "Units": "N/A",
+                "Gain": 1,
+                "Data_type": "N/A",
+                "Access_type": "RO"
+            },
+            "register_5": {
+                "address": 404,
+                "Register_name": "N/A",
+                "function_code": "Read Holding Registers",
+                "Units": "N/A",
+                "Gain": 1,
+                "Data_type": "N/A",
+                "Access_type": "RO"
+            }
+        }
+    },
+    "register_group_4": {
+        "slave_address": "2",
+        "registers": {
+            "register_1": {
+                "address": 400,
+                "Register_name": "N/A",
+                "function_code": "Read Holding Registers",
+                "Units": "N/A",
+                "Gain": 1,
+                "Data_type": "N/A",
+                "Access_type": "RO"
+            },
+            "register_2": {
+                "address": 401,
+                "Register_name": "N/A",
+                "function_code": "Read Holding Registers",
+                "Units": "N/A",
+                "Gain": 1,
+                "Data_type": "N/A",
+                "Access_type": "RO"
+            },
+            "register_3": {
+                "address": 402,
+                "Register_name": "N/A",
+                "function_code": "Read Holding Registers",
+                "Units": "N/A",
+                "Gain": 1,
+                "Data_type": "N/A",
+                "Access_type": "RO"
+            },
+            "register_4": {
+                "address": 403,
+                "Register_name": "N/A",
+                "function_code": "Read Holding Registers",
+                "Units": "N/A",
+                "Gain": 1,
+                "Data_type": "N/A",
+                "Access_type": "RO"
+            },
+            "register_5": {
+                "address": 404,
                 "Register_name": "N/A",
                 "function_code": "Read Holding Registers",
                 "Units": "N/A",
