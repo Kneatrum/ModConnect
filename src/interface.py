@@ -18,7 +18,7 @@ device_name = ""
 
 
 database_path = os.path.join(os.getcwd(), 'database','test.json')
-path_to_register_setup = os.path.join(os.getcwd(), 'database')
+path_to_register_setup = os.path.join(os.getcwd(), 'database','register_map_file.json')
 
 
 if sys.platform.startswith('win'): # Check if we are running on Windows
@@ -255,6 +255,12 @@ def generate_setup_file(input_list):
         json.dump({register_group: {'slave_address':unit_id, 'registers':parent_data}},f) # Appenining the register attributes with the json structure
         
         print("JSON file created!")
+
+def check_for_existing_register_setup() -> bool:
+        if os.path.isfile(path_to_register_setup):
+            return True
+        else:
+            return False
 
 
 
