@@ -209,6 +209,9 @@ class TableWidget(QWidget):
     def delete_register(self):
         print("Delete register")
         pass
+
+    def check_for_existing_register_setup(self):
+        
                 
 
 
