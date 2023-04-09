@@ -44,10 +44,10 @@ class MainWindow(QWidget):
         self.data_type = data_type
         self.access_type = access_type
         
-        self.register_table_widget_1 = TableWidget(self.rows,self.columns)
-        self.register_table_widget_2 = TableWidget(self.rows,self.columns)
-        self.register_table_widget_3 = TableWidget(self.rows,self.columns)
-        self.register_table_widget_4 = TableWidget(self.rows,self.columns)
+        self.register_table_widget_1 = TableWidget(self.rows,self.columns,self.register_group)
+        self.register_table_widget_2 = TableWidget(self.rows,self.columns,self.register_group)
+        self.register_table_widget_3 = TableWidget(self.rows,self.columns,self.register_group)
+        self.register_table_widget_4 = TableWidget(self.rows,self.columns,self.register_group)
         
         # Create a vertical layout and add widgets to it
         self.main_layout = QVBoxLayout()
@@ -66,17 +66,25 @@ class MainWindow(QWidget):
 
 
 class TableWidget(QWidget):
-    def __init__(self, rows, columns):
+    def __init__(self, rows, columns,register_group):
         super().__init__()
 
-        # Create a layout and add the table widget and the button
-        self.layout = QVBoxLayout()
+        # Add a label for the register group or device group
+        label_name = "Device " + str(register_group) # Create an initial name "Device " + the index of the register group. For example, Device 1
+        self.register_group_label = QLabel(label_name)
+
 
         # Add a button to add registers
         self.add_reg_button = QPushButton()
         self.add_reg_button.setText("Add registers")
         self.add_reg_button.setFixedSize(100,25) # Setting the size of the button
         self.add_reg_button.clicked.connect(self.showMessageBox)
+
+        # Add a button to remove registers
+        self.remove_reg_button = QPushButton()
+        self.remove_reg_button.setText("Delete register")
+        self.remove_reg_button.setFixedSize(100,25) # Setting the size of the button
+        self.remove_reg_button.clicked.connect(self.delete_register)
 
         # Create a table to display the registers
         self.table_widget = QTableWidget()
@@ -89,7 +97,17 @@ class TableWidget(QWidget):
         #self.table_widget.setFixedWidth(400)
         #self.table_widget.setFixedWidth(self.table_widget.horizontalHeader().length()) # Set the maximum width of the qtable widget to the width of the 3 columnns we have ( "Register Name", "Address", "Value" )
 
-        self.layout.addWidget(self.add_reg_button)
+        # Create a layout and add the table widget and the button buttons. 
+        self.layout = QVBoxLayout()
+
+        
+        # Create a horizontal layout to hold the Device group label and the two buttons (Add and remove register buttons)
+        self.h_layout = QHBoxLayout() 
+        self.h_layout.addWidget(self.register_group_label)
+
+        self.h_layout.addWidget(self.add_reg_button)
+        self.h_layout.addWidget(self.remove_reg_button)
+        self.layout.addLayout(self.h_layout)
         self.layout.addWidget(self.table_widget)
         
 
@@ -187,6 +205,10 @@ class TableWidget(QWidget):
             str_register = str(register)
             self.table_widget.setItem(row, 1, QTableWidgetItem(str_register))
             register = register + 1
+
+    def delete_register(self):
+        print("Delete register")
+        pass
                 
 
 
