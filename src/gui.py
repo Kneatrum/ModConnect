@@ -19,6 +19,9 @@ class MainWindow(QWidget):
 
         # Add actions to the "File" menu
         newAction = QAction('New', self)
+        # Connect the "triggered" signal of the "New" QAction to the "on_new_button_clicked" function
+        newAction.triggered.connect(self.on_new_button_clicked)
+
         openAction = QAction('Open', self)
         saveAction = QAction('Save', self)
         fileMenu.addAction(newAction)
@@ -88,6 +91,18 @@ class MainWindow(QWidget):
             self.gain = gain
             self.data_type = data_type
             self.access_type = access_type
+
+
+    def on_new_button_clicked(self):
+        print ("Create a new group")
+        data = interface.read_register_setup_file()
+        num_register_groups = 0 # Variable to store the number of register groups
+        # Find out how many register groups there are in the register setup file
+        for key in data.keys():
+            if "register_group_" in key:
+                num_register_groups += 1
+        print (num_register_groups)
+
         
 
 
@@ -133,7 +148,6 @@ class TableWidget(QWidget):
         # Create a horizontal layout to hold the Device group label and the two buttons (Add and remove register buttons)
         self.h_layout = QHBoxLayout() 
         self.h_layout.addWidget(self.register_group_label)
-
         self.h_layout.addWidget(self.add_reg_button)
         self.h_layout.addWidget(self.remove_reg_button)
         self.layout.addLayout(self.h_layout)
