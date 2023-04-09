@@ -18,6 +18,7 @@ device_name = ""
 
 
 database_path = os.path.join(os.getcwd(), 'database','test.json')
+path_to_register_setup = os.path.join(os.getcwd(), 'database')
 
 
 if sys.platform.startswith('win'): # Check if we are running on Windows
