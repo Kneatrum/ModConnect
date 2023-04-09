@@ -78,26 +78,7 @@ class MainWindow(QWidget):
             self.data_type = data_type
             self.access_type = access_type
         
-        # self.register_table_widget_1 = TableWidget(self.rows,self.columns,self.register_group)
-        # self.register_table_widget_2 = TableWidget(self.rows,self.columns,self.register_group)
-        # self.register_table_widget_3 = TableWidget(self.rows,self.columns,self.register_group)
-        # self.register_table_widget_4 = TableWidget(self.rows,self.columns,self.register_group)
-        
-        # Create a vertical layout and add widgets to it
-        # self.main_layout = QVBoxLayout()
-        # self.main_layout.addWidget(menubar)
 
-        # Create a horizontal layout and add widgets to it
-        # self.horizontal_layout = QHBoxLayout()
-        # self.horizontal_layout.addWidget(self.register_table_widget_1)
-        # self.horizontal_layout.addWidget(self.register_table_widget_2)
-        # self.horizontal_layout.addWidget(self.register_table_widget_3)
-        # self.horizontal_layout.addWidget(self.register_table_widget_4)
-        # self.horizontal_layout.addWidget(self.register_table_widgets)
-        # self.main_layout.addLayout(self.horizontal_layout)
-        # self.horizontal_layout.setSpacing(0)
-        # self.horizontal_layout.setContentsMargins(0, 0, 0, 0)
-        # self.setLayout(self.main_layout)
 
 
 
