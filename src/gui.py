@@ -61,7 +61,8 @@ class MainWindow(QWidget):
             for i in range(num_register_groups):
                 self.register_group = i+1
                 self.horizontal_layout.addWidget(TableWidget(rows, columns, self.register_group)) # Create table widhets and add them in the horizontal layout
-
+            
+            self.horizontal_layout.addStretch()
 
             # Create a scroll area widget and add the horizontal layout to it
             scroll_area = QScrollArea()
