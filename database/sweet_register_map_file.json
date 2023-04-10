@@ -1,0 +1,87 @@
+{
+    "register_group_1": {
+        "slave_address": "1",
+        "registers": {
+            "register_1": {
+                "address": 5,
+                "Register_name": "N/A",
+                "function_code": "Read Holding Registers",
+                "Units": "N/A",
+                "Gain": 1,
+                "Data_type": "N/A",
+                "Access_type": "RO"
+            }
+        }
+    },
+    "register_group_2": {
+        "slave_address": "1",
+        "registers": {
+            "register_1": {
+                "address": 5,
+                "Register_name": "N/A",
+                "function_code": "Read Holding Registers",
+                "Units": "N/A",
+                "Gain": 1,
+                "Data_type": "N/A",
+                "Access_type": "RO"
+            }
+        }
+    },
+    "register_group_3": {
+        "slave_address": "1",
+        "registers": {
+            "register_1": {
+                "address": 5,
+                "Register_name": "N/A",
+                "function_code": "Read Holding Registers",
+                "Units": "N/A",
+                "Gain": 1,
+                "Data_type": "N/A",
+                "Access_type": "RO"
+            }
+        }
+    },
+    "register_group_4": {
+        "slave_address": "1",
+        "registers": {
+            "register_1": {
+                "address": 5,
+                "Register_name": "N/A",
+                "function_code": "Read Holding Registers",
+                "Units": "N/A",
+                "Gain": 1,
+                "Data_type": "N/A",
+                "Access_type": "RO"
+            }
+        }
+    },
+    "register_group_5": {
+        "slave_address": "1",
+        "registers": {
+            "register_1": {
+                "address": 5,
+                "Register_name": "N/A",
+                "function_code": "Read Holding Registers",
+                "Units": "N/A",
+                "Gain": 1,
+                "Data_type": "N/A",
+                "Access_type": "RO"
+            }
+        }
+    },
+    "register_group_6": {
+        "slave_address": "1",
+        "registers": {
+            "register_1": {
+                "address": 5,
+                "Register_name": "N/A",
+                "function_code": "Read Holding Registers",
+                "Units": "N/A",
+                "Gain": 1,
+                "Data_type": "N/A",
+                "Access_type": "RO"
+            }
+        }
+    }
+
+}
