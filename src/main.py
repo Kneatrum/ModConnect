@@ -54,33 +54,57 @@ class MainWindow(QtWidgets.QMainWindow):
         editMenu.addAction(copyAction)
         editMenu.addAction(pasteAction)
 
+        self.setMenuBar(menubar)
 
-        # First check if there is a register setup file in the database
-        register_setup_file_exists = interface.check_for_existing_register_setup()
+        num_register_groups = self.check_for_existing_register_setup()
+        if num_register_groups != 0:
+            widget = self.return_widget(rows,columns,num_register_groups)
 
-        if register_setup_file_exists == True:
-            print ("Register setup file exists")
-            data = interface.read_register_setup_file() # read the register setup
-            num_register_groups = 0 # Variable to store the number of register groups
-            # Find out how many register groups there are in the register setup file
-            for key in data.keys():
-                if "register_group_" in key:
-                    num_register_groups += 1
-            print (num_register_groups)
+            self.setCentralWidget(widget)
+            # Add a small space between the menu bar and the central widget
+            self.centralWidget().layout().setContentsMargins(0, 20, 0, 50)
+            self.show()
+        else:
+            blank_widget = TableWidget(rows, columns,register_group) # Add a blank widget
+            self.setCentralWidget(blank_widget)
+            # Add a small space between the menu bar and the central widget
+            self.centralWidget().layout().setContentsMargins(0, 20, 0, 50)
+            self.show()
 
+
+
+
+
+    def check_for_existing_register_setup(self) -> int:
+            # First check if there is a register setup file in the database
+            register_setup_file_exists = interface.check_for_existing_register_setup()
+
+            if register_setup_file_exists == True:
+                print ("Register setup file exists")
+                data = interface.read_register_setup_file() # read the register setup
+                num_register_groups = 0 # Variable to store the number of register groups
+                # Find out how many register groups there are in the register setup file
+                for key in data.keys():
+                    if "register_group_" in key:
+                        num_register_groups += 1
+            
+                return num_register_groups
+            else : 
+                return 0
+    
+    def return_widget(self,rows,columns,num_register_groups):
+        if( num_register_groups > 0 ):
             # Create a central widget
             central_widget = QWidget()
-
-
             # Create a horizontal layout to add the table widgets
             self.horizontal_layout = QHBoxLayout()
-            
-
+            # Loop through the register setup and create widgets for each register group/ device
             for i in range(num_register_groups):
                 self.register_group = i+1
                 self.horizontal_layout.addWidget(TableWidget(rows, columns, self.register_group)) # Create table widgets and add them in the horizontal layout
-                self.horizontal_layout.setSpacing(0) 
-        
+            
+            self.horizontal_layout.addStretch() 
+            
 
             # Create a scroll area widget and add the horizontal layout to it
             scroll_area = QScrollArea()
@@ -95,16 +119,7 @@ class MainWindow(QtWidgets.QMainWindow):
             #self.setLayout(self.main_layout)  # Set the main layout
 
             central_widget.setLayout(self.main_layout) # Assign the main layout to the central widget
-
-
-            self.setCentralWidget(central_widget)
-
-            # Add a small space between the menu bar and the central widget
-            self.centralWidget().layout().setContentsMargins(0, 50, 0, 50)
-
-
-        # # End Main UI code
-        # self.show()
+            return central_widget
 
 
 
@@ -112,12 +127,15 @@ class TableWidget(QWidget):
     def __init__(self, rows, columns,register_group):
         super().__init__()
 
+
+
         # Add a label for the register group or device group
         label_name = "Device " + str(register_group) # Create an initial name "Device " + the index of the register group. For example, Device 1
 
         # Create a QGroupBox
         group_box = QGroupBox(label_name, self)
-        group_box.setMaximumWidth(400) # set maximum width
+        group_box.setMinimumWidth(450) # set minimum width
+        group_box.setMaximumWidth(450) # set maximum width
 
   
     
@@ -141,13 +159,13 @@ class TableWidget(QWidget):
         remove_device_button.clicked.connect(self.delete_device)
 
         # Create a table to display the registers
-        table_widget = QTableWidget()
-        table_widget.setRowCount(rows)
-        table_widget.setColumnCount(columns)
-        table_widget.setHorizontalHeaderLabels(["Register Name", "Address", "Value"])
-        table_widget.setColumnWidth(0, 200) # Set the width of the "Register Name" column to 200
-        table_widget.setColumnWidth(1, 100) # Set the width of the "Address" column to 100
-        table_widget.setColumnWidth(2, 100) # Set the width of the "Value" column to 100
+        self.table_widget = QTableWidget()
+        self.table_widget.setRowCount(rows)
+        self.table_widget.setColumnCount(columns)
+        self.table_widget.setHorizontalHeaderLabels(["Register Name", "Address", "Value"])
+        self.table_widget.setColumnWidth(0, 200) # Set the width of the "Register Name" column to 200
+        self.table_widget.setColumnWidth(1, 100) # Set the width of the "Address" column to 100
+        self.table_widget.setColumnWidth(2, 100) # Set the width of the "Value" column to 100
         #table_widget.setFixedWidth(table_widget.horizontalHeader().length()) # Set the maximum width of the qtable widget to the width of the 3 columnns we have ( "Register Name", "Address", "Value" )
 
         
@@ -163,7 +181,7 @@ class TableWidget(QWidget):
         # Create a vertical layout to hold the buttons and the table widget
         button_and_tablewidget_layout = QVBoxLayout()
         button_and_tablewidget_layout.addLayout(button_layout)
-        button_and_tablewidget_layout.addWidget(table_widget)
+        button_and_tablewidget_layout.addWidget(self.table_widget)
 
         # Add the button and table widget to the group box
         group_box.setLayout(button_and_tablewidget_layout)
@@ -172,6 +190,13 @@ class TableWidget(QWidget):
         main_layout = QVBoxLayout()
         main_layout.addWidget(group_box)
         self.setLayout(main_layout)
+
+    
+                    
+            
+
+
+        
 
 
 
