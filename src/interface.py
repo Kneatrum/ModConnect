@@ -273,10 +273,10 @@ def update_setup_file(user_input_dict):
     # Loop through the list of registers entered by the user and update the the register setup file
     for i in range(int(reg_quantity)):
         existing_register_count = register_count_under_device(data,device) # Find the number of registers that exist
-        print("Existing register count {}".format(existing_register_count))
+        # print("Existing register count {}".format(existing_register_count))
 
         new_register_start = "register_" + str(existing_register_count + 1) # If x registers exist, the next register will be x+1
-        print("New register start {}".format(new_register_start))
+        # print("New register start {}".format(new_register_start))
         parent_value = {} 
         # Assigning values to all the registr attributes
         parent_value["address"] = int(user_input_dict["registers"]["address"]) + i # If the user wants to read say 10 registers after register 1000, this line of code increments the addresses to register number 1011
