@@ -10,13 +10,13 @@ import interface
 
 class MainWindow(QtWidgets.QMainWindow):
 
-    def __init__(self,rows = 0, columns = 3, register_group = 1, slave_address = 1, register_quantity = 1, register_name = "N/A", units = "N/A", gain = 1, data_type = "N/A", access_type = "RO"):
+    def __init__(self,rows = 0, columns = 3, device = 1, slave_address = 1, register_quantity = 1, register_name = "N/A", units = "N/A", gain = 1, data_type = "N/A", access_type = "RO"):
         super().__init__()
         
         # Initializing the main window
         self.rows = rows
         self.columns = columns
-        self.register_group = register_group
+        self.device = device
         self.slave_address = slave_address
         self.register_quantity = register_quantity
         self.register_name = register_name
@@ -38,7 +38,7 @@ class MainWindow(QtWidgets.QMainWindow):
         # Add actions to the "File" menu
         newAction = QAction('New', self)
         # Connect the "triggered" signal of the "New" QAction to the "on_new_button_clicked" function
-        #newAction.triggered.connect(self.on_new_button_clicked)
+        newAction.triggered.connect(self.on_new_button_clicked)
 
         openAction = QAction('Open', self)
         saveAction = QAction('Save', self)
@@ -56,52 +56,44 @@ class MainWindow(QtWidgets.QMainWindow):
 
         self.setMenuBar(menubar)
 
-        num_register_groups = self.check_for_existing_register_setup()
-        if num_register_groups != 0:
-            widget = self.return_widget(rows,columns,num_register_groups)
-
+        saved_devices = interface.saved_device_count()
+        if saved_devices != 0:
+            print("Found saved devices")
+            widget = self.device_widget(rows,columns,saved_devices)
             self.setCentralWidget(widget)
             # Add a small space between the menu bar and the central widget
             self.centralWidget().layout().setContentsMargins(0, 20, 0, 50)
             self.show()
         else:
-            blank_widget = TableWidget(rows, columns,register_group) # Add a blank widget
+            print("No saved devices")
+            blank_widget = TableWidget(rows, columns,device) # Add a blank widget
             self.setCentralWidget(blank_widget)
             # Add a small space between the menu bar and the central widget
             self.centralWidget().layout().setContentsMargins(0, 20, 0, 50)
             self.show()
 
+    def on_new_button_clicked(self):
+        print("Adding a new device")
+        interface.append_device()
 
 
 
 
-    def check_for_existing_register_setup(self) -> int:
-            # First check if there is a register setup file in the database
-            register_setup_file_exists = interface.check_for_existing_register_setup()
 
-            if register_setup_file_exists == True:
-                print ("Register setup file exists")
-                data = interface.read_register_setup_file() # read the register setup
-                num_register_groups = 0 # Variable to store the number of register groups
-                # Find out how many register groups there are in the register setup file
-                for key in data.keys():
-                    if "register_group_" in key:
-                        num_register_groups += 1
-            
-                return num_register_groups
-            else : 
-                return 0
+
     
-    def return_widget(self,rows,columns,num_register_groups):
-        if( num_register_groups > 0 ):
+
+    
+    def device_widget(self,rows,columns,saved_devices):
+        if( saved_devices > 0 ):
             # Create a central widget
             central_widget = QWidget()
             # Create a horizontal layout to add the table widgets
             self.horizontal_layout = QHBoxLayout()
             # Loop through the register setup and create widgets for each register group/ device
-            for i in range(num_register_groups):
-                self.register_group = i+1
-                self.horizontal_layout.addWidget(TableWidget(rows, columns, self.register_group)) # Create table widgets and add them in the horizontal layout
+            for i in range(saved_devices):
+                self.device = i+1
+                self.horizontal_layout.addWidget(TableWidget(rows, columns, self.device)) # Create table widgets and add them in the horizontal layout
             
             self.horizontal_layout.addStretch() 
             
@@ -124,13 +116,13 @@ class MainWindow(QtWidgets.QMainWindow):
 
 
 class TableWidget(QWidget):
-    def __init__(self, rows, columns,register_group):
+    def __init__(self, rows, columns,device):
         super().__init__()
 
 
 
         # Add a label for the register group or device group
-        label_name = "Device " + str(register_group) # Create an initial name "Device " + the index of the register group. For example, Device 1
+        label_name = "Device " + str(device) # Create an initial name "Device " + the index of the register group. For example, Device 1
 
         # Create a QGroupBox
         group_box = QGroupBox(label_name, self)
@@ -246,6 +238,7 @@ class TableWidget(QWidget):
         self.rset_submit_button = QPushButton("Submit")
         r_set_h_layout_4.addWidget(self.rset_submit_button)
         self.rset_submit_button.clicked.connect(self.get_user_input)
+        self.register_setup_dialog.close()
 
         # Add all the layouts to the main vertical layout
         rset_main_layout.addLayout(r_set_h_layout_1)
@@ -257,27 +250,31 @@ class TableWidget(QWidget):
         self.register_setup_dialog.exec_() 
 
 
+
         # This function gets the user input values and the default values from the constructor function and sends them to interface.py
     def get_user_input(self):
         main_window = MainWindow()  # Create an instance of the main window to enable us to access some of the default values
         user_input = {} # An empty dictionary to store user input
-        list_register_properties ={} # Empty dictionary to store register properties
-        list_register_properties['Register_name'] = main_window.register_name   
-        list_register_properties['address'] = int(self.reg_address.text())
-        list_register_properties['function_code'] = self.function_code.currentText()
-        list_register_properties['Units'] =main_window.units
-        list_register_properties['Gain'] =main_window.gain
-        list_register_properties['Data_type'] =main_window.data_type
-        list_register_properties['Access_type'] =main_window.access_type
+
+        register_properties_dict ={} # Empty dictionary to store register properties
+        register_properties_dict['Register_name'] = main_window.register_name   
+        register_properties_dict['address'] = int(self.reg_address.text())
+        register_properties_dict['function_code'] = self.function_code.currentText()
+        register_properties_dict['Units'] =main_window.units
+        register_properties_dict['Gain'] =main_window.gain
+        register_properties_dict['Data_type'] =main_window.data_type
+        register_properties_dict['Access_type'] =main_window.access_type
 
         self.slave_address = self.slave_id.text()
         self.register_quantity = self.reg_quantity.text()
-        user_input["register_group"] = main_window.register_group
+        user_input["device"] = main_window.device
         user_input['slave_address'] = self.slave_address
         user_input['quantity'] = self.register_quantity
-        user_input["registers"] = list_register_properties
+
+        user_input["registers"] = register_properties_dict
         self.rows = int(self.register_quantity)
         self.table_widget.setRowCount(self.rows)
+
         interface.generate_setup_file(user_input)
         self.update_register_table()
         self.table_widget.update()

@@ -1,5 +1,5 @@
 {
-    "register_group_1":{
+    "device_1":{
 
         "slave_address":{
             "address": 1
@@ -54,7 +54,7 @@
             }
         }
     },
-    "register_group_2":{
+    "device_2":{
         
         "slave_address":{
             "address": 1

@@ -1,0 +1,26 @@
+{
+    "device_1": {
+        "slave_address": "1",
+        "registers": {}
+    },
+    "device_2": {
+        "slave_address": 1,
+        "registers": {}
+    },
+    "device_3": {
+        "slave_address": 1,
+        "registers": {}
+    },
+    "device_4": {
+        "slave_address": 1,
+        "registers": {}
+    },
+    "device_5": {
+        "slave_address": 1,
+        "registers": {}
+    },
+    "device_6": {
+        "slave_address": 1,
+        "registers": {}
+    }
+}

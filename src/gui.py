@@ -5,7 +5,7 @@ import interface
 
 
 class MainWindow(QWidget):
-    def __init__(self,rows = 0, columns = 3, register_group = 1, slave_address = 1, register_quantity = 1, register_name = "N/A", units = "N/A", gain = 1, data_type = "N/A", access_type = "RO"):
+    def __init__(self,rows = 0, columns = 3, device = 1, slave_address = 1, register_quantity = 1, register_name = "N/A", units = "N/A", gain = 1, data_type = "N/A", access_type = "RO"):
         super().__init__()
 
 
@@ -48,19 +48,19 @@ class MainWindow(QWidget):
         if register_setup_file_exists == True:
             print ("Register setup file exists")
             data = interface.read_register_setup_file() # read the register setup
-            num_register_groups = 0 # Variable to store the number of register groups
+            num_devices = 0 # Variable to store the number of register groups
             # Find out how many register groups there are in the register setup file
             for key in data.keys():
-                if "register_group_" in key:
-                    num_register_groups += 1
-            print (num_register_groups)
+                if "device_" in key:
+                    num_devices += 1
+            print (num_devices)
 
             # Create a horizontal layout to add the table widgets
             self.horizontal_layout = QHBoxLayout()
 
-            for i in range(num_register_groups):
-                self.register_group = i+1
-                self.horizontal_layout.addWidget(TableWidget(rows, columns, self.register_group)) # Create table widhets and add them in the horizontal layout
+            for i in range(num_devices):
+                self.device = i+1
+                self.horizontal_layout.addWidget(TableWidget(rows, columns, self.device)) # Create table widhets and add them in the horizontal layout
             
             self.horizontal_layout.addStretch()
 
@@ -84,7 +84,7 @@ class MainWindow(QWidget):
             # Setting a few default values
         self.rows = rows
         self.columns = columns
-        self.register_group = register_group
+        self.device = device
         self.slave_address = slave_address
         self.register_quantity = register_quantity
         self.register_name = register_name
@@ -97,12 +97,12 @@ class MainWindow(QWidget):
     def on_new_button_clicked(self):
         print ("Create a new group")
         data = interface.read_register_setup_file()
-        num_register_groups = 0 # Variable to store the number of register groups
+        num_devices = 0 # Variable to store the number of register groups
         # Find out how many register groups there are in the register setup file
         for key in data.keys():
-            if "register_group_" in key:
-                num_register_groups += 1
-        print (num_register_groups)
+            if "device_" in key:
+                num_devices += 1
+        print (num_devices)
 
         
 
@@ -112,12 +112,12 @@ class MainWindow(QWidget):
 
 
 class TableWidget(QWidget):
-    def __init__(self, rows, columns,register_group):
+    def __init__(self, rows, columns,device):
         super().__init__()
 
         # Add a label for the register group or device group
-        label_name = "Device " + str(register_group) # Create an initial name "Device " + the index of the register group. For example, Device 1
-        self.register_group_label = QLabel(label_name)
+        label_name = "Device " + str(device) # Create an initial name "Device " + the index of the register group. For example, Device 1
+        self.device_label = QLabel(label_name)
 
 
         # Add a button to add registers
@@ -148,7 +148,7 @@ class TableWidget(QWidget):
         
         # Create a horizontal layout to hold the Device group label and the two buttons (Add and remove register buttons)
         self.h_layout = QHBoxLayout() 
-        self.h_layout.addWidget(self.register_group_label)
+        self.h_layout.addWidget(self.device_label)
         self.h_layout.addWidget(self.add_reg_button)
         self.h_layout.addWidget(self.remove_reg_button)
         self.layout.addLayout(self.h_layout)
@@ -231,7 +231,7 @@ class TableWidget(QWidget):
 
         self.slave_address = self.slave_id.text()
         self.register_quantity = self.reg_quantity.text()
-        user_input["register_group"] = main_window.register_group
+        user_input["device"] = main_window.device
         user_input['slave_address'] = self.slave_address
         user_input['quantity'] = self.register_quantity
         user_input["registers"] = list_register_properties

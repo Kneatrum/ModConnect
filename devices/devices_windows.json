@@ -2,7 +2,7 @@
   "devices": {
     "modbus_tcp_devices": {
       "device_1": {
-        "register_group": {
+        "device": {
           "group_id": 1
         },
         "connection_params": {
@@ -11,7 +11,7 @@
         }
       },
       "device_2": {
-        "register_group": {
+        "device": {
           "group_id": 1
         },
         "connection_params": {
@@ -20,7 +20,7 @@
         }
       },
       "device_3": {
-        "register_group": {
+        "device": {
           "group_id": 2
         },
         "connection_params": {
@@ -29,7 +29,7 @@
         }
       },
       "device_4": {
-        "register_group": {
+        "device": {
           "group_id": 3
         },
         "connection_params": {
@@ -40,7 +40,7 @@
     },
     "modbus_rtu_devices": {
       "device_1": {
-        "register_group": {
+        "device": {
           "group_id": 2
         },
         "connection_params": {
@@ -53,7 +53,7 @@
         }
       },
       "device_2": {
-        "register_group": {
+        "device": {
           "group_id": 1
         },
         "connection_params": {
@@ -66,7 +66,7 @@
         }
       },
       "device_3": {
-        "register_group": {
+        "device": {
           "group_id": 1
         },
         "connection_params": {

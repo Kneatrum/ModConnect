@@ -1,5 +1,5 @@
 {
-    "register_group_1": {
+    "device_1": {
         "slave_address": "1",
         "registers": {
             "register_1": {
@@ -13,7 +13,7 @@
             }
         }
     },
-    "register_group_2": {
+    "device_2": {
         "slave_address": "1",
         "registers": {
             "register_1": {
@@ -27,7 +27,7 @@
             }
         }
     },
-    "register_group_3": {
+    "device_3": {
         "slave_address": "1",
         "registers": {
             "register_1": {
@@ -41,7 +41,7 @@
             }
         }
     },
-    "register_group_4": {
+    "device_4": {
         "slave_address": "1",
         "registers": {
             "register_1": {
@@ -55,7 +55,7 @@
             }
         }
     },
-    "register_group_5": {
+    "device_5": {
         "slave_address": "1",
         "registers": {
             "register_1": {
@@ -69,7 +69,7 @@
             }
         }
     },
-    "register_group_6": {
+    "device_6": {
         "slave_address": "1",
         "registers": {
             "register_1": {
