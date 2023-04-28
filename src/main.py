@@ -275,7 +275,8 @@ class TableWidget(QWidget):
         self.rows = int(self.register_quantity)
         self.table_widget.setRowCount(self.rows)
 
-        interface.generate_setup_file(user_input)
+        #interface.generate_setup_file(user_input)
+        interface.update_setup_file(user_input)
         self.update_register_table()
         self.table_widget.update()
 

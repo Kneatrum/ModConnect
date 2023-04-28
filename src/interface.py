@@ -9,6 +9,7 @@ import os
 import  sys
 
 
+
 modbus_device_settings = ""
 rtu_clients_list = []
 tcp_clients_list = []
@@ -56,7 +57,7 @@ def get_tcp_clients() -> list:
 
         IP_ADDRESS = modbus_device_settings['devices']['modbus_tcp_devices'][device]['connection_params']['host']       # Get the IP address
         TCP_PORT = modbus_device_settings['devices']['modbus_tcp_devices'][device]['connection_params']['port']         # Get the port number
-        device = modbus_device_settings['devices']['modbus_tcp_devices'][device]['device']['group_id']  # Get the register group ID
+        device = modbus_device_settings['devices']['modbus_tcp_devices'][device]['device']['device_id']  # Get the register group ID
         #print(IP_ADDRESS, TCP_PORT)   # Print the device information to the console
         tcp_client = ModbusTcpClient(IP_ADDRESS, TCP_PORT)
         
@@ -88,7 +89,7 @@ def get_rtu_clients() -> list:
         BYTESIZE = modbus_device_settings['devices']['modbus_rtu_devices'][device]['connection_params']['bytesize']
         TIMEOUT = modbus_device_settings['devices']['modbus_rtu_devices'][device]['connection_params']['timeout']
 
-        device = modbus_device_settings['devices']['modbus_rtu_devices'][device]['device']['group_id']  # Get the register group ID
+        device = modbus_device_settings['devices']['modbus_rtu_devices'][device]['device']['device_id']  # Get the register group ID
 
         print(SERIAL_PORT, BAUDRATE, PARITY, STOPBITS, BYTESIZE, TIMEOUT)
         rtu_client = ModbusSerialClient(method='rtu',port=SERIAL_PORT,baudrate=BAUDRATE,parity=PARITY,stopbits=STOPBITS,bytesize=BYTESIZE,timeout=TIMEOUT)
@@ -106,11 +107,11 @@ def get_rtu_clients() -> list:
 
 
 
-def read_tcp_registers(client,group_id):
+def read_tcp_registers(client,device_id):
     with open(database_path, 'r') as f:
           data = json.load(f)
     
-    device_id = "device_" + str(group_id) # Get the register group id to identify the registers to read for a specific device
+    device_id = "device_" + str(device_id) # Get the register group id to identify the registers to read for a specific device
 
     UNIT_ID = data[device_id]['slave_address']['address']
     print("Slave ID", UNIT_ID) 
@@ -166,11 +167,11 @@ def read_tcp_registers(client,group_id):
 
 
 
-def read_rtu_registers(client,group_id):
+def read_rtu_registers(client,device_id):
     with open(database_path, 'r') as f:
           data = json.load(f)
 
-    device_id = "device_" + str(group_id) # Get the register group id to identify the registers to read for a specific device
+    device_id = "device_" + str(device_id) # Get the register group id to identify the registers to read for a specific device
 
     UNIT_ID = data[device_id]['slave_address']['address']  # Get the slave address
     print("Slave ID", UNIT_ID)
@@ -225,8 +226,8 @@ def generate_setup_file(user_input_dict):
 
     # Get the quantity of registers to poll from. 
     reg_quantity = user_input_dict["quantity"]
-    group_id = user_input_dict["device"]
-    device = "device_" + str(group_id)
+    device_id = user_input_dict["device"]
+    device = "device_" + str(device_id)
     unit_id = str(user_input_dict["slave_address"])
 
     
@@ -251,6 +252,48 @@ def generate_setup_file(user_input_dict):
         json.dump({device: {'slave_address':unit_id, 'registers':parent_data}},f) # Appenining the register attributes with the json structure
         
         print("JSON file created!")
+
+
+
+# This function receives user input and default register parameters from gui.py file as a dictionary
+def update_setup_file(user_input_dict): 
+
+    device_id = user_input_dict["device"]
+    unit_id = str(user_input_dict["slave_address"])
+    reg_quantity = user_input_dict["quantity"]
+
+    device = "device_" + str(device_id)
+
+    # Read the register setup file
+    with open(path_to_register_setup, 'r') as f:  
+            data = json.load(f)
+
+    
+    
+    # Loop through the list of registers entered by the user and update the the register setup file
+    for i in range(int(reg_quantity)):
+        existing_register_count = register_count_under_device(data,device) # Find the number of registers that exist
+        print("Existing register count {}".format(existing_register_count))
+
+        new_register_start = "register_" + str(existing_register_count + 1) # If x registers exist, the next register will be x+1
+        print("New register start {}".format(new_register_start))
+        parent_value = {} 
+        # Assigning values to all the registr attributes
+        parent_value["address"] = int(user_input_dict["registers"]["address"]) + i # If the user wants to read say 10 registers after register 1000, this line of code increments the addresses to register number 1011
+        parent_value["Register_name"] = user_input_dict["registers"]["Register_name"] 
+        parent_value["function_code"] = user_input_dict["registers"]["function_code"]
+        parent_value["Units"] = user_input_dict["registers"]["Units"]
+        parent_value["Gain"] = user_input_dict["registers"]["Gain"]
+        parent_value["Data_type"] = user_input_dict["registers"]["Data_type"]
+        parent_value["Access_type"] = user_input_dict["registers"]["Access_type"] 
+
+        # Update the existing json file with the new register parameters
+        data[device]['registers'].update({new_register_start:parent_value})
+        with open(path_to_register_setup, 'w') as f:
+            json.dump(data, f, indent=4)
+
+    
+    print("JSON file created!")
 
 
 
@@ -284,6 +327,16 @@ def saved_device_count() -> int:
             return saved_devices
         else : 
             return 0
+        
+def register_count_under_device(json_data, device_key):
+    count = 0
+    if device_key in json_data:
+        device_data = json_data[device_key]
+        if "registers" in device_data:
+            registers_data = device_data["registers"]
+            count = sum([1 for key in registers_data.keys() if "register_" in key])
+    return count
+
 
 
 
@@ -311,7 +364,6 @@ def append_device():
 
 
 
-            
 
 
 '''
@@ -334,7 +386,7 @@ def append_device():
 
 '''
 
-append_device()
+# append_device()
 
 # my_tcp_list = get_tcp_clients()
 # print(my_tcp_list[0].get('client'))

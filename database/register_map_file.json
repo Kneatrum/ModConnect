@@ -1,26 +1,61 @@
 {
     "device_1": {
         "slave_address": "1",
-        "registers": {}
-    },
-    "device_2": {
-        "slave_address": 1,
-        "registers": {}
-    },
-    "device_3": {
-        "slave_address": 1,
-        "registers": {}
-    },
-    "device_4": {
-        "slave_address": 1,
-        "registers": {}
-    },
-    "device_5": {
-        "slave_address": 1,
-        "registers": {}
-    },
-    "device_6": {
-        "slave_address": 1,
-        "registers": {}
+        "registers": {
+            "register_1": {
+                "address": 3000,
+                "Register_name": "N/A",
+                "function_code": "Read Holding Registers",
+                "Units": "N/A",
+                "Gain": 1,
+                "Data_type": "N/A",
+                "Access_type": "RO"
+            },
+            "register_2": {
+                "address": 3000,
+                "Register_name": "N/A",
+                "function_code": "Read Holding Registers",
+                "Units": "N/A",
+                "Gain": 1,
+                "Data_type": "N/A",
+                "Access_type": "RO"
+            },
+            "register_3": {
+                "address": 3001,
+                "Register_name": "N/A",
+                "function_code": "Read Holding Registers",
+                "Units": "N/A",
+                "Gain": 1,
+                "Data_type": "N/A",
+                "Access_type": "RO"
+            },
+            "register_4": {
+                "address": 3002,
+                "Register_name": "N/A",
+                "function_code": "Read Holding Registers",
+                "Units": "N/A",
+                "Gain": 1,
+                "Data_type": "N/A",
+                "Access_type": "RO"
+            },
+            "register_5": {
+                "address": 3003,
+                "Register_name": "N/A",
+                "function_code": "Read Holding Registers",
+                "Units": "N/A",
+                "Gain": 1,
+                "Data_type": "N/A",
+                "Access_type": "RO"
+            },
+            "register_6": {
+                "address": 3004,
+                "Register_name": "N/A",
+                "function_code": "Read Holding Registers",
+                "Units": "N/A",
+                "Gain": 1,
+                "Data_type": "N/A",
+                "Access_type": "RO"
+            }
+        }
     }
 }
