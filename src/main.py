@@ -144,7 +144,7 @@ class TableWidget(QWidget):
         remove_reg_button.setFixedSize(100,25) # Setting the size of the button
         remove_reg_button.clicked.connect(self.delete_register)
 
-        # Add a button to remove Devide 
+        # Add a button to remove Device 
         remove_device_button = QPushButton()
         remove_device_button.setText("Delete device")
         remove_device_button.setFixedSize(100,25) # Setting the size of the button
@@ -277,14 +277,14 @@ class TableWidget(QWidget):
 
         #interface.generate_setup_file(user_input)
         interface.update_setup_file(user_input)
-        self.update_register_table()
+        self.update_register_table(self.reg_address.text(),self.reg_quantity.text())
         self.table_widget.update()
 
 
         # Add the register addresses to the "Address" column
-    def update_register_table(self):
-        register = int(self.reg_address.text())
-        for row in range (int(self.reg_quantity.text())):
+    def update_register_table(self,register_start_address,register_quantity):
+        register = int(register_start_address)
+        for row in range (int(register_quantity)):
             str_register = str(register)
             self.table_widget.setItem(row, 1, QTableWidgetItem(str_register))
             register = register + 1
