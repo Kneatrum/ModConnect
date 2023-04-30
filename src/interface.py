@@ -265,9 +265,7 @@ def update_setup_file(user_input_dict):
     device = "device_" + str(device_id)
 
     # Read the register setup file
-    with open(path_to_register_setup, 'r') as f:  
-            data = json.load(f)
-
+    data = read_register_setup_file()
     
     
     # Loop through the list of registers entered by the user and update the the register setup file
