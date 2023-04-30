@@ -357,6 +357,16 @@ def append_device():
 
         with open(path_to_register_setup, 'w') as f:
             json.dump(data, f, indent=4)
+
+def update_register_name(device_id:int, row:int, name:str):
+    target_register = "register_" + str(row+1)
+
+    # Read the register setup file
+    data = read_register_setup_file()
+
+    data["device_" + str(device_id)]['registers'][target_register].update({'Register_name':name})
+    with open(path_to_register_setup, 'w') as f:
+        json.dump(data, f, indent=4)
     
 
 
