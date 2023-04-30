@@ -93,7 +93,9 @@ class MainWindow(QtWidgets.QMainWindow):
             # Loop through the register setup and create widgets for each register group/ device
             for i in range(saved_devices):
                 self.device = i+1
-                self.horizontal_layout.addWidget(TableWidget(rows, columns, self.device)) # Create table widgets and add them in the horizontal layout
+                widget = TableWidget(rows, columns, self.device)
+                # widget.table_widget.setItem(0, 1, QTableWidgetItem("N/A"))
+                self.horizontal_layout.addWidget(widget) # Create table widgets and add them in the horizontal layout
             
             self.horizontal_layout.addStretch() 
             
