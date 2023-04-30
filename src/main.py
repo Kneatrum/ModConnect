@@ -95,14 +95,14 @@ class MainWindow(QtWidgets.QMainWindow):
             # Loop through the register setup and create widgets for each register group/ device
             for i in range(saved_devices):
                 self.device = i+1
-                registers_per_device = interface.register_count_under_device(data,self.device)
-                widget = TableWidget(rows, columns, self.device)
-                widget.table_widget.setRowCount(registers_per_device)
-                self.horizontal_layout.addWidget(widget) # Create table widgets and add them in the horizontal layout
+                registers_per_device = interface.register_count_under_device(data,self.device) # Find how many registers we have per device
+                widget = TableWidget(rows, columns, self.device) # Create and instance of our table widget
+                widget.table_widget.setRowCount(registers_per_device) # Set the number of rows to the number of registers we have
+                self.horizontal_layout.addWidget(widget) # Create the table widgets and add them in the horizontal layout
+                # Add the register parameters in the rows and columns of each device
                 for j in range(registers_per_device):
-                    widget.table_widget.setItem(j, 0, QTableWidgetItem(data["device_" + str(self.device)]["registers"]["register_" + str(j+1)]["Register_name"]))
-                    widget.table_widget.setItem(j, 1, QTableWidgetItem(str(data["device_" + str(self.device)]["registers"]["register_" + str(j+1)]["address"])))
-                    
+                    widget.table_widget.setItem(j, 0, QTableWidgetItem(data["device_" + str(self.device)]["registers"]["register_" + str(j+1)]["Register_name"])) # Update the register name
+                    widget.table_widget.setItem(j, 1, QTableWidgetItem(str(data["device_" + str(self.device)]["registers"]["register_" + str(j+1)]["address"]))) # Update the string version of the register address
             self.horizontal_layout.addStretch() 
             
 
