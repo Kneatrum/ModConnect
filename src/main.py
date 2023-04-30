@@ -202,7 +202,7 @@ class TableWidget(QWidget):
         col = item.column()
         text = item.text()
         print(f"Cell ({row}, {col}) changed to {text}")
-        if col == 0:
+        if item.column() == 0:
             interface.update_register_name(self.device,row,text)
 
     
