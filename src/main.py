@@ -56,29 +56,39 @@ class MainWindow(QtWidgets.QMainWindow):
 
         self.setMenuBar(menubar)
 
+        
+     
+        self.add_devices_to_layout(self.rows,self.columns)
+        
+            
+
+    def on_new_button_clicked(self):
+        print("Adding a new device")
+        interface.append_device()
+        self.add_devices_to_layout(self.rows,self.columns)
+
+
+
+    def add_devices_to_layout(self, rows, columns):
         saved_devices = interface.saved_device_count()
+
         if saved_devices != 0:
             print("Found saved devices")
-            widget = self.device_widget(self.rows,self.columns,saved_devices)
+            widget = self.device_widget(rows,columns,saved_devices)
             self.setCentralWidget(widget)
             # Add a small space between the menu bar and the central widget
             self.centralWidget().layout().setContentsMargins(0, 20, 0, 50)
             self.show()
         else:
+            saved_devices = 1
             print("No saved devices")
-            blank_widget = TableWidget(rows, columns,device) # Add a blank widget
+            blank_widget = TableWidget(rows, columns,saved_devices) # Add a blank widget
             self.setCentralWidget(blank_widget)
             # Add a small space between the menu bar and the central widget
             self.centralWidget().layout().setContentsMargins(0, 20, 0, 50)
             self.show()
 
-    def on_new_button_clicked(self):
-        print("Adding a new device")
-        interface.append_device()
-
-
-
-
+        
 
 
     
