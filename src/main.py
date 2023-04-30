@@ -169,6 +169,7 @@ class TableWidget(QWidget):
         self.table_widget.setColumnWidth(0, 200) # Set the width of the "Register Name" column to 200
         self.table_widget.setColumnWidth(1, 100) # Set the width of the "Address" column to 100
         self.table_widget.setColumnWidth(2, 100) # Set the width of the "Value" column to 100
+        self.table_widget.itemChanged.connect(self.onItemChanged)
         #table_widget.setFixedWidth(table_widget.horizontalHeader().length()) # Set the maximum width of the qtable widget to the width of the 3 columnns we have ( "Register Name", "Address", "Value" )
 
         
@@ -193,6 +194,13 @@ class TableWidget(QWidget):
         main_layout = QVBoxLayout()
         main_layout.addWidget(group_box)
         self.setLayout(main_layout)
+
+
+    def onItemChanged(self, item):
+            row = item.row()
+            col = item.column()
+            text = item.text()
+            print(f"Cell ({row}, {col}) changed to {text}")
 
     
                     
