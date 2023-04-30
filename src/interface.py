@@ -262,7 +262,6 @@ def update_setup_file(user_input_dict):
     unit_id = str(user_input_dict["slave_address"])
     reg_quantity = user_input_dict["quantity"]
 
-    device = "device_" + str(device_id)
 
     # Read the register setup file
     data = read_register_setup_file()
@@ -270,7 +269,7 @@ def update_setup_file(user_input_dict):
     
     # Loop through the list of registers entered by the user and update the the register setup file
     for i in range(int(reg_quantity)):
-        existing_register_count = register_count_under_device(data,device) # Find the number of registers that exist
+        existing_register_count = register_count_under_device(data,device_id) # Find the number of registers that exist
         # print("Existing register count {}".format(existing_register_count))
 
         new_register_start = "register_" + str(existing_register_count + 1) # If x registers exist, the next register will be x+1
@@ -286,7 +285,7 @@ def update_setup_file(user_input_dict):
         parent_value["Access_type"] = user_input_dict["registers"]["Access_type"] 
 
         # Update the existing json file with the new register parameters
-        data[device]['registers'].update({new_register_start:parent_value})
+        data["device_" + str(device_id)]['registers'].update({new_register_start:parent_value})
         with open(path_to_register_setup, 'w') as f:
             json.dump(data, f, indent=4)
 
@@ -326,7 +325,8 @@ def saved_device_count() -> int:
         else : 
             return 0
         
-def register_count_under_device(json_data, device_key):
+def register_count_under_device(json_data, device_id: int):
+    device_key = "device_" + str(device_id)
     count = 0
     if device_key in json_data:
         device_data = json_data[device_key]
