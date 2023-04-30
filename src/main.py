@@ -59,7 +59,7 @@ class MainWindow(QtWidgets.QMainWindow):
         saved_devices = interface.saved_device_count()
         if saved_devices != 0:
             print("Found saved devices")
-            widget = self.device_widget(rows,columns,saved_devices)
+            widget = self.device_widget(self.rows,self.columns,saved_devices)
             self.setCentralWidget(widget)
             # Add a small space between the menu bar and the central widget
             self.centralWidget().layout().setContentsMargins(0, 20, 0, 50)
@@ -90,13 +90,19 @@ class MainWindow(QtWidgets.QMainWindow):
             central_widget = QWidget()
             # Create a horizontal layout to add the table widgets
             self.horizontal_layout = QHBoxLayout()
+            # Read the register setup file and save the content in the 'data' variable
+            data = interface.read_register_setup_file()
             # Loop through the register setup and create widgets for each register group/ device
             for i in range(saved_devices):
                 self.device = i+1
+                registers_per_device = interface.register_count_under_device(data,self.device)
                 widget = TableWidget(rows, columns, self.device)
-                # widget.table_widget.setItem(0, 1, QTableWidgetItem("N/A"))
+                widget.table_widget.setRowCount(registers_per_device)
                 self.horizontal_layout.addWidget(widget) # Create table widgets and add them in the horizontal layout
-            
+                for j in range(registers_per_device):
+                    widget.table_widget.setItem(j, 0, QTableWidgetItem(data["device_" + str(self.device)]["registers"]["register_" + str(j+1)]["Register_name"]))
+                    widget.table_widget.setItem(j, 1, QTableWidgetItem(str(data["device_" + str(self.device)]["registers"]["register_" + str(j+1)]["address"])))
+                    
             self.horizontal_layout.addStretch() 
             
 
@@ -120,6 +126,9 @@ class MainWindow(QtWidgets.QMainWindow):
 class TableWidget(QWidget):
     def __init__(self, rows, columns,device):
         super().__init__()
+
+        self.rows = rows
+        self.columns = columns
 
 
 
@@ -154,8 +163,8 @@ class TableWidget(QWidget):
 
         # Create a table to display the registers
         self.table_widget = QTableWidget()
-        self.table_widget.setRowCount(rows)
-        self.table_widget.setColumnCount(columns)
+        self.table_widget.setRowCount(self.rows)
+        self.table_widget.setColumnCount(self.columns)
         self.table_widget.setHorizontalHeaderLabels(["Register Name", "Address", "Value"])
         self.table_widget.setColumnWidth(0, 200) # Set the width of the "Register Name" column to 200
         self.table_widget.setColumnWidth(1, 100) # Set the width of the "Address" column to 100
