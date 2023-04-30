@@ -129,11 +129,12 @@ class TableWidget(QWidget):
 
         self.rows = rows
         self.columns = columns
+        self.device = device
 
 
 
         # Add a label for the register group or device group
-        label_name = "Device " + str(device) # Create an initial name "Device " + the index of the register group. For example, Device 1
+        label_name = "Device " + str(self.device) # Create an initial name "Device " + the index of the register group. For example, Device 1
 
         # Create a QGroupBox
         group_box = QGroupBox(label_name, self)
@@ -197,10 +198,11 @@ class TableWidget(QWidget):
 
 
     def onItemChanged(self, item):
-            row = item.row()
-            col = item.column()
-            text = item.text()
-            print(f"Cell ({row}, {col}) changed to {text}")
+        row = item.row()
+        col = item.column()
+        text = item.text()
+        print(f"Cell ({row}, {col}) changed to {text}")
+        interface.update_register_name(self.device,row,text)
 
     
                     
