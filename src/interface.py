@@ -18,12 +18,7 @@ tcp_clients_list = []
 data_folder = 'database'
 register_map_file = 'register_map_file.json'
 path_to_register_setup = os.path.join(os.getcwd(), data_folder,register_map_file)
-
-
-
-
-
-database_path = os.path.join(os.getcwd(), data_folder,'test.json')
+test_file_path = os.path.join(os.getcwd(), data_folder,'test.json')
 
 
 if sys.platform.startswith('win'): # Check if we are running on Windows
@@ -50,16 +45,7 @@ else:
 # print()
 
 
-def confirm_if_data_file_exists():
-    if not os.path.exists(os.path.join(os.getcwd(), data_folder)):
-        os.makedirs(data_folder)
-        print(f"Directory '{data_folder}' created successfully!")
-        if not os.path.exists(path_to_register_setup):
-            with open(path_to_register_setup, "w") as f:
-                json.dump({}, f)
-            print(f"File '{register_map_file}' created successfully in directory '{data_folder}'!")
-    else:
-        print(f"Directory '{data_folder}' already exists.")
+
 
 
 
@@ -124,7 +110,7 @@ def get_rtu_clients() -> list:
 
 
 def read_tcp_registers(client,device_id):
-    with open(database_path, 'r') as f:
+    with open(test_file_path, 'r') as f:
           data = json.load(f)
     
     device_id = "device_" + str(device_id) # Get the register group id to identify the registers to read for a specific device
@@ -184,7 +170,7 @@ def read_tcp_registers(client,device_id):
 
 
 def read_rtu_registers(client,device_id):
-    with open(database_path, 'r') as f:
+    with open(test_file_path, 'r') as f:
           data = json.load(f)
 
     device_id = "device_" + str(device_id) # Get the register group id to identify the registers to read for a specific device
@@ -235,22 +221,29 @@ def read_rtu_registers(client,device_id):
         else:
             print("Unknown function_code")
 
+
+def confirm_if_data_file_exists():
+    if not os.path.exists(os.path.join(os.getcwd(), data_folder)):
+        os.makedirs(data_folder)
+        print(f"Directory '{data_folder}' created successfully!")
+        if not os.path.exists(path_to_register_setup):
+            with open(path_to_register_setup, "w") as f:
+                json.dump({}, f)
+            print(f"File '{register_map_file}' created successfully in directory '{data_folder}'!")
+    else:
+        print(f"Directory '{data_folder}' already exists.")
+
+
 # This function receives user input and default register parameters from gui.py file as a dictionary
 def generate_setup_file(user_input_dict):
     print(user_input_dict)
-
-
     # Get the quantity of registers to poll from. 
     reg_quantity = user_input_dict["quantity"]
     device_id = user_input_dict["device"]
     device = "device_" + str(device_id)
     unit_id = str(user_input_dict["slave_address"])
-
-    
     with open(path_to_register_setup, 'w') as f:
-
         parent_data = {}
-
         # Loop through the list of registers entered by the user
         for i in range(int(reg_quantity)):
             parent_key = "register_" + str(i+1)  # This is the initial  name assigned to the variable that will be read from the register. The user will be allowed to rename the register later. 
@@ -264,30 +257,22 @@ def generate_setup_file(user_input_dict):
             parent_value["Data_type"] = user_input_dict["registers"]["Data_type"]
             parent_value["Access_type"] = user_input_dict["registers"]["Access_type"]
             parent_data[parent_key] = parent_value 
-
         json.dump({device: {'slave_address':unit_id, 'registers':parent_data}},f) # Appenining the register attributes with the json structure
-        
         print("JSON file created!")
 
 
 
 # This function receives user input and default register parameters from gui.py file as a dictionary
 def update_setup_file(user_input_dict): 
-
     device_id = user_input_dict["device"]
     unit_id = str(user_input_dict["slave_address"])
     reg_quantity = user_input_dict["quantity"]
-
-
     # Read the register setup file
     data = read_register_setup_file()
-    
-    
     # Loop through the list of registers entered by the user and update the the register setup file
     for i in range(int(reg_quantity)):
         existing_register_count = register_count_under_device(data,device_id) # Find the number of registers that exist
         # print("Existing register count {}".format(existing_register_count))
-
         new_register_start = "register_" + str(existing_register_count + 1) # If x registers exist, the next register will be x+1
         # print("New register start {}".format(new_register_start))
         parent_value = {} 
@@ -304,8 +289,6 @@ def update_setup_file(user_input_dict):
         data["device_" + str(device_id)]['registers'].update({new_register_start:parent_value})
         with open(path_to_register_setup, 'w') as f:
             json.dump(data, f, indent=4)
-
-    
     print("JSON file created!")
 
 
@@ -316,6 +299,8 @@ def check_for_existing_register_setup() -> bool:
         else:
             return False
         
+
+
 def read_register_setup_file():
     with open(path_to_register_setup, 'r') as file:
         data = json.load(file)
@@ -325,6 +310,7 @@ def read_register_setup_file():
 
 
 def saved_device_count() -> int:
+        print("saved_device_count  runs first!")
         # First check if there is a register setup file in the database
         register_setup_file_exists = check_for_existing_register_setup()
 
@@ -341,6 +327,8 @@ def saved_device_count() -> int:
         else : 
             return 0
         
+
+
 def register_count_under_device(json_data, device_id: int):
     device_key = "device_" + str(device_id)
     count = 0
