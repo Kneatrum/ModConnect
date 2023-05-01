@@ -5,7 +5,8 @@ from PyQt5 import QtWidgets
 from PyQt5 import QtGui
 from PyQt5 import QtCore
 import interface
-
+import random
+import time
 
 
 class MainWindow(QtWidgets.QMainWindow):
@@ -26,6 +27,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.access_type = access_type
 
         self.main_widget = None
+        
 
         # Set the title of the window
         self.setWindowTitle("Modpoll")
@@ -61,6 +63,33 @@ class MainWindow(QtWidgets.QMainWindow):
         
      
         self.add_devices_to_layout(self.rows,self.columns)
+
+        self.timer = QtCore.QTimer()
+        self.timer.timeout.connect(self.update_cells)
+        self.timer.start(1000) # Update cells every 1 second
+
+
+
+        
+    def update_cells(self):
+        # row = random.randint(0, 9)
+        # col = random.randint(0, 9)
+        # value = random.randint(0, 100)
+        # item = QtWidgets.QTableWidgetItem(str(value))
+        # self.table_widget.setItem(row, col, item)
+        tutoto = window.main_widget.findChildren(QTableWidget)
+        for row in range(tutoto[0].rowCount()):
+            tutoto[0].setItem(row, 2, QTableWidgetItem(str(random.randint(0, 100))))
+            # tutoto[1].setItem(0, 2, QTableWidgetItem("Mwiti"))
+            # tutoto[2].setItem(0, 2, QTableWidgetItem("Njue"))
+        for row in range(tutoto[1].rowCount()):
+            tutoto[1].setItem(row, 2, QTableWidgetItem(str(random.randint(0, 100))))
+            # tutoto[1].setItem(0, 2, QTableWidgetItem("Mwiti"))
+            # tutoto[2].setItem(0, 2, QTableWidgetItem("Njue"))
+        for row in range(tutoto[2].rowCount()):
+            tutoto[2].setItem(row, 2, QTableWidgetItem(str(random.randint(0, 100))))
+            # tutoto[1].setItem(0, 2, QTableWidgetItem("Mwiti"))
+            # tutoto[2].setItem(0, 2, QTableWidgetItem("Njue"))
         
             
 
@@ -213,7 +242,7 @@ class TableWidget(QWidget):
         row = item.row()
         col = item.column()
         text = item.text()
-        print(f"Cell ({row}, {col}) changed to {text}")
+        # print(f"Cell ({row}, {col}) changed to {text}")
         if item.column() == 0:
             interface.update_register_name(self.device,row,text)
 
@@ -341,10 +370,5 @@ if __name__ == '__main__':
     app = QtWidgets.QApplication(sys.argv)
     window = MainWindow()
     window.showMaximized()
-    tutoto = window.main_widget.findChildren(QTableWidget)
-    tutoto[0].setItem(0, 2, QTableWidgetItem("Martin"))
-    tutoto[1].setItem(0, 2, QTableWidgetItem("Mwiti"))
-    tutoto[2].setItem(0, 2, QTableWidgetItem("Njue"))
-
     window.show()
     app.exec_()
