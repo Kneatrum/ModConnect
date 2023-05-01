@@ -76,22 +76,16 @@ class MainWindow(QtWidgets.QMainWindow):
 
 
         
-    def update_cells(self):
-        # row = random.randint(0, 9)
-        # col = random.randint(0, 9)
-        # value = random.randint(0, 100)
-        # item = QtWidgets.QTableWidgetItem(str(value))
-        # self.table_widget.setItem(row, col, item)
+    def update_cells(self):  
+        tutoto = self.main_widget.findChildren(QTableWidget)
+        if len(tutoto) > 0:
+            for row in range(tutoto[0].rowCount()):
+                tutoto[0].setItem(row, 2, QTableWidgetItem(str(random.randint(0, 100))))
+            for row in range(tutoto[1].rowCount()):
+                tutoto[1].setItem(row, 2, QTableWidgetItem(str(random.randint(0, 100))))
+            for row in range(tutoto[2].rowCount()):
+                tutoto[2].setItem(row, 2, QTableWidgetItem(str(random.randint(0, 100))))
         
-        # tutoto = self.main_widget.findChildren(QTableWidget)
-        # if len(tutoto) > 0:
-        #     for row in range(tutoto[0].rowCount()):
-        #         tutoto[0].setItem(row, 2, QTableWidgetItem(str(random.randint(0, 100))))
-            # for row in range(tutoto[1].rowCount()):
-            #     tutoto[1].setItem(row, 2, QTableWidgetItem(str(random.randint(0, 100))))
-            # for row in range(tutoto[2].rowCount()):
-            #     tutoto[2].setItem(row, 2, QTableWidgetItem(str(random.randint(0, 100))))
-        pass
         
             
 
