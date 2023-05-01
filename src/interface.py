@@ -14,24 +14,16 @@ modbus_device_settings = ""
 rtu_clients_list = []
 tcp_clients_list = []
 
-#device_data = {}
-database = 'database'
+
+data_folder = 'database'
 register_map_file = 'register_map_file.json'
-
-print(os.getcwd())
-if not os.path.exists(os.path.join(os.getcwd(), database)):
-    os.makedirs('database')
-    print(f"Directory '{database}' created successfully!")
-    if not os.path.exists(os.path.join(os.getcwd(), database,register_map_file)):
-        with open(os.path.join(os.getcwd(), database,register_map_file), "w") as f:
-            json.dump({}, f)
-        print(f"File '{register_map_file}' created successfully in directory '{database}'!")
-else:
-    print(f"Directory '{database}' already exists.")
+path_to_register_setup = os.path.join(os.getcwd(), data_folder,register_map_file)
 
 
-database_path = os.path.join(os.getcwd(), 'database','test.json')
-path_to_register_setup = os.path.join(os.getcwd(), 'database',register_map_file)
+
+
+
+database_path = os.path.join(os.getcwd(), data_folder,'test.json')
 
 
 if sys.platform.startswith('win'): # Check if we are running on Windows
@@ -56,6 +48,19 @@ else:
 # print( "-> ", str(len(modbus_device_settings['devices']['modbus_rtu_devices'])) + " modbus RTU devices" )
 # print( "-> ", str(len(modbus_device_settings['devices']['modbus_tcp_devices'])) + " modbus TCP devices" )
 # print()
+
+
+def confirm_if_data_file_exists():
+    if not os.path.exists(os.path.join(os.getcwd(), data_folder)):
+        os.makedirs(data_folder)
+        print(f"Directory '{data_folder}' created successfully!")
+        if not os.path.exists(path_to_register_setup):
+            with open(path_to_register_setup, "w") as f:
+                json.dump({}, f)
+            print(f"File '{register_map_file}' created successfully in directory '{data_folder}'!")
+    else:
+        print(f"Directory '{data_folder}' already exists.")
+
 
 
 def get_tcp_clients() -> list:
@@ -368,6 +373,8 @@ def append_device():
 
         with open(path_to_register_setup, 'w') as f:
             json.dump(data, f, indent=4)
+
+
 
 def update_register_name(device_id:int, row:int, name:str):
     target_register = "register_" + str(row+1)
