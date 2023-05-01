@@ -15,8 +15,19 @@ rtu_clients_list = []
 tcp_clients_list = []
 
 #device_data = {}
-device_name = ""
+database = 'database'
 register_map_file = 'register_map_file.json'
+
+print(os.getcwd())
+if not os.path.exists(os.path.join(os.getcwd(), database)):
+    os.makedirs('database')
+    print(f"Directory '{database}' created successfully!")
+if not os.path.exists(os.path.join(os.getcwd(), database,register_map_file)):
+    with open(os.path.join(os.getcwd(), database,register_map_file), "w") as f:
+        json.dump({}, f)
+    print(f"File '{register_map_file}' created successfully in directory '{database}'!")
+else:
+    print(f"Directory '{database}' already exists.")
 
 
 database_path = os.path.join(os.getcwd(), 'database','test.json')
