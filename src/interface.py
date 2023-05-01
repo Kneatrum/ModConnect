@@ -22,10 +22,10 @@ print(os.getcwd())
 if not os.path.exists(os.path.join(os.getcwd(), database)):
     os.makedirs('database')
     print(f"Directory '{database}' created successfully!")
-if not os.path.exists(os.path.join(os.getcwd(), database,register_map_file)):
-    with open(os.path.join(os.getcwd(), database,register_map_file), "w") as f:
-        json.dump({}, f)
-    print(f"File '{register_map_file}' created successfully in directory '{database}'!")
+    if not os.path.exists(os.path.join(os.getcwd(), database,register_map_file)):
+        with open(os.path.join(os.getcwd(), database,register_map_file), "w") as f:
+            json.dump({}, f)
+        print(f"File '{register_map_file}' created successfully in directory '{database}'!")
 else:
     print(f"Directory '{database}' already exists.")
 
