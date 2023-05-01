@@ -25,6 +25,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self.data_type = data_type
         self.access_type = access_type
 
+        self.main_widget = None
+
         # Set the title of the window
         self.setWindowTitle("Modpoll")
 
@@ -74,8 +76,8 @@ class MainWindow(QtWidgets.QMainWindow):
 
         if saved_devices != 0:
             print("Found saved devices")
-            widget = self.device_widget(rows,columns,saved_devices)
-            self.setCentralWidget(widget)
+            self.main_widget = self.device_widget(rows,columns,saved_devices)
+            self.setCentralWidget(self.main_widget)
             # Add a small space between the menu bar and the central widget
             self.centralWidget().layout().setContentsMargins(0, 20, 0, 50)
             self.show()
@@ -339,5 +341,10 @@ if __name__ == '__main__':
     app = QtWidgets.QApplication(sys.argv)
     window = MainWindow()
     window.showMaximized()
+    tutoto = window.main_widget.findChildren(QTableWidget)
+    tutoto[0].setItem(0, 2, QTableWidgetItem("Martin"))
+    tutoto[1].setItem(0, 2, QTableWidgetItem("Mwiti"))
+    tutoto[2].setItem(0, 2, QTableWidgetItem("Njue"))
+
     window.show()
     app.exec_()
