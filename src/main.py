@@ -13,6 +13,8 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def __init__(self,rows = 0, columns = 3, device = 1, slave_address = 1, register_quantity = 1, register_name = "N/A", units = "N/A", gain = 1, data_type = "N/A", access_type = "RO"):
         super().__init__()
+
+        interface.confirm_if_data_file_exists()
         
         # Initializing the main window
         self.rows = rows
@@ -59,10 +61,13 @@ class MainWindow(QtWidgets.QMainWindow):
         editMenu.addAction(pasteAction)
 
         self.setMenuBar(menubar)
+        print("Initial {}".format( self.main_widget))
 
         
      
         self.add_devices_to_layout(self.rows,self.columns)
+
+        print("Final {}".format( self.main_widget))
 
         self.timer = QtCore.QTimer()
         self.timer.timeout.connect(self.update_cells)
@@ -77,19 +82,16 @@ class MainWindow(QtWidgets.QMainWindow):
         # value = random.randint(0, 100)
         # item = QtWidgets.QTableWidgetItem(str(value))
         # self.table_widget.setItem(row, col, item)
-        tutoto = window.main_widget.findChildren(QTableWidget)
-        for row in range(tutoto[0].rowCount()):
-            tutoto[0].setItem(row, 2, QTableWidgetItem(str(random.randint(0, 100))))
-            # tutoto[1].setItem(0, 2, QTableWidgetItem("Mwiti"))
-            # tutoto[2].setItem(0, 2, QTableWidgetItem("Njue"))
-        for row in range(tutoto[1].rowCount()):
-            tutoto[1].setItem(row, 2, QTableWidgetItem(str(random.randint(0, 100))))
-            # tutoto[1].setItem(0, 2, QTableWidgetItem("Mwiti"))
-            # tutoto[2].setItem(0, 2, QTableWidgetItem("Njue"))
-        for row in range(tutoto[2].rowCount()):
-            tutoto[2].setItem(row, 2, QTableWidgetItem(str(random.randint(0, 100))))
-            # tutoto[1].setItem(0, 2, QTableWidgetItem("Mwiti"))
-            # tutoto[2].setItem(0, 2, QTableWidgetItem("Njue"))
+        
+        # tutoto = self.main_widget.findChildren(QTableWidget)
+        # if len(tutoto) > 0:
+        #     for row in range(tutoto[0].rowCount()):
+        #         tutoto[0].setItem(row, 2, QTableWidgetItem(str(random.randint(0, 100))))
+            # for row in range(tutoto[1].rowCount()):
+            #     tutoto[1].setItem(row, 2, QTableWidgetItem(str(random.randint(0, 100))))
+            # for row in range(tutoto[2].rowCount()):
+            #     tutoto[2].setItem(row, 2, QTableWidgetItem(str(random.randint(0, 100))))
+        pass
         
             
 
@@ -111,13 +113,14 @@ class MainWindow(QtWidgets.QMainWindow):
             self.centralWidget().layout().setContentsMargins(0, 20, 0, 50)
             self.show()
         else:
-            saved_devices = 1
-            print("No saved devices")
-            blank_widget = TableWidget(rows, columns,saved_devices) # Add a blank widget
-            self.setCentralWidget(blank_widget)
+            interface.append_device()
+            saved_devices = interface.saved_device_count()
+            self.main_widget = self.device_widget(rows,columns,saved_devices)
+            self.setCentralWidget(self.main_widget)
             # Add a small space between the menu bar and the central widget
             self.centralWidget().layout().setContentsMargins(0, 20, 0, 50)
             self.show()
+        
 
         
 
