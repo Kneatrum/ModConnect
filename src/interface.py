@@ -80,13 +80,14 @@ class ModbusTcpClient():
         return tcp_clients_list
         
 
-    def read_tcp_registers(client,device_id):
+    def read_tcp_registers(client,device_id) -> dict:
+        device_data ={}
         with open(test_file_path, 'r') as f:
             data = json.load(f)
         
         device_id = "device_" + str(device_id) # Get the register group id to identify the registers to read for a specific device
 
-        UNIT_ID = data[device_id]['slave_address']['address']
+        UNIT_ID = int(data[device_id]['slave_address']['address'])
         print("Slave ID", UNIT_ID) 
 
         for variable in data[device_id]['registers']:
@@ -95,10 +96,10 @@ class ModbusTcpClient():
                 quantity = data[device_id]['registers'][variable]['quantity']  
                 device_name = device_name+variable 
 
-                # response = client.read_coils(address, quantity, unit= UNIT_ID)
-                # decoder = BinaryPayloadDecoder.fromRegisters(response.registers, byteorder=Endian.Big, wordorder=Endian.Big)
-                # data = decoder.decode_16bit_uint()
-                #device_data.update(device_name=data)
+                response = client.read_coils(address, quantity, unit= UNIT_ID)
+                decoder = BinaryPayloadDecoder.fromRegisters(response.registers, byteorder=Endian.Big, wordorder=Endian.Big)
+                data = decoder.decode_16bit_uint()
+                device_data.update(device_name=data)
 
 
             elif data[device_id]['registers'][variable]['function_code'] == 2:
@@ -106,10 +107,10 @@ class ModbusTcpClient():
                 quantity = data[device_id]['registers'][variable]['quantity']  
                 device_name = device_name+variable 
 
-                # response = client.read_discrete_inputs(address, quantity, unit= UNIT_ID)
-                # decoder = BinaryPayloadDecoder.fromRegisters(response.registers, byteorder=Endian.Big, wordorder=Endian.Big)
-                # data = decoder.decode_16bit_uint()
-                #device_data.update(device_name=data)
+                response = client.read_discrete_inputs(address, quantity, unit= UNIT_ID)
+                decoder = BinaryPayloadDecoder.fromRegisters(response.registers, byteorder=Endian.Big, wordorder=Endian.Big)
+                data = decoder.decode_16bit_uint()
+                device_data.update(device_name=data)
 
 
             elif data[device_id]['registers'][variable]['function_code'] == 3:
@@ -118,10 +119,10 @@ class ModbusTcpClient():
                 quantity = data[device_id]['registers'][variable]['quantity']  
                 device_name = device_name+variable 
 
-                # response = client.read_holding_registers(address, quantity, unit= UNIT_ID)
-                # decoder = BinaryPayloadDecoder.fromRegisters(response.registers, byteorder=Endian.Big, wordorder=Endian.Big)
-                # data = decoder.decode_16bit_uint()
-                #device_data.update(device_name=data)
+                response = client.read_holding_registers(address, quantity, unit= UNIT_ID)
+                decoder = BinaryPayloadDecoder.fromRegisters(response.registers, byteorder=Endian.Big, wordorder=Endian.Big)
+                data = decoder.decode_16bit_uint()
+                device_data.update(device_name=data)
 
 
             elif data[device_id]['registers'][variable]['function_code'] == 4:
@@ -129,10 +130,10 @@ class ModbusTcpClient():
                 quantity = data[device_id]['registers'][variable]['quantity']  
                 device_name = device_name+variable 
 
-                # response = client.read_input_registers(address, quantity, unit= UNIT_ID)
-                # decoder = BinaryPayloadDecoder.fromRegisters(response.registers, byteorder=Endian.Big, wordorder=Endian.Big)
-                # data = decoder.decode_16bit_uint()
-                #device_data.update(device_name=data)
+                response = client.read_input_registers(address, quantity, unit= UNIT_ID)
+                decoder = BinaryPayloadDecoder.fromRegisters(response.registers, byteorder=Endian.Big, wordorder=Endian.Big)
+                data = decoder.decode_16bit_uint()
+                device_data.update(device_name=data)
 
 
             else:
@@ -457,11 +458,11 @@ def update_register_name(device_id:int, row:int, name:str):
 # print(my_rtu_list[2].get('client'))
 # print(my_rtu_list[2].get('device'))
 
-# for client in rtu_clients_list:
-#     read_rtu_registers(client)
+for client in rtu_clients_list:
+     ModbusRTUClient.read_rtu_registers(client)
 
-# for client in tcp_clients_list:
-#     read_tcp_registers(client)
+for client in tcp_clients_list:
+     ModbusTcpClient.read_tcp_registers(client)
 
 
 

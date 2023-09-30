@@ -29,6 +29,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self.access_type = access_type
 
         self.main_widget = None
+
+
         
 
         # Set the title of the window
@@ -61,14 +63,7 @@ class MainWindow(QtWidgets.QMainWindow):
         editMenu.addAction(pasteAction)
 
         self.setMenuBar(menubar)
-        print("Initial {}".format( self.main_widget))
-
-        
-     
         self.add_devices_to_layout(self.rows,self.columns)
-
-        print("Final {}".format( self.main_widget))
-
         self.timer = QtCore.QTimer()
         self.timer.timeout.connect(self.update_cells)
         self.timer.start(1000) # Update cells every 1 second
@@ -77,16 +72,23 @@ class MainWindow(QtWidgets.QMainWindow):
 
         
     def update_cells(self):  
-        tutoto = self.main_widget.findChildren(QTableWidget)
-        if len(tutoto) > 0:
-            for row in range(tutoto[0].rowCount()):
-                tutoto[0].setItem(row, 2, QTableWidgetItem(str(random.randint(0, 100))))
-            for row in range(tutoto[1].rowCount()):
-                tutoto[1].setItem(row, 2, QTableWidgetItem(str(random.randint(0, 100))))
-            for row in range(tutoto[2].rowCount()):
-                tutoto[2].setItem(row, 2, QTableWidgetItem(str(random.randint(0, 100))))
-        
-        
+        # interface.ModbusTcpClient.read_tcp_registers()
+        device_table_widget = self.main_widget.findChildren(QTableWidget)
+
+        for device_id in range(len(device_table_widget)): # Loop through the devices
+            for row in range(device_table_widget[device_id].rowCount()): # Loop through the rows
+                device_table_widget[device_id].setItem(row, 2, QTableWidgetItem(str(random.randint(0, 100)))) # Updating the register column (column 2) with the register values
+
+
+        # Find the QLabel with name "connection_status_label"
+        labels = self.main_widget.findChildren(QLabel)
+        for label in labels:
+            if label is not None:
+                print("Label {}".format(label.objectName()))
+                # label.setText("New connection status") # Change the text of the label  
+            else:
+                print("None") 
+
             
 
     def on_new_button_clicked(self):
@@ -169,6 +171,10 @@ class TableWidget(QWidget):
         self.columns = columns
         self.device = device
 
+        self.connection_status = False
+
+        
+
 
 
         # Add a label for the register group or device group
@@ -179,26 +185,32 @@ class TableWidget(QWidget):
         group_box.setMinimumWidth(450) # set minimum width
         group_box.setMaximumWidth(450) # set maximum width
 
-  
-    
 
-        # Add a button to add registers
-        add_reg_button = QPushButton()
-        add_reg_button.setText("Add registers")
-        add_reg_button.setFixedSize(100,25) # Setting the size of the button
-        add_reg_button.clicked.connect(self.showMessageBox)
+        # Create the actions Qlabel
+        self.actions_label = QLabel("Actions",self)
 
-        # Add a button to remove registers
-        remove_reg_button = QPushButton()
-        remove_reg_button.setText("Delete register")
-        remove_reg_button.setFixedSize(100,25) # Setting the size of the button
-        remove_reg_button.clicked.connect(self.delete_register)
 
-        # Add a button to remove Device 
-        remove_device_button = QPushButton()
-        remove_device_button.setText("Delete device")
-        remove_device_button.setFixedSize(100,25) # Setting the size of the button
-        remove_device_button.clicked.connect(self.delete_device)
+        # Create the connection status Qlabel
+        self.connection_status_label = QLabel("Disconnected",self)
+        self.connection_status_label.setStyleSheet("background-color: rgb(212, 212, 212); padding: 25px;")
+        self.connection_status_label.setFixedHeight(30)
+                
+        # Set the object name of the connection status label
+        self.connection_status_label.setObjectName("connection_status_label_device_" + str(self.device))
+        
+
+
+
+        # Add a dropdown menu and add actions to it
+        self.action_items = ["Select an action","Add Registers", "Remove register", "Connect", "Quit"] # Create a list of actions
+        self.action_menu = QComboBox() 
+        self.action_menu.addItems(self.action_items) 
+        self.action_menu.setCurrentIndex(0)
+        self.action_menu.setFixedWidth(100)
+        view = self.action_menu.view() # Get the view of the combo box
+        view.setRowHidden(0, True) # Hide the first row of the combo box view
+        self.action_menu.currentIndexChanged.connect(self.on_drop_down_menu_current_index_changed) # Trigger an action when the user selects an option
+
 
         # Create a table to display the registers
         self.table_widget = QTableWidget()
@@ -212,22 +224,40 @@ class TableWidget(QWidget):
         #table_widget.setFixedWidth(table_widget.horizontalHeader().length()) # Set the maximum width of the qtable widget to the width of the 3 columnns we have ( "Register Name", "Address", "Value" )
 
         
-        # Create a horizontal button layout to hold the three buttons 
-        button_layout = QHBoxLayout() 
-        button_layout.addWidget(add_reg_button)
-        button_layout.addStretch() # Add a stretch to create a spacer
-        button_layout.addWidget(remove_reg_button)
-        button_layout.addStretch() # Add a stretch to create a spacer
-        button_layout.addWidget(remove_device_button)
+        # Create a horizontal layout to hold action label and combo box vlayouy and connection status label
+        top_horizontal_layout = QHBoxLayout()
+        
+
+        # Create a horizontal layout to hold the connection status
+        con_status_h_layout = QHBoxLayout()
+        con_status_h_layout.addWidget(self.connection_status_label)
+
+
+        # Create a vertical box layout for the qlabel and combo box
+        action_status_combo_box_v_layout = QVBoxLayout() 
+        action_status_combo_box_v_layout.addSpacing(10)
+        action_status_combo_box_v_layout.addWidget(self.actions_label) # Add the action label to the layout
+        action_status_combo_box_v_layout.addWidget(self.action_menu) # Add the action dropdown menu to the layout
+        action_status_combo_box_v_layout.addSpacing(20)
+
+        top_horizontal_layout.addLayout(action_status_combo_box_v_layout)
+        top_horizontal_layout.addSpacing(200)
+        top_horizontal_layout.addLayout(con_status_h_layout)
+
+        
+
+
+        
+
         
         
         # Create a vertical layout to hold the buttons and the table widget
-        button_and_tablewidget_layout = QVBoxLayout()
-        button_and_tablewidget_layout.addLayout(button_layout)
-        button_and_tablewidget_layout.addWidget(self.table_widget)
+        main_layout = QVBoxLayout()
+        main_layout.addLayout(top_horizontal_layout)
+        main_layout.addWidget(self.table_widget)
 
         # Add the button and table widget to the group box
-        group_box.setLayout(button_and_tablewidget_layout)
+        group_box.setLayout(main_layout)
 
         # Set the layout for the main QWidget
         main_layout = QVBoxLayout()
@@ -243,13 +273,22 @@ class TableWidget(QWidget):
         if item.column() == 0:
             interface.update_register_name(self.device,row,text)
 
-    
-                    
-            
+   
 
-
+    def on_drop_down_menu_current_index_changed(self):
+        
+        if self.action_menu.currentIndex() == 1: # If the selectec option is Add registers (index 1)
+            self.showMessageBox() # Show the message box for adding registers
+            self.action_menu.setCurrentIndex(0)
+        elif self.action_menu.currentIndex() == 2: # If the selectec option is Delete registers (index 2)
+            self.action_menu.setCurrentIndex(0)
+            pass
+        elif self.action_menu.currentIndex() == 3: # If the selected option is Connect (index 3)
+            self.action_menu.setCurrentIndex(0)
+            pass
         
 
+    
 
 
 
