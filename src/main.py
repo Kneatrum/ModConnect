@@ -206,7 +206,7 @@ class TableWidget(QWidget):
         self.action_menu = QComboBox() 
         self.action_menu.addItems(self.action_items) 
         self.action_menu.setCurrentIndex(0)
-        self.action_menu.setFixedWidth(100)
+        self.action_menu.setFixedWidth(150)
         view = self.action_menu.view() # Get the view of the combo box
         view.setRowHidden(0, True) # Hide the first row of the combo box view
         self.action_menu.currentIndexChanged.connect(self.on_drop_down_menu_current_index_changed) # Trigger an action when the user selects an option
