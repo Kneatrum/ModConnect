@@ -1,3 +1,8 @@
+"""
+This the file that defines the methods used to connect to external devices using modbus TCT or modbus RTU
+"""
+
+
 from pymodbus.client import ModbusTcpClient, ModbusSerialClient
 from pymodbus.exceptions import ConnectionException
 from pymodbus.payload import BinaryPayloadDecoder
