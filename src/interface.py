@@ -3,7 +3,7 @@ from pymodbus.exceptions import ConnectionException
 from pymodbus.payload import BinaryPayloadDecoder
 from pymodbus.payload import BinaryPayloadBuilder
 from pymodbus.constants import Endian
-import numpy as np
+# import numpy as np
 import json
 import os
 import  sys
