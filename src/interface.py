@@ -244,7 +244,7 @@ def generate_setup_file(user_input_dict):
     
     with open(path_to_register_setup, 'w') as f:
 
-        parent_data = {}
+        register_data = {}
 
         # Loop through the list of registers entered by the user
         for i in range(int(reg_quantity)):
@@ -258,9 +258,9 @@ def generate_setup_file(user_input_dict):
             parent_value["Gain"] = user_input_dict["registers"]["Gain"]
             parent_value["Data_type"] = user_input_dict["registers"]["Data_type"]
             parent_value["Access_type"] = user_input_dict["registers"]["Access_type"]
-            parent_data[parent_key] = parent_value 
+            register_data[parent_key] = parent_value 
 
-        json.dump({device: {'slave_address':unit_id, 'registers':parent_data}},f) # Appenining the register attributes with the json structure
+        json.dump({device: {'slave_address':unit_id, 'registers':register_data}},f) # Appenining the register attributes with the json structure
         
         print("JSON file created!")
 
