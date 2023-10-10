@@ -118,7 +118,13 @@ def read_tcp_registers(client,device_id):
     
     device_id = "device_" + str(device_id) # Get the register group id to identify the registers to read for a specific device
 
-    UNIT_ID = data[device_id]['connection_params']['windows']['tcp_params']['slave_address']['address']
+    if sys.platform.startswith('win'): # Check if we are running on Windows
+        print('Running on Windows')
+        UNIT_ID = data[device_id]['connection_params']['windows']['tcp_params']['slave_address']['address']
+    elif sys.platform.startswith('linux'): # Check if we are running on Linux
+        print('Running on Linux')
+        UNIT_ID = data[device_id]['connection_params']['linux']['tcp_params']['slave_address']['address']
+
     print("Slave ID", UNIT_ID) 
 
     for variable in data[device_id]['registers']:
