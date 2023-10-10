@@ -77,19 +77,14 @@ class MainWindow(QtWidgets.QMainWindow):
         # value = random.randint(0, 100)
         # item = QtWidgets.QTableWidgetItem(str(value))
         # self.table_widget.setItem(row, col, item)
-        tutoto = window.main_widget.findChildren(QTableWidget)
-        for row in range(tutoto[0].rowCount()):
-            tutoto[0].setItem(row, 2, QTableWidgetItem(str(random.randint(0, 100))))
-            # tutoto[1].setItem(0, 2, QTableWidgetItem("Mwiti"))
-            # tutoto[2].setItem(0, 2, QTableWidgetItem("Njue"))
-        for row in range(tutoto[1].rowCount()):
-            tutoto[1].setItem(row, 2, QTableWidgetItem(str(random.randint(0, 100))))
-            # tutoto[1].setItem(0, 2, QTableWidgetItem("Mwiti"))
-            # tutoto[2].setItem(0, 2, QTableWidgetItem("Njue"))
-        for row in range(tutoto[2].rowCount()):
-            tutoto[2].setItem(row, 2, QTableWidgetItem(str(random.randint(0, 100))))
-            # tutoto[1].setItem(0, 2, QTableWidgetItem("Mwiti"))
-            # tutoto[2].setItem(0, 2, QTableWidgetItem("Njue"))
+        child = window.main_widget.findChildren(QTableWidget)
+        print("Number of children",len(child))
+        for num in range(len(child)):
+            for row in range(child[num].rowCount()):
+                child[num].setItem(row, 2, QTableWidgetItem(str(random.randint(0, 100))))
+                # child[num].setItem(0, 2, QTableWidgetItem("Mwiti"))
+                # child[num].setItem(0, 2, QTableWidgetItem("Njue"))
+
         
             
 
