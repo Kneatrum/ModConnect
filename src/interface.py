@@ -359,9 +359,42 @@ def append_device():
         with open(path_to_register_setup, 'r') as f:
             data = json.load(f)
             config = {
-                "slave_address": "1",
-                "registers": {}
-            }
+                        "connection_params": {
+                            "windows": {
+                                "tcp_params": {
+                                    "slave_address": "1",
+                                    "host": "192.168.1.100",
+                                    "port": 502
+                                },
+                                "rtu_params": {
+                                    "slave_address": "1",
+                                    "port": "COM2",
+                                    "baudrate": 9600,
+                                    "parity": "N",
+                                    "stopbits": 1,
+                                    "bytesize": 8,
+                                    "timeout": 1
+                                }
+                            },
+                            "linux": {
+                                "tcp_params": {
+                                    "slave_address": "1",
+                                    "host": "192.168.1.100",
+                                    "port": 502
+                                },
+                                "rtu_params": {
+                                    "slave_address": "1",
+                                    "port": "/dev/ttyUSB0",
+                                    "baudrate": 9600,
+                                    "parity": "N",
+                                    "stopbits": 1,
+                                    "bytesize": 8,
+                                    "timeout": 1
+                                }
+                            }
+                        },
+                        "registers": {}
+                    }
 
             data.update({new_device:config})
             print(data)
