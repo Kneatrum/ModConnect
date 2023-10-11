@@ -1,6 +1,6 @@
 import sys
 from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QApplication, QScrollArea, QGroupBox, QWidget, QMenu, QAction, QMenuBar, QPushButton, QTableWidget,QTableWidgetItem, QVBoxLayout, QLabel, QLineEdit, QComboBox, QDialog,QHBoxLayout
+from PyQt5.QtWidgets import QApplication, QScrollArea, QGroupBox, QWidget, QMenu, QAction, QMenuBar, QPushButton, QTableWidget,QTableWidgetItem, QVBoxLayout, QLabel, QLineEdit, QComboBox, QDialog,QHBoxLayout,QRadioButton
 from PyQt5 import QtWidgets
 from PyQt5 import QtGui
 from PyQt5 import QtCore
@@ -89,9 +89,11 @@ class MainWindow(QtWidgets.QMainWindow):
             
 
     def on_new_button_clicked(self):
-        print("Adding a new device")
-        interface.append_device()
-        self.add_devices_to_layout(self.rows,self.columns)
+        self.new_device_setup_dialog()
+        
+        # print("Adding a new device")
+        # interface.append_device()
+        # self.add_devices_to_layout(self.rows,self.columns)
 
 
 
@@ -113,11 +115,6 @@ class MainWindow(QtWidgets.QMainWindow):
             # Add a small space between the menu bar and the central widget
             self.centralWidget().layout().setContentsMargins(0, 20, 0, 50)
             self.show()
-
-        
-
-
-    
 
     
     def device_widget(self,rows,columns,saved_devices):
@@ -156,6 +153,160 @@ class MainWindow(QtWidgets.QMainWindow):
 
             central_widget.setLayout(self.main_layout) # Assign the main layout to the central widget
             return central_widget
+        
+
+
+
+  
+
+  
+    def new_device_setup_dialog(self):
+        self.register_setup_dialog = QDialog(self)
+        self.register_setup_dialog.setWindowTitle("Register Setup")
+
+        # Create the main Vertical layout
+        rset_main_layout = QVBoxLayout()
+
+        label_name = "Device "
+
+        # Create a QGroupBox for the entire dialog
+        dialog_group_box = QGroupBox(label_name, self)
+
+        # Create a horizontal layout for the Modbus options (radio buttons)
+        modbus_options_layout = QHBoxLayout()
+        
+        self.modbus_tcp_radio = QRadioButton("Modbus TCP")
+        self.modbus_rtu_radio = QRadioButton("Modbus RTU")
+        
+        # Add radio buttons to the layout
+        modbus_options_layout.addWidget(self.modbus_tcp_radio)
+        modbus_options_layout.addWidget(self.modbus_rtu_radio)
+        
+        # Add the Modbus options layout to the main layout
+        rset_main_layout.addLayout(modbus_options_layout)
+
+        # Create a QGroupBox for the "Set" elements
+        set_group_box = QGroupBox("Set", self)
+        set_group_box.setFixedWidth(450)  # Set a fixed width to prevent resizing
+
+        # Create the first horizontal layout and add Slave ID label and its edit box for "Set"
+        r_set_h_layout_1 = QHBoxLayout()
+        self.slave_id_label = QLabel("Slave ID1")
+        self.slave_id = QLineEdit()
+
+        # Add label and slave widgets to the first horizontal layout for "Set"
+        r_set_h_layout_1.addWidget(self.slave_id_label)
+        r_set_h_layout_1.addWidget(self.slave_id)
+
+        # Create a vertical layout and add a dropdown list of the function codes for "Set"
+        r_set_v_layout_1 = QVBoxLayout()
+        self.fx_code_label = QLabel("Function Code1")
+        r_set_v_layout_1.addWidget(self.fx_code_label)  # Add the label to the vertical layout
+
+        self.fx_code_items = ["Read Holding Registers", "Read Input registers", "Read Discrete Inputs", "Read Coils"]
+        # Create a list of function codes
+        self.function_code = QComboBox()  # Create a drop-down list of function codes
+        self.function_code.addItems(self.fx_code_items)  # Add function codes to the dropdown list
+        r_set_v_layout_1.addWidget(self.function_code)  # Add function code items to the widget
+
+        # Create a horizontal layout for Register address label and its edit box for "Set"
+        r_set_h_layout_2 = QHBoxLayout()
+        self.reg_address_label = QLabel("Register Address1")
+        self.reg_address = QLineEdit(self)
+        r_set_h_layout_2.addWidget(self.reg_address_label)
+        r_set_h_layout_2.addWidget(self.reg_address)
+
+        # Create a horizontal layout for Register quantity and its edit box for "Set"
+        r_set_h_layout_3 = QHBoxLayout(self)
+        self.reg_quantity_label = QLabel("Quantity1")
+        self.reg_quantity = QLineEdit(self)
+        r_set_h_layout_3.addWidget(self.reg_quantity_label)
+        r_set_h_layout_3.addWidget(self.reg_quantity)
+
+        # Create a vertical layout for the elements inside the "Set" group box
+        set_group_box_layout = QVBoxLayout()
+        set_group_box_layout.addLayout(r_set_h_layout_1)
+        set_group_box_layout.addLayout(r_set_v_layout_1)
+        set_group_box_layout.addLayout(r_set_h_layout_2)
+        set_group_box_layout.addLayout(r_set_h_layout_3)
+
+        # Set the layout of the "Set" group box
+        set_group_box.setLayout(set_group_box_layout)
+
+        # Create a QGroupBox for the "Set2" elements
+        set2_group_box = QGroupBox("Set2", self)
+        set2_group_box.setFixedWidth(450)  # Set a fixed width to prevent resizing
+
+        # Create the first horizontal layout and add Slave ID label and its edit box for "Set2"
+        r_set2_h_layout_1 = QHBoxLayout()
+        self.slave_id2_label = QLabel("Slave ID")
+        self.slave_id2 = QLineEdit()
+
+        # Add label and slave widgets to the first horizontal layout for "Set2"
+        r_set2_h_layout_1.addWidget(self.slave_id2_label)
+        r_set2_h_layout_1.addWidget(self.slave_id2)
+
+        # Create a vertical layout and add a dropdown list of the function codes for "Set2"
+        r_set2_v_layout_1 = QVBoxLayout()
+        self.fx_code2_label = QLabel("Function Code")
+        r_set2_v_layout_1.addWidget(self.fx_code2_label)  # Add the label to the vertical layout
+
+        self.fx_code2_items = ["Read Holding Registers", "Read Input registers", "Read Discrete Inputs", "Read Coils"]
+        # Create a list of function codes for "Set2"
+        self.function_code2 = QComboBox()  # Create a drop-down list of function codes for "Set2"
+        self.function_code2.addItems(self.fx_code2_items)  # Add function codes to the dropdown list for "Set2"
+        r_set2_v_layout_1.addWidget(self.function_code2)  # Add function code items to the widget for "Set2"
+
+        # Create a horizontal layout for Register address label and its edit box for "Set2"
+        r_set2_h_layout_2 = QHBoxLayout()
+        self.reg_address2_label = QLabel("Register Address")
+        self.reg_address2 = QLineEdit(self)
+        r_set2_h_layout_2.addWidget(self.reg_address2_label)
+        r_set2_h_layout_2.addWidget(self.reg_address2)
+
+        # Create a horizontal layout for Register quantity and its edit box for "Set2"
+        r_set2_h_layout_3 = QHBoxLayout(self)
+        self.reg_quantity2_label = QLabel("Quantity")
+        self.reg_quantity2 = QLineEdit(self)
+        r_set2_h_layout_3.addWidget(self.reg_quantity2_label)
+        r_set2_h_layout_3.addWidget(self.reg_quantity2)
+
+        # Create a vertical layout for the elements inside the "Set2" group box
+        set2_group_box_layout = QVBoxLayout()
+        set2_group_box_layout.addLayout(r_set2_h_layout_1)
+        set2_group_box_layout.addLayout(r_set2_v_layout_1)
+        set2_group_box_layout.addLayout(r_set2_h_layout_2)
+        set2_group_box_layout.addLayout(r_set2_h_layout_3)
+
+        # Set the layout of the "Set2" group box
+        set2_group_box.setLayout(set2_group_box_layout)
+
+        # Initially hide "Set" and "Set2" group boxes
+        set_group_box.hide()
+        set2_group_box.hide()
+
+        # Connect radio buttons to show/hide the respective group boxes
+        self.modbus_tcp_radio.toggled.connect(lambda: set_group_box.setVisible(self.modbus_tcp_radio.isChecked()))
+        self.modbus_rtu_radio.toggled.connect(lambda: set2_group_box.setVisible(self.modbus_rtu_radio.isChecked()))
+
+        # Add the "Set2" group box to the main layout
+        rset_main_layout.addWidget(set2_group_box)
+
+        # Add the "Set" group box to the main layout
+        rset_main_layout.addWidget(set_group_box)
+
+        # Add the main layout to the main group box
+        dialog_group_box.setLayout(rset_main_layout)
+
+        # Execute the dialog box
+        self.register_setup_dialog.setLayout(rset_main_layout)
+        self.register_setup_dialog.exec_()
+
+
+
+
+
+        
 
 
 
@@ -242,13 +393,6 @@ class TableWidget(QWidget):
             interface.update_register_name(self.device,row,text)
 
     
-                    
-            
-
-
-        
-
-
 
 
     def showMessageBox(self):
