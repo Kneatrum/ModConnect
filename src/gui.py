@@ -2,6 +2,13 @@
 This file contains the two classes that define the layout of the application using PyQT5
 The "MainWindow" class is the main window of the application. It contains the menu bar, the table widget, the register setup dialog, and the main window.
 The "TableWidget" class is the main widget used to display the registers from the devices that are connected externally either by Modbus TCP or Modbus RTU
+"""
+
+
+"""
+This file contains the two classes that define the layout of the application using PyQT5
+The "MainWindow" class is the main window of the application. It contains the menu bar, the table widget, the register setup dialog, and the main window.
+The "TableWidget" class is the main widget used to display the registers from the devices that are connected externally either by Modbus TCP or Modbus RTU
 
 """
 
