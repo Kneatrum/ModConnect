@@ -71,7 +71,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
 
         
-<<<<<<< HEAD
+
     def update_cells(self):  
         # interface.ModbusTcpClient.read_tcp_registers()
         device_table_widget = self.main_widget.findChildren(QTableWidget)
@@ -90,7 +90,7 @@ class MainWindow(QtWidgets.QMainWindow):
             else:
                 print("None") 
 
-=======
+
     def update_cells(self):
         # row = random.randint(0, 9)
         # col = random.randint(0, 9)
@@ -106,7 +106,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 # child[num].setItem(0, 2, QTableWidgetItem("Njue"))
 
         
->>>>>>> dev
+
             
 
     def on_new_button_clicked(self):
@@ -566,7 +566,7 @@ class TableWidget(QWidget):
         if item.column() == 0:
             interface.update_register_name(self.device,row,text)
 
-<<<<<<< HEAD
+
    
 
     def on_drop_down_menu_current_index_changed(self):
@@ -584,9 +584,6 @@ class TableWidget(QWidget):
 
     
 
-=======
-    
->>>>>>> dev
 
 
     def showMessageBox(self):
