@@ -660,7 +660,7 @@ class TableWidget(QWidget):
 
         self.slave_address = self.slave_id.text()
         self.register_quantity = self.reg_quantity.text()
-        user_input["device"] = main_window.device
+        user_input["device"] = self.device
         user_input['slave_address'] = self.slave_address
         user_input['quantity'] = self.register_quantity
 
