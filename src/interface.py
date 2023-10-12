@@ -277,6 +277,7 @@ def generate_setup_file(user_input_dict):
             parent_value["Data_type"] = user_input_dict["registers"]["Data_type"]
             parent_value["Access_type"] = user_input_dict["registers"]["Access_type"]
             register_data[parent_key] = parent_value 
+            
 
         json.dump({device: {'slave_address':unit_id, 'registers':register_data}},f) # Appenining the register attributes with the json structure
         
@@ -367,58 +368,21 @@ def register_count_under_device(json_data, device_id: int):
 
 
 
-def append_device():
+def append_device(config):
     if check_for_existing_register_setup():
         device_count = saved_device_count() # Check how many devices exist
         new_device = "device_" + str(device_count+1) # Since we are adding a new device, increment the device number by 1
         print(new_device)
 
-
         with open(path_to_register_setup, 'r') as f:
             data = json.load(f)
-            config = {
-                        "connection_params": {
-                            "windows": {
-                                "tcp_params": {
-                                    "slave_address": "1",
-                                    "host": "192.168.1.100",
-                                    "port": 502
-                                },
-                                "rtu_params": {
-                                    "slave_address": "1",
-                                    "port": "COM2",
-                                    "baudrate": 9600,
-                                    "parity": "N",
-                                    "stopbits": 1,
-                                    "bytesize": 8,
-                                    "timeout": 1
-                                }
-                            },
-                            "linux": {
-                                "tcp_params": {
-                                    "slave_address": "1",
-                                    "host": "192.168.1.100",
-                                    "port": 502
-                                },
-                                "rtu_params": {
-                                    "slave_address": "1",
-                                    "port": "/dev/ttyUSB0",
-                                    "baudrate": 9600,
-                                    "parity": "N",
-                                    "stopbits": 1,
-                                    "bytesize": 8,
-                                    "timeout": 1
-                                }
-                            }
-                        },
-                        "registers": {}
-                    }
-
+            
             data.update({new_device:config})
-            print(data)
 
         with open(path_to_register_setup, 'w') as f:
-            json.dump(data, f, indent=4)
+             json.dump(data, f, indent=4)
+
+             
 
 def update_register_name(device_id:int, row:int, name:str):
     target_register = "register_" + str(row+1)
