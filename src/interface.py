@@ -9,6 +9,7 @@ from pymodbus.payload import BinaryPayloadDecoder
 from pymodbus.payload import BinaryPayloadBuilder
 from pymodbus.constants import Endian
 # import numpy as np
+import serial.tools.list_ports
 import json
 import os
 import  sys
@@ -50,6 +51,23 @@ else:
 # print( "-> ", str(len(modbus_device_settings['devices']['modbus_rtu_devices'])) + " modbus RTU devices" )
 # print( "-> ", str(len(modbus_device_settings['devices']['modbus_tcp_devices'])) + " modbus TCP devices" )
 # print()
+
+# Get a list of available COM ports
+
+def get_available_ports() -> list:
+    available_ports = list(serial.tools.list_ports.comports())
+    port_list = []
+    if not available_ports:
+        print("No COM ports found.")
+        return None
+    else:
+        print("Available COM ports:")
+        print("Available ports ",available_ports)
+        for port in available_ports:
+            port_list.append(port.device)
+            # print(f"Port: {port.device}, Description: {port.description}")
+        print(port_list)
+        return port_list
 
 
 def get_tcp_clients() -> list:
