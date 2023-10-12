@@ -272,7 +272,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.baud_rate_label = QLabel("Baud Rate")
         baud_rate_layout.addWidget(self.baud_rate_label)  # Add the label to the horizontal layout
 
-        self.baud_rate_items = ["9600","14400","19200","38400","57600","15200"]
+        self.baud_rate_items = ["9600","14400","19200","38400","57600","115200"]
         # Create a list of baud rates for "Modbus RTU"
         self.baud_rates = QComboBox()  # Create a drop-down list of the baud rates for "Modbus RTU"
         self.baud_rates.addItems(self.baud_rate_items)  # Add baud rates to the dropdown list for "Modbus RTU"
