@@ -78,7 +78,7 @@ class MainWindow(QtWidgets.QMainWindow):
         # item = QtWidgets.QTableWidgetItem(str(value))
         # self.table_widget.setItem(row, col, item)
         child = window.main_widget.findChildren(QTableWidget)
-        print("Number of children",len(child))
+        # print("Number of children",len(child))
         for num in range(len(child)):
             for row in range(child[num].rowCount()):
                 child[num].setItem(row, 2, QTableWidgetItem(str(random.randint(0, 100))))
@@ -90,10 +90,11 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def on_new_button_clicked(self):
         self.new_device_setup_dialog()
+        config = self.submit_button_clicked()
         
         # print("Adding a new device")
-        # interface.append_device()
-        # self.add_devices_to_layout(self.rows,self.columns)
+        interface.append_device(config)
+        self.add_devices_to_layout(self.rows,self.columns)
 
 
 
@@ -167,10 +168,21 @@ class MainWindow(QtWidgets.QMainWindow):
         # Create the main Vertical layout
         device_setup_main_layout = QVBoxLayout()
 
-        label_name = "Device "
+        self.device_number = self.device
 
         # Create a QGroupBox for the entire dialog
-        dialog_group_box = QGroupBox(label_name, self)
+        dialog_group_box = QGroupBox("Device " + str(self.device_number), self)
+
+        # Create the first horizontal layout and a provison for assigning a custom name to the "Modbus TCP" device
+        tcp_custom_name_layout = QHBoxLayout()
+        self.tcp_custom_name_label = QLabel("Custom Name")
+        self.tcp_custom_name = QLineEdit()
+
+        # Add label and slave widgets to the first horizontal layout for "Modbus TCP"
+        tcp_custom_name_layout.addWidget(self.tcp_custom_name_label)
+        tcp_custom_name_layout.addWidget(self.tcp_custom_name)
+
+
 
         # Create a horizontal layout for the Modbus options (radio buttons)
         modbus_options_layout = QHBoxLayout()
@@ -190,9 +202,9 @@ class MainWindow(QtWidgets.QMainWindow):
         modbus_tcp_group_box.setFixedWidth(450)  # Set a fixed width to prevent resizing
 
         # Create the first horizontal layout and add Slave ID label and its edit box for "Modbus TCP"
-        r_set_h_layout_1 = QHBoxLayout()
-        self.slave_id_label = QLabel("Slave ID")
-        self.slave_id = QLineEdit()
+        tcp_slave_id_h_layout = QHBoxLayout()
+        self.tcp_slave_id_label = QLabel("Slave ID")
+        self.tcp_slave_id = QLineEdit()
 
         # Create the second horizontal layout and add IP Address label and its edit box for "Modbus TCP"
         r_set_h_layout_2 = QHBoxLayout()  
@@ -205,8 +217,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self.port = QLineEdit()
 
         # Add label and slave widgets to the first horizontal layout for "Modbus TCP"
-        r_set_h_layout_1.addWidget(self.slave_id_label)
-        r_set_h_layout_1.addWidget(self.slave_id)
+        tcp_slave_id_h_layout.addWidget(self.tcp_slave_id_label)
+        tcp_slave_id_h_layout.addWidget(self.tcp_slave_id)
 
         # Add label and IP Address widgets to the second horizontal layout for "Set"
         r_set_h_layout_2.addWidget(self.ip_address_label)
@@ -218,7 +230,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
         # Create a the first vertical layout and add the slave ID layout
         r_set_v_layout_1 = QVBoxLayout()
-        r_set_v_layout_1.addLayout(r_set_h_layout_1)  
+        r_set_v_layout_1.addLayout(tcp_slave_id_h_layout)  
 
         # Create the second vertical layout and add the IP Address layout
         r_set_v_layout_2 = QVBoxLayout()
@@ -231,7 +243,7 @@ class MainWindow(QtWidgets.QMainWindow):
     
         # Create a vertical layout for the elements inside the "Modbus TCP" group box
         modbust_tcp_group_box_layout = QVBoxLayout()
-
+        modbust_tcp_group_box_layout.addLayout(tcp_custom_name_layout)
         modbust_tcp_group_box_layout.addLayout(r_set_v_layout_1)
         modbust_tcp_group_box_layout.addLayout(r_set_v_layout_2)
         modbust_tcp_group_box_layout.addLayout(r_set_v_layout_3)
@@ -247,14 +259,24 @@ class MainWindow(QtWidgets.QMainWindow):
         modbus_rtu_group_box = QGroupBox("Modbus RTU", self)
         modbus_rtu_group_box.setFixedWidth(450)  # Set a fixed width to prevent resizing
 
-        # Create the first horizontal layout and add Slave ID label and its edit box for "Modbus RTU"
-        slave_id_layout = QHBoxLayout()
-        self.slave_id_label = QLabel("Slave ID")
-        self.slave_id = QLineEdit()
+
+        # Create the first horizontal layout and a provison for assigning a custom name to the "Modbus TCP" device
+        rtu_custom_name_layout = QHBoxLayout()
+        self.rtu_custom_name_label = QLabel("Custom Name")
+        self.rtu_custom_name = QLineEdit()
 
         # Add label and slave widgets to the first horizontal layout for "Modbus RTU"
-        slave_id_layout.addWidget(self.slave_id_label)
-        slave_id_layout.addWidget(self.slave_id)
+        rtu_custom_name_layout.addWidget(self.rtu_custom_name_label)
+        rtu_custom_name_layout.addWidget(self.rtu_custom_name)
+
+        # Create the first horizontal layout and add Slave ID label and its edit box for "Modbus RTU"
+        rtu_slave_id_layout = QHBoxLayout()
+        self.rtu_slave_id_label = QLabel("Slave ID")
+        self.rtu_slave_id = QLineEdit()
+
+        # Add label and slave widgets to the first horizontal layout for "Modbus RTU"
+        rtu_slave_id_layout.addWidget(self.rtu_slave_id_label)
+        rtu_slave_id_layout.addWidget(self.rtu_slave_id)
 
         # Create a vertical layout and add a dropdown list of the com ports for "Modbus RTU"
         com_ports_layout = QHBoxLayout()
@@ -334,7 +356,8 @@ class MainWindow(QtWidgets.QMainWindow):
 
         # Create a vertical layout for the elements inside the "Modbus RTU" group box
         modbus_rtu_group_box_layout = QVBoxLayout()
-        modbus_rtu_group_box_layout.addLayout(slave_id_layout)
+        modbus_rtu_group_box_layout.addLayout(rtu_custom_name_layout)
+        modbus_rtu_group_box_layout.addLayout(rtu_slave_id_layout)
         modbus_rtu_group_box_layout.addLayout(com_ports_layout)
         modbus_rtu_group_box_layout.addLayout(baud_rate_layout)
         modbus_rtu_group_box_layout.addLayout(parity_layout)
@@ -371,9 +394,40 @@ class MainWindow(QtWidgets.QMainWindow):
         self.register_setup_dialog.exec_()
 
 
-    def submit_button_clicked(self):
+    def submit_button_clicked(self) -> dict:
         print("Submitted")
-        self.register_setup_dialog.accept()
+        # Check which radio button is selected (Modbus TCP or Modbus RTU)
+        if self.modbus_tcp_radio.isChecked():
+            temp_dict = {} 
+            # Modbus TCP is selected
+            temp_dict["device_name"] = self.tcp_custom_name.text()
+            temp_dict['slave_address'] = self.tcp_slave_id.text()
+            temp_dict['host'] = self.ip_address.text()
+            temp_dict['port'] = self.port.text()
+
+            cfg = {'connection_params': {'rtu_params': {}, 'tcp_params':temp_dict}, 'registers':{}}
+            self.register_setup_dialog.accept()
+            return cfg
+
+        elif self.modbus_rtu_radio.isChecked():
+            temp_dict = {}
+            # Modbus RTU is selected
+            temp_dict['device_name'] = self.rtu_custom_name.text()
+            temp_dict['slave_address'] = self.rtu_slave_id.text()
+            temp_dict['port'] = self.com_ports.currentText()  # Get the selected COM Port
+            temp_dict['baudrate'] = self.baud_rates.currentText()
+            temp_dict['parity'] = self.parity_options.currentText()
+            temp_dict['stopbits'] = self.stop_bits_options.currentText()
+            temp_dict['bytesize'] = self.byte_size_options.currentText()
+            temp_dict['timeout'] = self.timeout_options.currentText()
+
+            cfg = {'connection_params': {'rtu_params': temp_dict, 'tcp_params':{}}, 'registers':{}}
+            self.register_setup_dialog.accept()
+            return cfg
+
+
+        
+        
 
 
 
