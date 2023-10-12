@@ -442,13 +442,13 @@ def generate_setup_file(user_input_dict):
     device = "device_" + str(device_id)
     unit_id = str(user_input_dict["slave_address"])
     with open(path_to_register_setup, 'w') as f:
-<<<<<<< HEAD
+
         parent_data = {}
-=======
+
 
         register_data = {}
 
->>>>>>> dev
+
         # Loop through the list of registers entered by the user
         for i in range(int(reg_quantity)):
             parent_key = "register_" + str(i+1)  # This is the initial  name assigned to the variable that will be read from the register. The user will be allowed to rename the register later. 
@@ -461,16 +461,16 @@ def generate_setup_file(user_input_dict):
             parent_value["Gain"] = user_input_dict["registers"]["Gain"]
             parent_value["Data_type"] = user_input_dict["registers"]["Data_type"]
             parent_value["Access_type"] = user_input_dict["registers"]["Access_type"]
-<<<<<<< HEAD
+
             parent_data[parent_key] = parent_value 
         json.dump({device: {'slave_address':unit_id, 'registers':parent_data}},f) # Appenining the register attributes with the json structure
-=======
-            register_data[parent_key] = parent_value 
+
+        register_data[parent_key] = parent_value 
             
 
         json.dump({device: {'slave_address':unit_id, 'registers':register_data}},f) # Appenining the register attributes with the json structure
         
->>>>>>> dev
+
         print("JSON file created!")
 
 
