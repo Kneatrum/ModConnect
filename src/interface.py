@@ -134,7 +134,7 @@ def get_rtu_clients() -> list:
 
 
 def read_tcp_registers(client,device_id):
-    with open(database_path, 'r') as f:
+    with open(path_to_register_setup, 'r') as f:
           data = json.load(f)
     
     device_id = "device_" + str(device_id) # Get the register group id to identify the registers to read for a specific device
@@ -197,7 +197,7 @@ def read_tcp_registers(client,device_id):
             print('Running on Linux')
             linux_settings_path = os.path.join(os.getcwd(), 'devices','devices_linux.json')
             with open(linux_settings_path, 'r') as f:
-                self.modbus_device_settings = json.load(f)
+                modbus_device_settings = json.load(f)
 
         else:
             print('Unknown platform')
