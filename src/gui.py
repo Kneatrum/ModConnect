@@ -5,13 +5,6 @@ The "TableWidget" class is the main widget used to display the registers from th
 """
 
 
-"""
-This file contains the two classes that define the layout of the application using PyQT5
-The "MainWindow" class is the main window of the application. It contains the menu bar, the table widget, the register setup dialog, and the main window.
-The "TableWidget" class is the main widget used to display the registers from the devices that are connected externally either by Modbus TCP or Modbus RTU
-
-"""
-
 import sys
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QApplication, QScrollArea, QWidget, QMenu, QAction, QMenuBar, QPushButton, QTableWidget,QTableWidgetItem, QVBoxLayout, QLabel, QLineEdit, QComboBox, QDialog,QHBoxLayout
