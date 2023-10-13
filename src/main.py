@@ -91,19 +91,19 @@ class MainWindow(QtWidgets.QMainWindow):
                 print("None") 
 
 
-    def update_cells(self):
-        # row = random.randint(0, 9)
-        # col = random.randint(0, 9)
-        # value = random.randint(0, 100)
-        # item = QtWidgets.QTableWidgetItem(str(value))
-        # self.table_widget.setItem(row, col, item)
-        child = window.main_widget.findChildren(QTableWidget)
-        # print("Number of children",len(child))
-        for num in range(len(child)):
-            for row in range(child[num].rowCount()):
-                child[num].setItem(row, 2, QTableWidgetItem(str(random.randint(0, 100))))
-                # child[num].setItem(0, 2, QTableWidgetItem("Mwiti"))
-                # child[num].setItem(0, 2, QTableWidgetItem("Njue"))
+    # def update_cells(self):
+    #     # row = random.randint(0, 9)
+    #     # col = random.randint(0, 9)
+    #     # value = random.randint(0, 100)
+    #     # item = QtWidgets.QTableWidgetItem(str(value))
+    #     # self.table_widget.setItem(row, col, item)
+    #     child = window.main_widget.findChildren(QTableWidget)
+    #     # print("Number of children",len(child))
+    #     for num in range(len(child)):
+    #         for row in range(child[num].rowCount()):
+    #             child[num].setItem(row, 2, QTableWidgetItem(str(random.randint(0, 100))))
+    #             # child[num].setItem(0, 2, QTableWidgetItem("Mwiti"))
+    #             # child[num].setItem(0, 2, QTableWidgetItem("Njue"))
 
         
 
