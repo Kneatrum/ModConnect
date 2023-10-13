@@ -420,7 +420,6 @@ class ModbusRTUClient():
 
 
 
-
 def confirm_if_data_file_exists():
     if not os.path.exists(os.path.join(os.getcwd(), data_folder)):
         os.makedirs(data_folder)
