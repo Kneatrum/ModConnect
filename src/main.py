@@ -130,8 +130,8 @@ class MainWindow(QtWidgets.QMainWindow):
             self.centralWidget().layout().setContentsMargins(0, 20, 0, 50)
             self.show()
         else:
-            interface.append_device()
-            saved_devices = interface.saved_device_count()
+            # interface.append_device()
+            # saved_devices = interface.saved_device_count()
             self.main_widget = self.device_widget(rows,columns,saved_devices)
             self.setCentralWidget(self.main_widget)
             # Add a small space between the menu bar and the central widget
