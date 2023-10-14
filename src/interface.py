@@ -564,7 +564,8 @@ def register_count_under_device(json_data, device_id: int):
 
 def append_device(config):
     if check_for_existing_register_setup():
-        device_count = saved_device_count() # Check how many devices exist
+        device_setup_profile = saved_device_count() # Check how many devices exist
+        device_count = len(device_setup_profile)
         new_device = "device_" + str(device_count+1) # Since we are adding a new device, increment the device number by 1
         print(new_device)
 
