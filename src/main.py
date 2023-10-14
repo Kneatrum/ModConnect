@@ -577,8 +577,10 @@ class TableWidget(QWidget):
     def on_drop_down_menu_current_index_changed(self):
         
         if self.action_menu.currentIndex() == 1: # If the selectec option is Add registers (index 1)
+            self.table_widget.itemChanged.disconnect(self.onItemChanged) # Disconnect the ItemChanged signal to alow us to reload the GUI
             self.showMessageBox() # Show the message box for adding registers
             self.action_menu.setCurrentIndex(0)
+            self.table_widget.itemChanged.connect(self.onItemChanged)    # Reconnect the ItemChanged signal to allow us to update the register names
         elif self.action_menu.currentIndex() == 2: # If the selectec option is Delete registers (index 2)
             self.action_menu.setCurrentIndex(0)
             pass
@@ -595,17 +597,17 @@ class TableWidget(QWidget):
         self.register_setup_dialog = QDialog(self)
         self.register_setup_dialog.setWindowTitle("Register Setup")
 
-        # Create the main Vertical layout
+        # # Create the main Vertical layout
         rset_main_layout = QVBoxLayout()
 
-        # Create the first horizontal layout and add Slave ID label and its edit box
-        r_set_h_layout_1 = QHBoxLayout()
-        self.slave_id_label = QLabel("Slave ID")
-        self.slave_id = QLineEdit()
+        # # Create the first horizontal layout and add Slave ID label and its edit box
+        # r_set_h_layout_1 = QHBoxLayout()
+        # self.slave_id_label = QLabel("Slave ID")
+        # self.slave_id = QLineEdit()
         
         # Add label and slave widgets to the first horizontal layout
-        r_set_h_layout_1.addWidget(self.slave_id_label)
-        r_set_h_layout_1.addWidget(self.slave_id)
+        # r_set_h_layout_1.addWidget(self.slave_id_label)
+        # r_set_h_layout_1.addWidget(self.slave_id)
 
         # Create a vertical layout and add a dropdown list of the function codes
         r_set_v_layout_1 = QVBoxLayout()
@@ -636,10 +638,10 @@ class TableWidget(QWidget):
         self.rset_submit_button = QPushButton("Submit")
         r_set_h_layout_4.addWidget(self.rset_submit_button)
         self.rset_submit_button.clicked.connect(self.get_user_input)
-        self.register_setup_dialog.close()
+        self.register_setup_dialog.accept()
 
         # Add all the layouts to the main vertical layout
-        rset_main_layout.addLayout(r_set_h_layout_1)
+        # rset_main_layout.addLayout(r_set_h_layout_1)
         rset_main_layout.addLayout(r_set_v_layout_1)
         rset_main_layout.addLayout(r_set_h_layout_2)
         rset_main_layout.addLayout(r_set_h_layout_3)
@@ -663,29 +665,30 @@ class TableWidget(QWidget):
         register_properties_dict['Data_type'] =main_window.data_type
         register_properties_dict['Access_type'] =main_window.access_type
 
-        self.slave_address = self.slave_id.text()
+        # self.slave_address = self.slave_id.text()
         self.register_quantity = self.reg_quantity.text()
         user_input["device"] = self.device
-        user_input['slave_address'] = self.slave_address
+        # user_input['slave_address'] = self.slave_address
         user_input['quantity'] = self.register_quantity
 
         user_input["registers"] = register_properties_dict
-        self.rows = int(self.register_quantity)
-        self.table_widget.setRowCount(self.rows)
+        row_count = self.table_widget.rowCount()
+        print("Row count is ",str(row_count))
+        register_quantity = int(self.register_quantity)
+        register_address = int(self.reg_address.text())
+        self.table_widget.setRowCount(row_count  + register_quantity)
+        for x in range(register_quantity):
+            register_address = register_address + x
+            self.table_widget.setItem(row_count+x, 0, QTableWidgetItem("N/A"))
+            self.table_widget.setItem(row_count+x, 1, QTableWidgetItem(str(register_address)))
 
         #interface.generate_setup_file(user_input)
         interface.update_setup_file(user_input)
-        self.update_register_table(self.reg_address.text(),self.reg_quantity.text())
+        # self.update_register_table(self.reg_address.text(),self.reg_quantity.text())
         self.table_widget.update()
 
 
-        # Add the register addresses to the "Address" column
-    def update_register_table(self,register_start_address,register_quantity):
-        register = int(register_start_address)
-        for row in range (int(register_quantity)):
-            str_register = str(register)
-            self.table_widget.setItem(row, 1, QTableWidgetItem(str_register))
-            register = register + 1
+
 
     def delete_register(self):
         print("Delete register")
