@@ -477,7 +477,6 @@ def generate_setup_file(user_input_dict):
 # This function receives user input and default register parameters from gui.py file as a dictionary
 def update_setup_file(user_input_dict): 
     device_id = user_input_dict["device"]
-    unit_id = str(user_input_dict["slave_address"])
     reg_quantity = user_input_dict["quantity"]
     # Read the register setup file
     data = read_register_setup_file()
