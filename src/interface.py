@@ -533,10 +533,12 @@ def saved_device_count() -> dict:
             device_count = 0 # Variable to store the number of register groups
             # Find out how many register groups there are in the register setup file
             for key in data.keys():
-                if "device_" in key:
-                    device_count += 1
-                    register_count_under_device = len(data["device_"+ str(device_count)]["registers"].keys())        
-                    temp_dictionary["device_"+ str(device_count)] = register_count_under_device
+                    if "device_" in key:
+                        device_count += 1
+                        if data["device_"+ str(device_count)] != None:
+                            register_count_under_device = len(data["device_"+ str(device_count)]["registers"].keys())        
+                            temp_dictionary["device_"+ str(device_count)] = register_count_under_device
+
 
                          
             print(len(temp_dictionary))
