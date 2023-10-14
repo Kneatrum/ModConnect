@@ -521,23 +521,31 @@ def read_register_setup_file():
 
 
 
-def saved_device_count() -> int:
+def saved_device_count() -> dict:
         print("saved_device_count  runs first!")
+        temp_dictionary = {}
         # First check if there is a register setup file in the database
         register_setup_file_exists = check_for_existing_register_setup()
 
         if register_setup_file_exists == True:
             print ("Register setup file exists")
             data = read_register_setup_file() # read the register setup
-            saved_devices = 0 # Variable to store the number of register groups
+            device_count = 0 # Variable to store the number of register groups
             # Find out how many register groups there are in the register setup file
             for key in data.keys():
                 if "device_" in key:
-                    saved_devices += 1
-        
-            return saved_devices
+                    device_count += 1
+                    register_count_under_device = len(data["device_"+ str(device_count)]["registers"].keys())        
+                    temp_dictionary["device_"+ str(device_count)] = register_count_under_device
+
+                         
+            print(len(temp_dictionary))
+            print(temp_dictionary)
+            return temp_dictionary
         else : 
-            return 0
+            return None
+        
+
         
 
 
