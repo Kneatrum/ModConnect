@@ -10,3 +10,7 @@ Requirements:
 * pymodbus (V3.5.2) or later: Required for modbus read and write operations
 * pyserial (3.5) or later: Required for accessing the system serial communication ports
 
+How to run the software
+* At the moment you just need to run the main.py file from the terminal.
+* So far, the code has been developed and tested on a windows system.
+
