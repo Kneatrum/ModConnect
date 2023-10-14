@@ -93,21 +93,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 print("None") 
 
 
-    # def update_cells(self):
-    #     # row = random.randint(0, 9)
-    #     # col = random.randint(0, 9)
-    #     # value = random.randint(0, 100)
-    #     # item = QtWidgets.QTableWidgetItem(str(value))
-    #     # self.table_widget.setItem(row, col, item)
-    #     child = window.main_widget.findChildren(QTableWidget)
-    #     # print("Number of children",len(child))
-    #     for num in range(len(child)):
-    #         for row in range(child[num].rowCount()):
-    #             child[num].setItem(row, 2, QTableWidgetItem(str(random.randint(0, 100))))
-    #             # child[num].setItem(0, 2, QTableWidgetItem("Mwiti"))
-    #             # child[num].setItem(0, 2, QTableWidgetItem("Njue"))
 
-        
 
             
 
@@ -600,14 +586,6 @@ class TableWidget(QWidget):
         # # Create the main Vertical layout
         rset_main_layout = QVBoxLayout()
 
-        # # Create the first horizontal layout and add Slave ID label and its edit box
-        # r_set_h_layout_1 = QHBoxLayout()
-        # self.slave_id_label = QLabel("Slave ID")
-        # self.slave_id = QLineEdit()
-        
-        # Add label and slave widgets to the first horizontal layout
-        # r_set_h_layout_1.addWidget(self.slave_id_label)
-        # r_set_h_layout_1.addWidget(self.slave_id)
 
         # Create a vertical layout and add a dropdown list of the function codes
         r_set_v_layout_1 = QVBoxLayout()
