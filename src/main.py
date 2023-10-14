@@ -61,9 +61,11 @@ class MainWindow(QtWidgets.QMainWindow):
         editMenu.addAction(cutAction)
         editMenu.addAction(copyAction)
         editMenu.addAction(pasteAction)
-
         self.setMenuBar(menubar)
-        self.add_devices_to_layout(self.rows,self.columns)
+
+        # Display all the registered devices on the screen
+        self.add_devices_to_layout()
+        # Update the registers after every one second.
         self.timer = QtCore.QTimer()
         self.timer.timeout.connect(self.update_cells)
         self.timer.start(1000) # Update cells every 1 second
@@ -115,16 +117,19 @@ class MainWindow(QtWidgets.QMainWindow):
         
         # print("Adding a new device")
         interface.append_device(config)
-        self.add_devices_to_layout(self.rows,self.columns)
+        self.add_devices_to_layout()
 
 
-
-    def add_devices_to_layout(self, rows, columns):
+    '''
+    This is the functions responsible for displaying all the registered devices on the screen.
+    
+    '''
+    def add_devices_to_layout(self):
         saved_devices = interface.saved_device_count()
 
-        if saved_devices != 0:
+        if saved_devices != None:
             print("Found saved devices")
-            self.main_widget = self.device_widget(rows,columns,saved_devices)
+            self.main_widget = self.device_widget_setup(saved_devices)
             self.setCentralWidget(self.main_widget)
             # Add a small space between the menu bar and the central widget
             self.centralWidget().layout().setContentsMargins(0, 20, 0, 50)
@@ -132,7 +137,7 @@ class MainWindow(QtWidgets.QMainWindow):
         else:
             # interface.append_device()
             # saved_devices = interface.saved_device_count()
-            self.main_widget = self.device_widget(rows,columns,saved_devices)
+            self.main_widget = self.device_widget_setup(saved_devices)
             self.setCentralWidget(self.main_widget)
             # Add a small space between the menu bar and the central widget
             self.centralWidget().layout().setContentsMargins(0, 20, 0, 50)
@@ -140,20 +145,20 @@ class MainWindow(QtWidgets.QMainWindow):
         
 
     
-    def device_widget(self,rows,columns,saved_devices):
-        if( saved_devices > 0 ):
+    def device_widget_setup(self,saved_devices):
+        if( saved_devices != None ):
             # Create a central widget
             central_widget = QWidget()
             # Create a horizontal layout to add the table widgets
             self.horizontal_layout = QHBoxLayout()
             # Read the register setup file and save the content in the 'data' variable
             data = interface.read_register_setup_file()
-            # Loop through the register setup and create widgets for each register group/ device
-            for i in range(saved_devices):
+            # Loop through the register setup and create widgets for each device
+            for i in range(len(saved_devices)):
                 self.device = i+1
-                registers_per_device = interface.register_count_under_device(data,self.device) # Find how many registers we have per device
-                widget = TableWidget(rows, columns, self.device) # Create and instance of our table widget
-                widget.table_widget.setRowCount(registers_per_device) # Set the number of rows to the number of registers we have
+                registers_per_device = saved_devices["device_"+str(self.device)]
+                widget = TableWidget(self.device, registers_per_device) # Create and instance of our table widget
+                # widget.table_widget.setRowCount(saved_devices["device"+str(self.device)]) # Set the number of rows to the number of registers we have
                 self.horizontal_layout.addWidget(widget) # Create the table widgets and add them in the horizontal layout
                 # Add the register parameters in the rows and columns of each device
                 for j in range(registers_per_device):
@@ -457,7 +462,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
 
 class TableWidget(QWidget):
-    def __init__(self, rows, columns,device):
+    def __init__(self, device, rows, columns=3):
         super().__init__()
 
         self.rows = rows
