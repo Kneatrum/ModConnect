@@ -74,23 +74,27 @@ class MainWindow(QtWidgets.QMainWindow):
 
         
 
-    def update_cells(self):  
-        # interface.ModbusTcpClient.read_tcp_registers()
-        device_table_widget = self.main_widget.findChildren(QTableWidget)
+    def update_cells(self): 
+        client_and_device = interface.tcp_clients_list 
+        tcp_list_length = len(client_and_device)
+        if tcp_list_length > 0:
+            device_table_widget = self.main_widget.findChildren(QTableWidget)
 
-        for device_id in range(len(device_table_widget)): # Loop through the devices
-            for row in range(device_table_widget[device_id].rowCount()): # Loop through the rows
-                device_table_widget[device_id].setItem(row, 2, QTableWidgetItem(str(random.randint(0, 100)))) # Updating the register column (column 2) with the register values
+            for _ in range(tcp_list_length): # This loop runs a number of time that is equal to the number of connected tcp devices.
+                for device_item in client_and_device: # Loop through the devices
+                    for row in range(device_table_widget[device_item[0]].rowCount()): # Loop through the rows
+                        device = device_item[0]
+                        client = device_item[1]
+                        device_table_widget[device_item[0]-1].setItem(row, 2, QTableWidgetItem(interface.read_tcp_registers(client,device))) # Updating the register column (column 2) with the register values
 
-
-        # Find the QLabel with name "connection_status_label"
-        labels = self.main_widget.findChildren(QLabel)
-        for label in labels:
-            if label is not None:
-                print("Label {}".format(label.objectName()))
-                # label.setText("New connection status") # Change the text of the label  
-            else:
-                print("None") 
+                # # Find the QLabel with name "connection_status_label"
+                # labels = self.main_widget.findChildren(QLabel)
+                # for label in labels:
+                #     if label is not None:
+                #         print("Label {}".format(label.objectName()))
+                #         # label.setText("New connection status") # Change the text of the label  
+                #     else:
+                #         print("None") 
 
 
 
@@ -572,6 +576,7 @@ class TableWidget(QWidget):
             pass
         elif self.action_menu.currentIndex() == 3: # If the selected option is Connect (index 3)
             self.action_menu.setCurrentIndex(0)
+            self.connect_to_device(self.device)
             pass
         
 
@@ -665,7 +670,11 @@ class TableWidget(QWidget):
         # self.update_register_table(self.reg_address.text(),self.reg_quantity.text())
         self.table_widget.update()
 
+    def connect_to_device(self,device):
+        # print("Connect to device",device)
+        interface.connect_to_client(device)
 
+        
 
 
     def delete_register(self):

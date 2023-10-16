@@ -26,7 +26,7 @@ register_map_file = 'register_map_file.json'
 path_to_register_setup = os.path.join(os.getcwd(), data_folder,register_map_file)
 test_file_path = os.path.join(os.getcwd(), data_folder,'test.json')
 
-class ModbusTcpClient():
+class Foo(): # To assign a name later
 
     def __init__(self):
 
@@ -73,30 +73,63 @@ def get_available_ports() -> list:
         return port_list
 
 
-def get_tcp_clients() -> list:
+def connect_to_client(device):
     print( "Modbus TCP devices" )
     
     # Connecting to the Modbus TCP devices
     # Loop through the registered Modbus TCP devices and connect to them
-    for device in modbus_device_settings['devices']['modbus_tcp_devices']:   
-        client_and_device_container = {}  # Create a dictionary to temporarrily store the client and register group information
+    # for device in modbus_device_settings['devices']['modbus_tcp_devices']:   
+    #     
 
-        IP_ADDRESS = modbus_device_settings['devices']['modbus_tcp_devices'][device]['connection_params']['host']       # Get the IP address
-        TCP_PORT = modbus_device_settings['devices']['modbus_tcp_devices'][device]['connection_params']['port']         # Get the port number
-        device = modbus_device_settings['devices']['modbus_tcp_devices'][device]['device']['device_id']  # Get the register group ID
-        #print(IP_ADDRESS, TCP_PORT)   # Print the device information to the console
-        tcp_client = ModbusTcpClient(IP_ADDRESS, TCP_PORT)
+    #     IP_ADDRESS = modbus_device_settings['devices']['modbus_tcp_devices'][device]['connection_params']['host']       # Get the IP address
+    #     TCP_PORT = modbus_device_settings['devices']['modbus_tcp_devices'][device]['connection_params']['port']         # Get the port number
+    #     device = modbus_device_settings['devices']['modbus_tcp_devices'][device]['device']['device_id']  # Get the register group ID
+    #     #print(IP_ADDRESS, TCP_PORT)   # Print the device information to the console
+    #     tcp_client = ModbusTcpClient(IP_ADDRESS, TCP_PORT)
         
     
-        try:
-            tcp_client.connect()
-            client_and_device_container['client'] = tcp_client
-            client_and_device_container['device'] = device
-            tcp_clients_list.append(client_and_device_container)
-            print("Connected to ", tcp_client, "successfully")
-        except Exception as e:
-            print(f"Connection to ", tcp_client, f"failed {e}")
-    return tcp_clients_list
+    #     try:
+    #         tcp_client.connect()
+    #         client_and_device_container['client'] = tcp_client
+    #         client_and_device_container['device'] = device
+    #         tcp_clients_list.append(client_and_device_container)
+    #         print("Connected to ", tcp_client, "successfully")
+    #     except Exception as e:
+    #         print(f"Connection to ", tcp_client, f"failed {e}")
+    # return tcp_clients_list
+
+    # print(path_to_register_setup)
+    with open(path_to_register_setup, 'r') as f:
+        data = json.load(f)
+        # print(data)
+        device_id = "device_" + str(device)
+        print(device_id)
+        if data[device_id]['connection_params']['tcp_params'] is not None:
+            SLAVE_ID = data[device_id]['connection_params']['tcp_params']['slave_address']
+            IP_ADDRESS = data[device_id]['connection_params']['tcp_params']['host']
+            TCP_PORT =  data[device_id]['connection_params']['tcp_params']['port']
+            print(SLAVE_ID + "," +IP_ADDRESS + ":" + str(TCP_PORT))
+
+            tcp_client = ModbusTcpClient(IP_ADDRESS, TCP_PORT)
+            temp_list = []
+            # client_and_device_container = {}  # Create a dictionary to temporarrily store the client and register group information
+            try:
+                connection = tcp_client.connect()
+                # client_and_device_container['client'] = tcp_client
+                # client_and_device_container['device'] = device
+                temp_list.append(device)
+                temp_list.append(tcp_client)
+                tcp_clients_list.append(temp_list)
+                print("Connection status: ", connection)
+                print("##Connected to ", tcp_clients_list)
+            except Exception as e:
+                print(f"Connection to ", tcp_client, f"failed {e}")
+                
+
+        elif data[device_id]['connection_params']['rtu_params'] is not None:
+            print("This is an RTU device")
+            
+
     
 
     
@@ -139,59 +172,71 @@ def read_tcp_registers(client,device_id):
     
     device_id = "device_" + str(device_id) # Get the register group id to identify the registers to read for a specific device
 
-    if sys.platform.startswith('win'): # Check if we are running on Windows
-        print('Running on Windows')
-        UNIT_ID = data[device_id]['connection_params']['windows']['tcp_params']['slave_address']['address']
-    elif sys.platform.startswith('linux'): # Check if we are running on Linux
-        print('Running on Linux')
-        UNIT_ID = data[device_id]['connection_params']['linux']['tcp_params']['slave_address']['address']
+    # if sys.platform.startswith('win'): # Check if we are running on Windows
+    #     print('Running on Windows')
+    #     UNIT_ID = data[device_id]['connection_params']['windows']['tcp_params']['slave_address']['address']
+    # elif sys.platform.startswith('linux'): # Check if we are running on Linux
+    #     print('Running on Linux')
+    #     UNIT_ID = data[device_id]['connection_params']['linux']['tcp_params']['slave_address']['address']
 
+    UNIT_ID = data[device_id]['connection_params']['tcp_params']['slave_address']
     print("Slave ID", UNIT_ID) 
 
     for variable in data[device_id]['registers']:
+        print("Variable :", variable)
+        print("Variable fx code:", data[device_id]['registers'][variable]['function_code'])
         if data[device_id]['registers'][variable]['function_code'] == 1:   
             address = data[device_id]['registers'][variable]['address']
             quantity = data[device_id]['registers'][variable]['quantity']  
-            device_name = device_name+variable 
+            # device_name = device_name+variable 
 
-            # response = client.read_coils(address, quantity, unit= UNIT_ID)
-            # decoder = BinaryPayloadDecoder.fromRegisters(response.registers, byteorder=Endian.Big, wordorder=Endian.Big)
-            # data = decoder.decode_16bit_uint()
-            #device_data.update(device_name=data)
-
+            response = client.read_coils(address, quantity, unit= UNIT_ID)
+            decoder = BinaryPayloadDecoder.fromRegisters(response.registers, byteorder=Endian.BIG, wordorder=Endian.BIG)
+            data = decoder.decode_16bit_uint()
+            # device_data.update(device_name=data)
+            # print("Register data: ",data)
+            return str(data)
+ 
 
         elif data[device_id]['registers'][variable]['function_code'] == 2:
             address = data[device_id]['registers'][variable]['address']
             quantity = data[device_id]['registers'][variable]['quantity']  
             device_name = device_name+variable 
 
-            # response = client.read_discrete_inputs(address, quantity, unit= UNIT_ID)
-            # decoder = BinaryPayloadDecoder.fromRegisters(response.registers, byteorder=Endian.Big, wordorder=Endian.Big)
-            # data = decoder.decode_16bit_uint()
+            response = client.read_discrete_inputs(address, quantity, unit= UNIT_ID)
+            decoder = BinaryPayloadDecoder.fromRegisters(response.registers, byteorder=Endian.BIG, wordorder=Endian.BIG)
+            data = decoder.decode_16bit_uint()
             #device_data.update(device_name=data)
+            # print("Register data: ",data)
+            return str(data)
 
 
-        elif data[device_id]['registers'][variable]['function_code'] == 3:
-            print("Reading ", variable, ". \nAddress is ",       data['registers'][variable]['address'], ". \nFunction_code is ", data['registers'][variable]['function_code'], "\nQuantity is ",  data['registers'][variable]['quantity'],"\n")                     
+        elif data[device_id]['registers'][variable]['function_code'] == "Read Holding Registers":
+            # print("Reading " + variable + ". \nAddress is " +  data['registers'][variable]['address'] + ". \nFunction_code is " + data['registers'][variable]['function_code'] + "\nQuantity is " +  data['registers'][variable]['quantity'] + "\n")                     
             address = data[device_id]['registers'][variable]['address']
-            quantity = data[device_id]['registers'][variable]['quantity']  
-            device_name = device_name+variable 
+            # quantity = data[device_id]['registers'][variable]['quantity']  
+            quantity = 1
+            # device_name = device_name+variable 
 
-            # response = client.read_holding_registers(address, quantity, unit= UNIT_ID)
-            # decoder = BinaryPayloadDecoder.fromRegisters(response.registers, byteorder=Endian.Big, wordorder=Endian.Big)
-            # data = decoder.decode_16bit_uint()
+            response = client.read_holding_registers(address, quantity, unit= UNIT_ID)
+            decoder = BinaryPayloadDecoder.fromRegisters(response.registers, byteorder=Endian.BIG, wordorder=Endian.BIG)
+            data = decoder.decode_16bit_uint()
             #device_data.update(device_name=data)
+            print("Register data: ",data)
+            return str(data)
 
 
         elif data[device_id]['registers'][variable]['function_code'] == 4:
             address = data[device_id]['registers'][variable]['address']
             quantity = data[device_id]['registers'][variable]['quantity']  
-            device_name = device_name+variable 
+            # device_name = device_name+variable 
 
-            # response = client.read_input_registers(address, quantity, unit= UNIT_ID)
-            # decoder = BinaryPayloadDecoder.fromRegisters(response.registers, byteorder=Endian.Big, wordorder=Endian.Big)
-            # data = decoder.decode_16bit_uint()
+            response = client.read_input_registers(address, quantity, unit= UNIT_ID)
+            decoder = BinaryPayloadDecoder.fromRegisters(response.registers, byteorder=Endian.BIG, wordorder=Endian.BIG)
+            data = decoder.decode_16bit_uint()
             #device_data.update(device_name=data)
+            # print("Register data: ",data)
+            return str(data)
 
         elif sys.platform.startswith('linux'): # Check if we are running on Linux
             print('Running on Linux')
