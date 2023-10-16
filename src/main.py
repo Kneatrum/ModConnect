@@ -8,6 +8,20 @@ import interface
 import random
 import time
 
+read_function_codes = {
+    "READ_COILS (01)": 1,
+    "READ_DISCRETE_INPUTS (02)": 2,
+    "READ_HOLDING_REGISTERS (03)": 3,
+    "READ_INPUT_REGISTERS (04)": 4
+    }
+
+write_function_codes = {
+    "WRITE_SINGLE_COIL (05)": 5,
+    "WRITE_SINGLE_REGISTER (06)": 6,
+    "WRITE_MULTIPLE_COILS (15)": 15,
+    "WRITE_MULTIPLE_REGISTERS (16)": 16
+}
+
 
 class MainWindow(QtWidgets.QMainWindow):
 
@@ -597,7 +611,7 @@ class TableWidget(QWidget):
         self.fx_code_label = QLabel("Function Code")
         r_set_v_layout_1.addWidget(self.fx_code_label) # Add the label to the vertical layout
 
-        self.fx_code_items = ["Read Holding Registers", "Read Input registers", "Read Discrete Inputs", "Read Coils"] # Create a list of function codes
+        self.fx_code_items = list(read_function_codes.keys())  # Create a list of function codes
         self.function_code = QComboBox() # Create a drop down list of function codes
         self.function_code.addItems(self.fx_code_items) # Add function codes to the dropdown list
         r_set_v_layout_1.addWidget(self.function_code) # Add function code items to widget
@@ -642,7 +656,7 @@ class TableWidget(QWidget):
         register_properties_dict ={} # Empty dictionary to store register properties
         register_properties_dict['Register_name'] = main_window.register_name   
         register_properties_dict['address'] = int(self.reg_address.text())
-        register_properties_dict['function_code'] = self.function_code.currentText()
+        register_properties_dict['function_code'] = read_function_codes[self.function_code.currentText()]
         register_properties_dict['Units'] =main_window.units
         register_properties_dict['Gain'] =main_window.gain
         register_properties_dict['Data_type'] =main_window.data_type

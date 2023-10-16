@@ -211,7 +211,7 @@ def read_tcp_registers(client,device_id):
             return str(data)
 
 
-        elif data[device_id]['registers'][variable]['function_code'] == "Read Holding Registers":
+        elif data[device_id]['registers'][variable]['function_code'] == 3:
             # print("Reading " + variable + ". \nAddress is " +  data['registers'][variable]['address'] + ". \nFunction_code is " + data['registers'][variable]['function_code'] + "\nQuantity is " +  data['registers'][variable]['quantity'] + "\n")                     
             address = data[device_id]['registers'][variable]['address']
             # quantity = data[device_id]['registers'][variable]['quantity']  
