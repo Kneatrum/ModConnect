@@ -89,28 +89,19 @@ class MainWindow(QtWidgets.QMainWindow):
         
 
     def update_cells(self): 
-        client_and_device = interface.tcp_clients_list 
-        tcp_list_length = len(client_and_device)
-        if tcp_list_length > 0:
-            device_table_widget = self.main_widget.findChildren(QTableWidget)
-
-            for _ in range(tcp_list_length): # This loop runs a number of time that is equal to the number of connected tcp devices.
-                for device_item in client_and_device: # Loop through the devices
-                    for row in range(device_table_widget[device_item[0]].rowCount()): # Loop through the rows
-                        device = device_item[0]
-                        client = device_item[1]
-                        device_table_widget[device_item[0]-1].setItem(row, 2, QTableWidgetItem(interface.read_tcp_registers(client,device))) # Updating the register column (column 2) with the register values
-
-                # # Find the QLabel with name "connection_status_label"
-                # labels = self.main_widget.findChildren(QLabel)
-                # for label in labels:
-                #     if label is not None:
-                #         print("Label {}".format(label.objectName()))
-                #         # label.setText("New connection status") # Change the text of the label  
-                #     else:
-                #         print("None") 
-
-
+        connected_devices = interface.tcp_connections_dict # Get the list of all connected TCP devices. 
+        tcp_device_count = len(connected_devices) # Find out the number of the devices connected.
+        if tcp_device_count > 0:
+            devices_on_display = self.main_widget.findChildren(QTableWidget) # Get a list of the devices on the main display.
+            if devices_on_display:
+                for device_number in connected_devices.keys():  # Loop through the devices
+                    device = device_number
+                    client = connected_devices[device]
+                    register_data =interface.read_tcp_registers(client,device) # Get the dictionary that contains the registers and their data
+                    for row in range(devices_on_display[device-1].rowCount()): # Loop through the rows and update the register details
+                        register_list = list(register_data.values()) # Only get the values and convert them to a list for easy access in this for loop
+                        devices_on_display[device_number-1].setItem(row, 2, QTableWidgetItem(str(register_list[row]))) # Updating the register column (column 2) with the register values
+                        
 
 
             

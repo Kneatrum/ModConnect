@@ -17,8 +17,9 @@ import  sys
 
 
 
-rtu_clients_list = []
-tcp_clients_list = []
+rtu_clients_list = {} # # This dictionary stores the number of RTU devices that are connected
+tcp_connections_dict = {} # This dictionary stores the number of TCP devices that are connected
+
 
 
 data_folder = 'database'
@@ -104,29 +105,33 @@ def connect_to_client(device):
         # print(data)
         device_id = "device_" + str(device)
         print(device_id)
-        if data[device_id]['connection_params']['tcp_params'] is not None:
+
+
+        if data[device_id]['connection_params']['tcp_params']:
             SLAVE_ID = data[device_id]['connection_params']['tcp_params']['slave_address']
             IP_ADDRESS = data[device_id]['connection_params']['tcp_params']['host']
             TCP_PORT =  data[device_id]['connection_params']['tcp_params']['port']
             print(SLAVE_ID + "," +IP_ADDRESS + ":" + str(TCP_PORT))
 
             tcp_client = ModbusTcpClient(IP_ADDRESS, TCP_PORT)
-            temp_list = []
             # client_and_device_container = {}  # Create a dictionary to temporarrily store the client and register group information
-            try:
-                connection = tcp_client.connect()
-                # client_and_device_container['client'] = tcp_client
-                # client_and_device_container['device'] = device
-                temp_list.append(device)
-                temp_list.append(tcp_client)
-                tcp_clients_list.append(temp_list)
-                print("Connection status: ", connection)
-                print("##Connected to ", tcp_clients_list)
-            except Exception as e:
-                print(f"Connection to ", tcp_client, f"failed {e}")
+
+            if device not in tcp_connections_dict.keys():
+                try:
+                    connection = tcp_client.connect()
+                    tcp_connections_dict[device] = tcp_client
+                    print("Connection status: ", connection)
+                    print("##Connected to ", tcp_client)
+                    return tcp_client
+                except Exception as e:
+                    print(f"Connection to ", tcp_client, f"failed: {e}")
+                    return None
+            else:
+                print("Device already added")
+                return None
                 
 
-        elif data[device_id]['connection_params']['rtu_params'] is not None:
+        elif data[device_id]['connection_params']['rtu_params']:
             print("This is an RTU device")
             
 
@@ -166,94 +171,49 @@ def get_rtu_clients() -> list:
 
 
 
-def read_tcp_registers(client,device_id):
+def read_tcp_registers(client,device_id) -> dict:
+    
+    register_data_dict = {}
+    device_id = "device_" + str(device_id) # Get the register group id to identify the registers to read for a specific device
+    temp_dict = {} # Temporary dictionary to store the current register and its function code
+
+
     with open(path_to_register_setup, 'r') as f:
           data = json.load(f)
-    
-    device_id = "device_" + str(device_id) # Get the register group id to identify the registers to read for a specific device
-
-    # if sys.platform.startswith('win'): # Check if we are running on Windows
-    #     print('Running on Windows')
-    #     UNIT_ID = data[device_id]['connection_params']['windows']['tcp_params']['slave_address']['address']
-    # elif sys.platform.startswith('linux'): # Check if we are running on Linux
-    #     print('Running on Linux')
-    #     UNIT_ID = data[device_id]['connection_params']['linux']['tcp_params']['slave_address']['address']
 
     UNIT_ID = data[device_id]['connection_params']['tcp_params']['slave_address']
-    print("Slave ID", UNIT_ID) 
 
-    for variable in data[device_id]['registers']:
-        print("Variable :", variable)
-        print("Variable fx code:", data[device_id]['registers'][variable]['function_code'])
-        if data[device_id]['registers'][variable]['function_code'] == 1:   
-            address = data[device_id]['registers'][variable]['address']
-            quantity = data[device_id]['registers'][variable]['quantity']  
-            # device_name = device_name+variable 
 
-            response = client.read_coils(address, quantity, unit= UNIT_ID)
-            decoder = BinaryPayloadDecoder.fromRegisters(response.registers, byteorder=Endian.BIG, wordorder=Endian.BIG)
-            data = decoder.decode_16bit_uint()
-            # device_data.update(device_name=data)
-            # print("Register data: ",data)
-            return str(data)
  
+    for register in data[device_id]['registers']:
+        reg = data[device_id]['registers'][register]["address"]
+        fx_code = data[device_id]['registers'][register]["function_code"]
+        temp_dict[reg] = fx_code
+    
 
-        elif data[device_id]['registers'][variable]['function_code'] == 2:
-            address = data[device_id]['registers'][variable]['address']
-            quantity = data[device_id]['registers'][variable]['quantity']  
-            device_name = device_name+variable 
-
-            response = client.read_discrete_inputs(address, quantity, unit= UNIT_ID)
-            decoder = BinaryPayloadDecoder.fromRegisters(response.registers, byteorder=Endian.BIG, wordorder=Endian.BIG)
-            data = decoder.decode_16bit_uint()
-            #device_data.update(device_name=data)
-            # print("Register data: ",data)
-            return str(data)
-
-
-        elif data[device_id]['registers'][variable]['function_code'] == 3:
-            # print("Reading " + variable + ". \nAddress is " +  data['registers'][variable]['address'] + ". \nFunction_code is " + data['registers'][variable]['function_code'] + "\nQuantity is " +  data['registers'][variable]['quantity'] + "\n")                     
-            address = data[device_id]['registers'][variable]['address']
-            # quantity = data[device_id]['registers'][variable]['quantity']  
-            quantity = 1
-            # device_name = device_name+variable 
-
-            response = client.read_holding_registers(address, quantity, unit= UNIT_ID)
-            decoder = BinaryPayloadDecoder.fromRegisters(response.registers, byteorder=Endian.BIG, wordorder=Endian.BIG)
-            data = decoder.decode_16bit_uint()
-            #device_data.update(device_name=data)
-            print("Register data: ",data)
-            return str(data)
-
-
-        elif data[device_id]['registers'][variable]['function_code'] == 4:
-            address = data[device_id]['registers'][variable]['address']
-            quantity = data[device_id]['registers'][variable]['quantity']  
-            # device_name = device_name+variable 
-
-            response = client.read_input_registers(address, quantity, unit= UNIT_ID)
-            decoder = BinaryPayloadDecoder.fromRegisters(response.registers, byteorder=Endian.BIG, wordorder=Endian.BIG)
-            data = decoder.decode_16bit_uint()
-            #device_data.update(device_name=data)
-            # print("Register data: ",data)
-            return str(data)
-
-        elif sys.platform.startswith('linux'): # Check if we are running on Linux
-            print('Running on Linux')
-            linux_settings_path = os.path.join(os.getcwd(), 'devices','devices_linux.json')
-            with open(linux_settings_path, 'r') as f:
-                modbus_device_settings = json.load(f)
-
+    for register_address, function_code in temp_dict.items():
+        quantity = 1  #data[device_id]['registers'][register]['quantity']  
+        if function_code == 1:
+            response = client.read_coils(register_address, quantity, unit= UNIT_ID)
+        elif function_code == 2:
+            response = client.read_discrete_inputs(register_address, quantity, unit= UNIT_ID)
+        elif function_code == 3:
+            response = client.read_holding_registers(register_address, quantity, unit= UNIT_ID)
+        elif function_code == 4:
+            response = client.read_input_registers(register_address, quantity, unit= UNIT_ID)
         else:
-            print('Unknown platform')
+            return None
+        response = client.read_holding_registers(register_address, quantity, unit= UNIT_ID)
+        if response:
+            decoder = BinaryPayloadDecoder.fromRegisters(response.registers, byteorder=Endian.BIG, wordorder=Endian.BIG)
+            data = decoder.decode_16bit_uint()
+            register_data_dict[register_address] = data
+        else:
+            print("Unable to read read: ", register)
+
+    return register_data_dict
 
 
-
-        # print(modbus_device_settings)
-        # print( "There are " + str(len(modbus_device_settings['devices'])) + " modbus device types connected:" )
-        # print( "-> ", str(len(modbus_device_settings['devices']['modbus_rtu_devices'])) + " modbus RTU devices" )
-        # print( "-> ", str(len(modbus_device_settings['devices']['modbus_tcp_devices'])) + " modbus TCP devices" )
-        # print()
 
 
 
@@ -279,14 +239,14 @@ def read_tcp_registers(client,device_id):
                 tcp_client.connect()
                 client_and_device_container['client'] = tcp_client
                 client_and_device_container['device'] = device
-                tcp_clients_list.append(client_and_device_container)
+                tcp_connections_dict.append(client_and_device_container)
                 print("Connected to ", tcp_client, "successfully")
             except Exception as e:
                 print(f"Connection to ", tcp_client, f"failed {e}")
-        return tcp_clients_list
+        return tcp_connections_dict
         
 
-    def read_tcp_registers(client,device_id) -> dict:
+    def read_tcp_registers_2(client,device_id) -> dict:
         device_data ={}
         with open(test_file_path, 'r') as f:
             data = json.load(f)
@@ -683,11 +643,7 @@ def update_register_name(device_id:int, row:int, name:str):
 # print(my_rtu_list[2].get('client'))
 # print(my_rtu_list[2].get('device'))
 
-for client in rtu_clients_list:
-     ModbusRTUClient.read_rtu_registers(client)
 
-for client in tcp_clients_list:
-     ModbusTcpClient.read_tcp_registers(client)
 
 
 
