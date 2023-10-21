@@ -170,20 +170,40 @@ def read_tcp_registers(client,device_id) -> dict:
     for register_address, function_code in temp_dict.items():
         quantity = 1  #data[device_id]['registers'][register]['quantity']  
         if function_code == 1:
-            response = client.read_coils(register_address, quantity, unit= UNIT_ID)
+            try:
+                response = client.read_coils(register_address, quantity, unit= UNIT_ID)
+            except Exception as e:
+                print("Error: {e}")
+                return None
         elif function_code == 2:
-            response = client.read_discrete_inputs(register_address, quantity, unit= UNIT_ID)
+            try:
+                response = client.read_discrete_inputs(register_address, quantity, unit= UNIT_ID)
+            except Exception as e:
+                print("Error: {e}")
+                return None
         elif function_code == 3:
-            response = client.read_holding_registers(register_address, quantity, unit= UNIT_ID)
+            try:
+                response = client.read_holding_registers(register_address, quantity, unit= UNIT_ID)
+            except Exception as e:
+                print("Error: {e}")
+                return None
         elif function_code == 4:
-            response = client.read_input_registers(register_address, quantity, unit= UNIT_ID)
+            try:
+                response = client.read_input_registers(register_address, quantity, unit= UNIT_ID)
+            except Exception as e:
+                print("Error: {e}")
+                return None
         else:
             return None
-        response = client.read_holding_registers(register_address, quantity, unit= UNIT_ID)
+        # response = client.read_holding_registers(register_address, quantity, unit= UNIT_ID)
         if response:
-            decoder = BinaryPayloadDecoder.fromRegisters(response.registers, byteorder=Endian.BIG, wordorder=Endian.BIG)
-            data = decoder.decode_16bit_uint()
-            register_data_dict[register_address] = data
+            try:
+                decoder = BinaryPayloadDecoder.fromRegisters(response.registers, byteorder=Endian.BIG, wordorder=Endian.BIG)
+                data = decoder.decode_16bit_uint()
+                register_data_dict[register_address] = data
+            except Exception as e:
+                print("Error: {e}")
+                return None
         else:
             print("Unable to read read: ", register)
             return None

@@ -103,6 +103,7 @@ class MainWindow(QtWidgets.QMainWindow):
                     labels = self.main_widget.findChildren(QLabel,device_label)
                     if is_conected:
                         register_data =interface.read_tcp_registers(client,device) # Get the dictionary that contains the registers and their data
+                        if register_data is None: return
                         for row in range(devices_on_display[device-1].rowCount()): # Loop through the rows and update the register details
                             labels[0].setText("Connected")  # Change the text of the label
                             labels[0].setStyleSheet("background-color: rgb(144, 238, 144); padding: 25px;") # rgb(144, 238, 144) For light green
