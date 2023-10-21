@@ -90,6 +90,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def update_cells(self): 
         connected_devices = interface.tcp_connections_dict # Get the list of all connected TCP devices. 
+        # print(connected_devices)
         tcp_device_count = len(connected_devices) # Find out the number of the devices connected.
         if tcp_device_count > 0:
             devices_on_display = self.main_widget.findChildren(QTableWidget) # Get a list of the devices on the main display.
@@ -97,11 +98,23 @@ class MainWindow(QtWidgets.QMainWindow):
                 for device_number in connected_devices.keys():  # Loop through the devices
                     device = device_number
                     client = connected_devices[device]
-                    register_data =interface.read_tcp_registers(client,device) # Get the dictionary that contains the registers and their data
-                    for row in range(devices_on_display[device-1].rowCount()): # Loop through the rows and update the register details
-                        register_list = list(register_data.values()) # Only get the values and convert them to a list for easy access in this for loop
-                        devices_on_display[device_number-1].setItem(row, 2, QTableWidgetItem(str(register_list[row]))) # Updating the register column (column 2) with the register values
-                        
+                    is_conected = client.is_socket_open()
+                    device_label = "connection_status_label_device_" + str(device)
+                    labels = self.main_widget.findChildren(QLabel,device_label)
+                    if is_conected:
+                        register_data =interface.read_tcp_registers(client,device) # Get the dictionary that contains the registers and their data
+                        for row in range(devices_on_display[device-1].rowCount()): # Loop through the rows and update the register details
+                            labels[0].setText("Connected")  # Change the text of the label
+                            labels[0].setStyleSheet("background-color: rgb(144, 238, 144); padding: 25px;") # rgb(144, 238, 144) For light green
+                            register_list = list(register_data.values()) # Only get the values and convert them to a list for easy access in this for loop
+                            devices_on_display[device_number-1].setItem(row, 2, QTableWidgetItem(str(register_list[row]))) # Updating the register column (column 2) with the register values
+                    else:
+                        print("Not Connected")  
+                        labels = self.main_widget.findChildren(QLabel,device_label)
+                        labels[0].setText("Disconnected")  # Change the text of the label
+                        labels[0].setStyleSheet("background-color: rgb(212, 212, 212); padding: 25px;") # rgb(212, 212, 212) for gray
+
+
 
 
             
@@ -109,7 +122,7 @@ class MainWindow(QtWidgets.QMainWindow):
     def on_new_button_clicked(self):
         self.new_device_setup_dialog()
         config = self.submit_button_clicked()
-        
+         
         # print("Adding a new device")
         interface.append_device(config)
         self.add_devices_to_layout()
@@ -578,11 +591,18 @@ class TableWidget(QWidget):
             self.table_widget.itemChanged.connect(self.onItemChanged)    # Reconnect the ItemChanged signal to allow us to update the register names
         elif self.action_menu.currentIndex() == 2: # If the selectec option is Delete registers (index 2)
             self.action_menu.setCurrentIndex(0)
-            pass
         elif self.action_menu.currentIndex() == 3: # If the selected option is Connect (index 3)
             self.action_menu.setCurrentIndex(0)
-            self.connect_to_device(self.device)
-            pass
+            if self.connect_to_device(self.device):
+                light_green = "rgb(144, 238, 144)"
+                self.set_conection_status("Connected",light_green)
+            
+
+
+
+    def set_conection_status(self,text,background_color):
+        self.connection_status_label.setText(text)
+        self.connection_status_label.setStyleSheet("background-color: " + background_color + "; padding: 25px;")
         
 
     
@@ -675,9 +695,12 @@ class TableWidget(QWidget):
         # self.update_register_table(self.reg_address.text(),self.reg_quantity.text())
         self.table_widget.update()
 
-    def connect_to_device(self,device):
+    def connect_to_device(self,device) -> bool:
         # print("Connect to device",device)
-        interface.connect_to_client(device)
+        if interface.connect_to_client(device):
+            return True
+        else:
+            return False
 
         
 

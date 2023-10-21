@@ -17,7 +17,7 @@ import  sys
 
 
 
-rtu_clients_list = {} # # This dictionary stores the number of RTU devices that are connected
+rtu_clients_list = {} # This dictionary stores the number of RTU devices that are connected
 tcp_connections_dict = {} # This dictionary stores the number of TCP devices that are connected
 
 
@@ -33,30 +33,30 @@ class Foo(): # To assign a name later
 
         self.modbus_device_settings = None
 
-if sys.platform.startswith('win'): # Check if we are running on Windows
-    print('Running on Windows')
-    windows_settings_path = os.path.join(os.getcwd(), 'devices','devices_windows.json')
-    with open(windows_settings_path, 'r') as f:
-          modbus_device_settings = json.load(f)
+    if sys.platform.startswith('win'): # Check if we are running on Windows
+        print('Running on Windows')
+        windows_settings_path = os.path.join(os.getcwd(), 'devices','devices_windows.json')
+        with open(windows_settings_path, 'r') as f:
+            modbus_device_settings = json.load(f)
 
-elif sys.platform.startswith('linux'): # Check if we are running on Linux
-    print('Running on Linux')
-    linux_settings_path = os.path.join(os.getcwd(), 'devices','devices_linux.json')
-    with open(linux_settings_path, 'r') as f:
-          modbus_device_settings = json.load(f)
+    elif sys.platform.startswith('linux'): # Check if we are running on Linux
+        print('Running on Linux')
+        linux_settings_path = os.path.join(os.getcwd(), 'devices','devices_linux.json')
+        with open(linux_settings_path, 'r') as f:
+            modbus_device_settings = json.load(f)
 
-else:
-    print('Unknown platform')
+    else:
+        print('Unknown platform')
 
 
 
-# print(modbus_device_settings)
-# print( "There are " + str(len(modbus_device_settings['devices'])) + " modbus device types connected:" )
-# print( "-> ", str(len(modbus_device_settings['devices']['modbus_rtu_devices'])) + " modbus RTU devices" )
-# print( "-> ", str(len(modbus_device_settings['devices']['modbus_tcp_devices'])) + " modbus TCP devices" )
-# print()
+    # print(modbus_device_settings)
+    # print( "There are " + str(len(modbus_device_settings['devices'])) + " modbus device types connected:" )
+    # print( "-> ", str(len(modbus_device_settings['devices']['modbus_rtu_devices'])) + " modbus RTU devices" )
+    # print( "-> ", str(len(modbus_device_settings['devices']['modbus_tcp_devices'])) + " modbus TCP devices" )
+    # print()
 
-# Get a list of available COM ports
+    # Get a list of available COM ports
 
 def get_available_ports() -> list:
     available_ports = list(serial.tools.list_ports.comports())
@@ -76,63 +76,39 @@ def get_available_ports() -> list:
 
 def connect_to_client(device):
     print( "Modbus TCP devices" )
-    
-    # Connecting to the Modbus TCP devices
-    # Loop through the registered Modbus TCP devices and connect to them
-    # for device in modbus_device_settings['devices']['modbus_tcp_devices']:   
-    #     
+    device_id = ""
 
-    #     IP_ADDRESS = modbus_device_settings['devices']['modbus_tcp_devices'][device]['connection_params']['host']       # Get the IP address
-    #     TCP_PORT = modbus_device_settings['devices']['modbus_tcp_devices'][device]['connection_params']['port']         # Get the port number
-    #     device = modbus_device_settings['devices']['modbus_tcp_devices'][device]['device']['device_id']  # Get the register group ID
-    #     #print(IP_ADDRESS, TCP_PORT)   # Print the device information to the console
-    #     tcp_client = ModbusTcpClient(IP_ADDRESS, TCP_PORT)
-        
-    
-    #     try:
-    #         tcp_client.connect()
-    #         client_and_device_container['client'] = tcp_client
-    #         client_and_device_container['device'] = device
-    #         tcp_clients_list.append(client_and_device_container)
-    #         print("Connected to ", tcp_client, "successfully")
-    #     except Exception as e:
-    #         print(f"Connection to ", tcp_client, f"failed {e}")
-    # return tcp_clients_list
-
-    # print(path_to_register_setup)
     with open(path_to_register_setup, 'r') as f:
         data = json.load(f)
         # print(data)
         device_id = "device_" + str(device)
-        print(device_id)
+        # print(device_id)
 
 
-        if data[device_id]['connection_params']['tcp_params']:
-            SLAVE_ID = data[device_id]['connection_params']['tcp_params']['slave_address']
-            IP_ADDRESS = data[device_id]['connection_params']['tcp_params']['host']
-            TCP_PORT =  data[device_id]['connection_params']['tcp_params']['port']
-            print(SLAVE_ID + "," +IP_ADDRESS + ":" + str(TCP_PORT))
+    if data[device_id]['connection_params']['tcp_params']:
+        SLAVE_ID = data[device_id]['connection_params']['tcp_params']['slave_address']
+        IP_ADDRESS = data[device_id]['connection_params']['tcp_params']['host']
+        TCP_PORT =  data[device_id]['connection_params']['tcp_params']['port']
+        print(SLAVE_ID + "," +IP_ADDRESS + ":" + str(TCP_PORT))
 
-            tcp_client = ModbusTcpClient(IP_ADDRESS, TCP_PORT)
-            # client_and_device_container = {}  # Create a dictionary to temporarrily store the client and register group information
+        tcp_client = ModbusTcpClient(IP_ADDRESS, TCP_PORT)
+        # client_and_device_container = {}  # Create a dictionary to temporarrily store the client and register group information
 
-            if device not in tcp_connections_dict.keys():
-                try:
-                    connection = tcp_client.connect()
-                    tcp_connections_dict[device] = tcp_client
-                    print("Connection status: ", connection)
-                    print("##Connected to ", tcp_client)
-                    return tcp_client
-                except Exception as e:
-                    print(f"Connection to ", tcp_client, f"failed: {e}")
-                    return None
-            else:
-                print("Device already added")
+        if device not in tcp_connections_dict.keys():
+            try:
+                connection = tcp_client.connect()
+                tcp_connections_dict[device] = tcp_client
+                print("Connection status: ", connection)
+                print("##Connected to ", tcp_client)
+                return tcp_client
+            except Exception as e:
+                print(f"Connection to ", tcp_client, f"failed: {e}")
                 return None
-                
-
-        elif data[device_id]['connection_params']['rtu_params']:
-            print("This is an RTU device")
+        else:
+            print("Device already added")
+            return None
+    elif data[device_id]['connection_params']['rtu_params']:
+        print("This is an RTU device")
             
 
     
@@ -210,6 +186,7 @@ def read_tcp_registers(client,device_id) -> dict:
             register_data_dict[register_address] = data
         else:
             print("Unable to read read: ", register)
+            return None
 
     return register_data_dict
 
