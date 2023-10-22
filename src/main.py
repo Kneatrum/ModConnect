@@ -110,10 +110,16 @@ class MainWindow(QtWidgets.QMainWindow):
                             register_list = list(register_data.values()) # Only get the values and convert them to a list for easy access in this for loop
                             devices_on_display[device_number-1].setItem(row, 2, QTableWidgetItem(str(register_list[row]))) # Updating the register column (column 2) with the register values
                     else:
-                        print("Not Connected")  
+                        # If the device is disconnected, remove it from the list of connected devices
+                        device_to_remove = device
+                        # Create a new dictionary without the specified device
+                        interface.tcp_connections_dict = {key: value for key, value in connected_devices.items() if key != device_to_remove}
+
+                        # Change the name of the label to Disconnected and set the background colour to gray
                         labels = self.main_widget.findChildren(QLabel,device_label)
                         labels[0].setText("Disconnected")  # Change the text of the label
                         labels[0].setStyleSheet("background-color: rgb(212, 212, 212); padding: 25px;") # rgb(212, 212, 212) for gray
+                        client.close()
 
 
 
@@ -699,8 +705,10 @@ class TableWidget(QWidget):
     def connect_to_device(self,device) -> bool:
         # print("Connect to device",device)
         if interface.connect_to_client(device):
+            print("#####Success")
             return True
         else:
+            print("#####Failure")
             return False
 
         

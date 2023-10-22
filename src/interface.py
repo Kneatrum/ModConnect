@@ -94,19 +94,25 @@ def connect_to_client(device):
         tcp_client = ModbusTcpClient(IP_ADDRESS, TCP_PORT)
         # client_and_device_container = {}  # Create a dictionary to temporarrily store the client and register group information
 
-        if device not in tcp_connections_dict.keys():
-            try:
-                connection = tcp_client.connect()
+        
+        try:
+            connection = tcp_client.connect()
+            print("Connection status: ", connection)
+            print("##Connected to ", tcp_client)
+            if device not in tcp_connections_dict.keys():
                 tcp_connections_dict[device] = tcp_client
-                print("Connection status: ", connection)
-                print("##Connected to ", tcp_client)
-                return tcp_client
-            except Exception as e:
-                print(f"Connection to ", tcp_client, f"failed: {e}")
-                return None
-        else:
-            print("Device already added")
-            return None
+            else:
+                print("Device already added")
+                # return None
+            return tcp_client
+            
+        except Exception as e:
+            print(f"Connection to ", tcp_client, f"failed: {e}")
+            
+
+            
+        
+
     elif data[device_id]['connection_params']['rtu_params']:
         print("This is an RTU device")
             
