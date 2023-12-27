@@ -122,34 +122,34 @@ def connect_to_client(device):
     
 
 
-def get_rtu_clients() -> list:
-    print( "Modbus RTU devices" )
-    # Connecting to the Modbus RTU devices
-    for device in modbus_device_settings['devices']['modbus_rtu_devices']:   
-        client_and_device_container = {}  # Create a dictionary to temporarrily store the client and register group information
+# def get_rtu_clients() -> list:
+#     print( "Modbus RTU devices" )
+#     # Connecting to the Modbus RTU devices
+#     for device in modbus_device_settings['devices']['modbus_rtu_devices']:   
+#         client_and_device_container = {}  # Create a dictionary to temporarrily store the client and register group information
 
-        SERIAL_PORT = modbus_device_settings['devices']['modbus_rtu_devices'][device]['connection_params']['port']
-        BAUDRATE = modbus_device_settings['devices']['modbus_rtu_devices'][device]['connection_params']['baudrate']
-        PARITY = modbus_device_settings['devices']['modbus_rtu_devices'][device]['connection_params']['parity']
-        STOPBITS = modbus_device_settings['devices']['modbus_rtu_devices'][device]['connection_params']['stopbits']
-        BYTESIZE = modbus_device_settings['devices']['modbus_rtu_devices'][device]['connection_params']['bytesize']
-        TIMEOUT = modbus_device_settings['devices']['modbus_rtu_devices'][device]['connection_params']['timeout']
+#         SERIAL_PORT = modbus_device_settings['devices']['modbus_rtu_devices'][device]['connection_params']['port']
+#         BAUDRATE = modbus_device_settings['devices']['modbus_rtu_devices'][device]['connection_params']['baudrate']
+#         PARITY = modbus_device_settings['devices']['modbus_rtu_devices'][device]['connection_params']['parity']
+#         STOPBITS = modbus_device_settings['devices']['modbus_rtu_devices'][device]['connection_params']['stopbits']
+#         BYTESIZE = modbus_device_settings['devices']['modbus_rtu_devices'][device]['connection_params']['bytesize']
+#         TIMEOUT = modbus_device_settings['devices']['modbus_rtu_devices'][device]['connection_params']['timeout']
 
-        device = modbus_device_settings['devices']['modbus_rtu_devices'][device]['device']['device_id']  # Get the register group ID
+#         device = modbus_device_settings['devices']['modbus_rtu_devices'][device]['device']['device_id']  # Get the register group ID
 
-        print(SERIAL_PORT, BAUDRATE, PARITY, STOPBITS, BYTESIZE, TIMEOUT)
-        rtu_client = ModbusSerialClient(method='rtu',port=SERIAL_PORT,baudrate=BAUDRATE,parity=PARITY,stopbits=STOPBITS,bytesize=BYTESIZE,timeout=TIMEOUT)
+#         print(SERIAL_PORT, BAUDRATE, PARITY, STOPBITS, BYTESIZE, TIMEOUT)
+#         rtu_client = ModbusSerialClient(method='rtu',port=SERIAL_PORT,baudrate=BAUDRATE,parity=PARITY,stopbits=STOPBITS,bytesize=BYTESIZE,timeout=TIMEOUT)
 
         
-        try:
-            rtu_client.connect()
-            client_and_device_container['client'] = rtu_client
-            client_and_device_container['device'] = device
-            rtu_clients_list.append(client_and_device_container)
-            print("Connected to Modbus RTU device successfully!")
-        except Exception as e:
-            print(f"Failed to connect to Modbus client {device+1}: {e}")
-    return rtu_clients_list
+#         try:
+#             rtu_client.connect()
+#             client_and_device_container['client'] = rtu_client
+#             client_and_device_container['device'] = device
+#             rtu_clients_list.append(client_and_device_container)
+#             print("Connected to Modbus RTU device successfully!")
+#         except Exception as e:
+#             print(f"Failed to connect to Modbus client {device+1}: {e}")
+#     return rtu_clients_list
 
 
 
@@ -179,25 +179,26 @@ def read_tcp_registers(client,device_id) -> dict:
             try:
                 response = client.read_coils(register_address, quantity, unit= UNIT_ID)
             except Exception as e:
-                print("Error: {e}")
+                print(e)
                 return None
         elif function_code == 2:
             try:
                 response = client.read_discrete_inputs(register_address, quantity, unit= UNIT_ID)
             except Exception as e:
-                print("Error: {e}")
+                print(e)
                 return None
         elif function_code == 3:
             try:
+                print("We are here#############################")
                 response = client.read_holding_registers(register_address, quantity, unit= UNIT_ID)
             except Exception as e:
-                print("Error: {e}")
+                print("Reading holding registers\n" + e)
                 return None
         elif function_code == 4:
             try:
                 response = client.read_input_registers(register_address, quantity, unit= UNIT_ID)
             except Exception as e:
-                print("Error: {e}")
+                print(e)
                 return None
         else:
             return None
@@ -208,7 +209,7 @@ def read_tcp_registers(client,device_id) -> dict:
                 data = decoder.decode_16bit_uint()
                 register_data_dict[register_address] = data
             except Exception as e:
-                print("Error: {e}")
+                print(e)
                 return None
         else:
             print("Unable to read read: ", register)
