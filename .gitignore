@@ -1,3 +1,6 @@
 database/
+data/
 src/__pycache__
 settings.json
+ref/
+.$Class Diagram.drawio.bkp
