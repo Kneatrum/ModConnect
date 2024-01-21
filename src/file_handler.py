@@ -39,8 +39,8 @@ if os.name == 'posix':
 
 class FileHandler:
     def __init__(self, path):
-        self.path = path
-        self.directory = os.path.dirname(self.path)
+        self.file_path = path
+        self.directory = os.path.dirname(self.file_path)
 
 
     def data_directory_exists(self) -> bool:
@@ -48,7 +48,7 @@ class FileHandler:
     
 
     def data_path_exists(self) -> bool:
-        return os.path.exists(self.path)
+        return os.path.exists(self.file_path)
     
 
     def create_data_directory(self):
@@ -57,7 +57,7 @@ class FileHandler:
 
 
     def create_data_file(self):
-        with open(self.path, 'w') as file:
+        with open(self.file_path, 'w') as file:
             pass
 
 
@@ -70,7 +70,7 @@ class FileHandler:
         if not self.data_path_exists():
             print("Data directory does not exist")
             return None
-        with open(self.path, 'r') as file:
+        with open(self.file_path, 'r') as file:
             data = json.load(file)
         return data
 
