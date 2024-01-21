@@ -73,6 +73,29 @@ class FileHandler:
         with open(self.file_path, 'r') as file:
             data = json.load(file)
         return data
+    
+
+    def get_slave_address(self, device_number) -> int:
+        if not self.data_path_exists():
+            print("Data path does not exist")
+            return None
+        data = self.get_raw_device_data()
+        if not data:
+            return None
+        device = DEVICE_PREFIX + f'{device_number}'
+        return data.get(device, {}).get('slave_address', None)
+    
+
+    def get_device_name(self, device_number) -> str:
+        if not self.data_path_exists():
+            print("Data path does not exist")
+            return None
+        data = self.get_raw_device_data()
+        if not data:
+            return None
+        device = DEVICE_PREFIX + f'{device_number}'
+        return data.get(device, {}).get('device_name', None)
+
 
 
     def get_device_count(self):
@@ -187,6 +210,4 @@ class FileHandler:
 
     def __save_register_addresses(self, device_number) -> bool: ######################
         pass
-
-
 
