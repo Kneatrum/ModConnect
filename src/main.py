@@ -4,23 +4,11 @@ from PyQt5.QtWidgets import QApplication, QScrollArea, QGroupBox, QWidget, QMenu
 from PyQt5 import QtWidgets
 from PyQt5 import QtGui
 from PyQt5 import QtCore
-import interface
+from file_handler import FileHandler as fh
 import random
 import time
 
-read_function_codes = {
-    "READ_COILS (01)": 1,
-    "READ_DISCRETE_INPUTS (02)": 2,
-    "READ_HOLDING_REGISTERS (03)": 3,
-    "READ_INPUT_REGISTERS (04)": 4
-    }
 
-write_function_codes = {
-    "WRITE_SINGLE_COIL (05)": 5,
-    "WRITE_SINGLE_REGISTER (06)": 6,
-    "WRITE_MULTIPLE_COILS (15)": 15,
-    "WRITE_MULTIPLE_REGISTERS (16)": 16
-}
 
 
 class MainWindow(QtWidgets.QMainWindow):
@@ -28,7 +16,7 @@ class MainWindow(QtWidgets.QMainWindow):
     def __init__(self,rows = 0, columns = 3, device = 1, slave_address = 1, register_quantity = 1, register_name = "N/A", units = "N/A", gain = 1, data_type = "N/A", access_type = "RO"):
         super().__init__()
 
-        interface.confirm_if_data_file_exists()
+        fh.create_path_if_not_exists()
         
         # Initializing the main window
         self.rows = rows
@@ -131,7 +119,7 @@ class MainWindow(QtWidgets.QMainWindow):
         config = self.submit_button_clicked()
          
         # print("Adding a new device")
-        interface.append_device(config)
+        fh.add_device(config)
         self.add_devices_to_layout()
 
 
@@ -140,9 +128,9 @@ class MainWindow(QtWidgets.QMainWindow):
     
     '''
     def add_devices_to_layout(self):
-        saved_devices = interface.saved_device_count()
+        saved_devices = fh.get_device_count()
 
-        if saved_devices != None:
+        if saved_devices:
             print("Found saved devices")
             self.main_widget = self.device_widget_setup(saved_devices)
             self.setCentralWidget(self.main_widget)
@@ -439,31 +427,35 @@ class MainWindow(QtWidgets.QMainWindow):
     def submit_button_clicked(self) -> dict:
         print("Submitted")
         # Check which radio button is selected (Modbus TCP or Modbus RTU)
-        if self.modbus_tcp_radio.isChecked():
-            temp_dict = {} 
+        if self.modbus_tcp_radio.isChecked(): 
+            tcp_client_dict = {}
+            slave_address_dict = {}
+            device_name_dict = {}
             # Modbus TCP is selected
-            temp_dict["device_name"] = self.tcp_custom_name.text()
-            temp_dict['slave_address'] = self.tcp_slave_id.text()
-            temp_dict['host'] = self.ip_address.text()
-            temp_dict['port'] = self.port.text()
+            slave_address_dict['slave_address'] = self.tcp_slave_id.text()
+            device_name_dict['device_name'] = self.tcp_custom_name.text()
+            tcp_client_dict['host'] = self.ip_address.text()
+            tcp_client_dict['port'] = self.port.text()
 
-            cfg = {'connection_params': {'rtu_params': {}, 'tcp_params':temp_dict}, 'registers':{}}
+            cfg = {'slave_address': slave_address_dict, 'device_name': device_name_dict, 'connection_params': {'rtu': {}, 'tcp':tcp_client_dict}, 'registers':{}}
             self.register_setup_dialog.accept()
             return cfg
 
         elif self.modbus_rtu_radio.isChecked():
-            temp_dict = {}
+            rtu_client_dict = {}
+            slave_address_dict = {}
+            device_name_dict = {}
             # Modbus RTU is selected
-            temp_dict['device_name'] = self.rtu_custom_name.text()
-            temp_dict['slave_address'] = self.rtu_slave_id.text()
-            temp_dict['port'] = self.com_ports.currentText()  # Get the selected COM Port
-            temp_dict['baudrate'] = self.baud_rates.currentText()
-            temp_dict['parity'] = self.parity_options.currentText()
-            temp_dict['stopbits'] = self.stop_bits_options.currentText()
-            temp_dict['bytesize'] = self.byte_size_options.currentText()
-            temp_dict['timeout'] = self.timeout_options.currentText()
+            device_name_dict['device_name'] = self.rtu_custom_name.text()
+            slave_address_dict['slave_address'] = self.rtu_slave_id.text()
+            rtu_client_dict['port'] = self.com_ports.currentText()  # Get the selected COM Port
+            rtu_client_dict['baudrate'] = self.baud_rates.currentText()
+            rtu_client_dict['parity'] = self.parity_options.currentText()
+            rtu_client_dict['stopbits'] = self.stop_bits_options.currentText()
+            rtu_client_dict['bytesize'] = self.byte_size_options.currentText()
+            rtu_client_dict['timeout'] = self.timeout_options.currentText()
 
-            cfg = {'connection_params': {'rtu_params': temp_dict, 'tcp_params':{}}, 'registers':{}}
+            cfg = {'slave_address': slave_address_dict, 'device_name': device_name_dict, 'connection_params': {'rtu': rtu_client_dict, 'tcp':{}}, 'registers':{}}
             self.register_setup_dialog.accept()
             return cfg
 
@@ -476,251 +468,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
 
 
-class TableWidget(QWidget):
-    def __init__(self, device, rows, columns=3):
-        super().__init__()
 
-        self.rows = rows
-        self.columns = columns
-        self.device = device
-
-        self.connection_status = False
-
-        
-
-
-
-        # Add a label for the register group or device group
-        label_name = "Device " + str(self.device) # Create an initial name "Device " + the index of the register group. For example, Device 1
-
-        # Create a QGroupBox
-        group_box = QGroupBox(label_name, self)
-        group_box.setMinimumWidth(450) # set minimum width
-        group_box.setMaximumWidth(450) # set maximum width
-
-
-        # Create the actions Qlabel
-        self.actions_label = QLabel("Actions",self)
-
-
-        # Create the connection status Qlabel
-        self.connection_status_label = QLabel("Disconnected",self)
-        self.connection_status_label.setStyleSheet("background-color: rgb(212, 212, 212); padding: 25px;")
-        self.connection_status_label.setFixedHeight(30)
-                
-        # Set the object name of the connection status label
-        self.connection_status_label.setObjectName("connection_status_label_device_" + str(self.device))
-        
-
-
-
-        # Add a dropdown menu and add actions to it
-        self.action_items = ["Select an action","Add Registers", "Remove register", "Connect", "Quit"] # Create a list of actions
-        self.action_menu = QComboBox() 
-        self.action_menu.addItems(self.action_items) 
-        self.action_menu.setCurrentIndex(0)
-        self.action_menu.setFixedWidth(150)
-        view = self.action_menu.view() # Get the view of the combo box
-        view.setRowHidden(0, True) # Hide the first row of the combo box view
-        self.action_menu.currentIndexChanged.connect(self.on_drop_down_menu_current_index_changed) # Trigger an action when the user selects an option
-
-
-        # Create a table to display the registers
-        self.table_widget = QTableWidget()
-        self.table_widget.setRowCount(self.rows)
-        self.table_widget.setColumnCount(self.columns)
-        self.table_widget.setHorizontalHeaderLabels(["Register Name", "Address", "Value"])
-        self.table_widget.setColumnWidth(0, 200) # Set the width of the "Register Name" column to 200
-        self.table_widget.setColumnWidth(1, 100) # Set the width of the "Address" column to 100
-        self.table_widget.setColumnWidth(2, 100) # Set the width of the "Value" column to 100
-        self.table_widget.itemChanged.connect(self.onItemChanged)
-        #table_widget.setFixedWidth(table_widget.horizontalHeader().length()) # Set the maximum width of the qtable widget to the width of the 3 columnns we have ( "Register Name", "Address", "Value" )
-
-        
-        # Create a horizontal layout to hold action label and combo box vlayouy and connection status label
-        top_horizontal_layout = QHBoxLayout()
-        
-
-        # Create a horizontal layout to hold the connection status
-        con_status_h_layout = QHBoxLayout()
-        con_status_h_layout.addWidget(self.connection_status_label)
-
-
-        # Create a vertical box layout for the qlabel and combo box
-        action_status_combo_box_v_layout = QVBoxLayout() 
-        action_status_combo_box_v_layout.addSpacing(10)
-        action_status_combo_box_v_layout.addWidget(self.actions_label) # Add the action label to the layout
-        action_status_combo_box_v_layout.addWidget(self.action_menu) # Add the action dropdown menu to the layout
-        action_status_combo_box_v_layout.addSpacing(20)
-
-        top_horizontal_layout.addLayout(action_status_combo_box_v_layout)
-        top_horizontal_layout.addSpacing(200)
-        top_horizontal_layout.addLayout(con_status_h_layout)
-
-        
-
-
-        
-
-        
-        
-        # Create a vertical layout to hold the buttons and the table widget
-        main_layout = QVBoxLayout()
-        main_layout.addLayout(top_horizontal_layout)
-        main_layout.addWidget(self.table_widget)
-
-        # Add the button and table widget to the group box
-        group_box.setLayout(main_layout)
-
-        # Set the layout for the main QWidget
-        main_layout = QVBoxLayout()
-        main_layout.addWidget(group_box)
-        self.setLayout(main_layout)
-
-
-    def onItemChanged(self, item):
-        row = item.row()
-        col = item.column()
-        text = item.text()
-        # print(f"Cell ({row}, {col}) changed to {text}")
-        if item.column() == 0:
-            interface.update_register_name(self.device,row,text)
-
-
-   
-
-    def on_drop_down_menu_current_index_changed(self):
-        
-        if self.action_menu.currentIndex() == 1: # If the selectec option is Add registers (index 1)
-            self.table_widget.itemChanged.disconnect(self.onItemChanged) # Disconnect the ItemChanged signal to alow us to reload the GUI
-            self.showMessageBox() # Show the message box for adding registers
-            self.action_menu.setCurrentIndex(0)
-            self.table_widget.itemChanged.connect(self.onItemChanged)    # Reconnect the ItemChanged signal to allow us to update the register names
-        elif self.action_menu.currentIndex() == 2: # If the selectec option is Delete registers (index 2)
-            self.action_menu.setCurrentIndex(0)
-        elif self.action_menu.currentIndex() == 3: # If the selected option is Connect (index 3)
-            self.action_menu.setCurrentIndex(0)
-            if self.connect_to_device(self.device):
-                light_green = "rgb(144, 238, 144)"
-                self.set_conection_status("Connected",light_green)
-            
-
-
-
-    def set_conection_status(self,text,background_color):
-        self.connection_status_label.setText(text)
-        self.connection_status_label.setStyleSheet("background-color: " + background_color + "; padding: 25px;")
-        
-
-    
-
-
-
-    def showMessageBox(self):
-        self.register_setup_dialog = QDialog(self)
-        self.register_setup_dialog.setWindowTitle("Register Setup")
-
-        # # Create the main Vertical layout
-        rset_main_layout = QVBoxLayout()
-
-
-        # Create a vertical layout and add a dropdown list of the function codes
-        r_set_v_layout_1 = QVBoxLayout()
-        self.fx_code_label = QLabel("Function Code")
-        r_set_v_layout_1.addWidget(self.fx_code_label) # Add the label to the vertical layout
-
-        self.fx_code_items = list(read_function_codes.keys())  # Create a list of function codes
-        self.function_code = QComboBox() # Create a drop down list of function codes
-        self.function_code.addItems(self.fx_code_items) # Add function codes to the dropdown list
-        r_set_v_layout_1.addWidget(self.function_code) # Add function code items to widget
-
-        # Create a horizontal layout for Register address label and its edit box
-        r_set_h_layout_2 = QHBoxLayout()
-        self.reg_address_label =  QLabel("Register Address")
-        self.reg_address = QLineEdit(self)
-        r_set_h_layout_2.addWidget(self.reg_address_label)
-        r_set_h_layout_2.addWidget(self.reg_address)
-
-        # Create a horizontal layout for Register quantity and its edit box
-        r_set_h_layout_3 = QHBoxLayout(self)
-        self.reg_quantity_label = QLabel("Quantity")
-        self.reg_quantity = QLineEdit(self)
-        r_set_h_layout_3.addWidget(self.reg_quantity_label)
-        r_set_h_layout_3.addWidget(self.reg_quantity)
-        
-        # Create a button to submit the register setup
-        r_set_h_layout_4 = QHBoxLayout(self)
-        self.rset_submit_button = QPushButton("Submit")
-        r_set_h_layout_4.addWidget(self.rset_submit_button)
-        self.rset_submit_button.clicked.connect(self.get_user_input)
-        self.register_setup_dialog.accept()
-
-        # Add all the layouts to the main vertical layout
-        # rset_main_layout.addLayout(r_set_h_layout_1)
-        rset_main_layout.addLayout(r_set_v_layout_1)
-        rset_main_layout.addLayout(r_set_h_layout_2)
-        rset_main_layout.addLayout(r_set_h_layout_3)
-        rset_main_layout.addLayout(r_set_h_layout_4) 
-        self.register_setup_dialog.setLayout(rset_main_layout)
-        self.register_setup_dialog.exec_() 
-
-
-
-        # This function gets the user input values and the default values from the constructor function and sends them to interface.py
-    def get_user_input(self):
-        main_window = MainWindow()  # Create an instance of the main window to enable us to access some of the default values
-        user_input = {} # An empty dictionary to store user input
-
-        register_properties_dict ={} # Empty dictionary to store register properties
-        register_properties_dict['Register_name'] = main_window.register_name   
-        register_properties_dict['address'] = int(self.reg_address.text())
-        register_properties_dict['function_code'] = read_function_codes[self.function_code.currentText()]
-        register_properties_dict['Units'] =main_window.units
-        register_properties_dict['Gain'] =main_window.gain
-        register_properties_dict['Data_type'] =main_window.data_type
-        register_properties_dict['Access_type'] =main_window.access_type
-
-        # self.slave_address = self.slave_id.text()
-        self.register_quantity = self.reg_quantity.text()
-        user_input["device"] = self.device
-        # user_input['slave_address'] = self.slave_address
-        user_input['quantity'] = self.register_quantity
-
-        user_input["registers"] = register_properties_dict
-        row_count = self.table_widget.rowCount()
-        print("Row count is ",str(row_count))
-        register_quantity = int(self.register_quantity)
-        register_address = int(self.reg_address.text())
-        self.table_widget.setRowCount(row_count  + register_quantity)
-        for x in range(register_quantity):
-            register_address = register_address + x
-            self.table_widget.setItem(row_count+x, 0, QTableWidgetItem("N/A"))
-            self.table_widget.setItem(row_count+x, 1, QTableWidgetItem(str(register_address)))
-
-        #interface.generate_setup_file(user_input)
-        interface.update_setup_file(user_input)
-        # self.update_register_table(self.reg_address.text(),self.reg_quantity.text())
-        self.table_widget.update()
-
-    def connect_to_device(self,device) -> bool:
-        # print("Connect to device",device)
-        if interface.connect_to_client(device):
-            print("#####Success")
-            return True
-        else:
-            print("#####Failure")
-            return False
-
-        
-
-
-    def delete_register(self):
-        print("Delete register")
-        pass
-
-    def delete_device(self):
-        print("Delete register")
-        pass
 
 
 
