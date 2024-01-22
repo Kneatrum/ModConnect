@@ -33,20 +33,20 @@ class Foo(): # To assign a name later
 
         self.modbus_device_settings = None
 
-    if sys.platform.startswith('win'): # Check if we are running on Windows
-        print('Running on Windows')
-        windows_settings_path = os.path.join(os.getcwd(), 'devices','devices_windows.json')
-        with open(windows_settings_path, 'r') as f:
-            modbus_device_settings = json.load(f)
+    # if sys.platform.startswith('win'): # Check if we are running on Windows
+    #     print('Running on Windows')
+    #     windows_settings_path = os.path.join(os.getcwd(), 'devices','devices_windows.json')
+    #     with open(windows_settings_path, 'r') as f:
+    #         modbus_device_settings = json.load(f)
 
-    elif sys.platform.startswith('linux'): # Check if we are running on Linux
-        print('Running on Linux')
-        linux_settings_path = os.path.join(os.getcwd(), 'devices','devices_linux.json')
-        with open(linux_settings_path, 'r') as f:
-            modbus_device_settings = json.load(f)
+    # elif sys.platform.startswith('linux'): # Check if we are running on Linux
+    #     print('Running on Linux')
+    #     linux_settings_path = os.path.join(os.getcwd(), 'devices','devices_linux.json')
+    #     with open(linux_settings_path, 'r') as f:
+    #         modbus_device_settings = json.load(f)
 
-    else:
-        print('Unknown platform')
+    # else:
+    #     print('Unknown platform')
 
 
 
