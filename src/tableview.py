@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QWidget,  QGroupBox, QWidget,  QPushButton, QTableWidget, QVBoxLayout, QLabel, QLineEdit, QComboBox, QDialog,QHBoxLayout
+from PyQt5.QtWidgets import QWidget,  QGroupBox, QWidget,  QPushButton, QTableWidget, QVBoxLayout, QLabel, QLineEdit, QComboBox, QDialog,QHBoxLayout, QTableWidgetItem
 from file_handler import FileHandler
 
 NAME_COLUMN = 0
@@ -34,17 +34,17 @@ class TableWidget(QWidget):
     }
 
 
-    def __init__(self, device_number, columns = 3, ):
+    def __init__(self, device_number:int, columns = 3, ):
         super().__init__()
 
-        self.file = FileHandler()
+        self.file_handler = FileHandler()
 
         self.device_number = device_number
         self.columns = columns
-        self.rows = self.file.get_register_count(self.device_number)
-        self.device_name = self.file.get_device_name(self.device_number)
-        self.slave_address = self.file.get_slave_address(self.device_number)
-        self.device_protocols = self.file.get_modbus_protocol(self.device_name)
+        self.rows = self.file_handler.get_register_count(self.device_number)
+        self.device_name = self.file_handler.get_device_name(self.device_number)
+        self.slave_address = self.file_handler.get_slave_address(self.device_number)
+        self.device_protocols = self.file_handler.get_modbus_protocol(self.device_name)
 
         self.connection_status = False
 
@@ -138,6 +138,7 @@ class TableWidget(QWidget):
         main_layout = QVBoxLayout()
         main_layout.addWidget(group_box)
         self.setLayout(main_layout)
+        self.update_register_table()
 
 
     def onItemChanged(self, item):
@@ -242,7 +243,7 @@ class TableWidget(QWidget):
         user_input["registers"] = self.REGISTER_PROPERTIES
 
         #interface.generate_setup_file(user_input)
-        self.file.save_register_data(user_input)
+        self.file_handler.save_register_data(user_input)
         # self.update_register_table(self.reg_address.text(),self.reg_quantity.text())
         self.update_register_table()
         self.table_widget.update()
@@ -253,13 +254,16 @@ class TableWidget(QWidget):
         """
         The below method returns a dictionary with a list of name and value
         Example: register_1: [name, value]
-        To extract the name -> register_1[0]
-        To extract the value -> register_1[1]
+        To extract the name -> results[register][0]
+        To extract the value -> results[register][1]
         """
-        results = self.file.get_register_names_and_addresses(self.device_number)
+        print("Device :", self.device_number)
+        results = self.file_handler.get_register_names_and_addresses(self.device_number)
+        self.table_widget.setRowCount(0)
         for index, register in enumerate(results):
-            self.table_widget.setItem(index, NAME_COLUMN, register[0])
-            self.table_widget.setItem(index, ADDRESS_COLUMN, register[1])
+            self.table_widget.insertRow(index)
+            self.table_widget.setItem(index, NAME_COLUMN, QTableWidgetItem(results[register][0]))
+            self.table_widget.setItem(index, ADDRESS_COLUMN, QTableWidgetItem(str(results[register][1]))) # Convert address to a string for it to be displayed.
 
 
 
