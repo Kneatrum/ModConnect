@@ -143,10 +143,10 @@ class FileHandler:
             return None
         # First find the device with the device number.
         for key in data:
+            count = 0
             device = DEVICE_PREFIX + f'{device_number}'
             if re.search(device, key):
                 # Now count the number of registers in the device
-                count = 0
                 for reg in data[device][REGISTERS]:
                     # Increment the count variable if we find this pattern (register_x) where x is a number.
                     if re.match(REGISTER_PREFIX + r'(\d+)', reg):
