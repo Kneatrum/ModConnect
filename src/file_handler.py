@@ -6,46 +6,30 @@ It acts as link between the file system and other classes in their modules.
 import os
 import json
 import re
+from constants import SLAVE_ADDRESS, \
+        DEVICE_NAME, CONNECTION_PARAMETERS,  \
+        DEVICE_PREFIX, REGISTERS, REGISTER_ADDRESS, \
+        REGISTER_NAME, REGISTER_PREFIX, FILE_PATH, \
+        FUNCTION_CODE, REGISTER_TEMPLATE
 
 
 
 
 
-# Variable to store the path to our json file which we use to store register data.
-FILE_PATH = ''
 
-# All devices in the json file start with this prefix.
-DEVICE_PREFIX = 'device_'
 
-# All registers in the json file start with this prefix
-REGISTER_PREFIX = 'register_'
 
-# Constants storing some of the key strings that make up the json file
-REGISTERS = 'registers'
-REGISTER_NAME = 'register_name'
-REGISTER_ADDRESS = 'address'
-CONNECTION_PARAMETERS = 'connection_params'
-TCP_PARAMETERS = 'tcp'
-RTU_PARAMETERS = 'rtu'
 
 
 
 
 class FileHandler:
 
-    # Set the default path for a windows system.
-    if os.name == 'nt':
-        FILE_PATH = os.path.join(os.getcwd(), 'data', 'register_map_file.json')
 
-
-    # Set the default path for a linux system.
-    if os.name == 'posix':
-        # TODO: Enter path for linux system.
-        pass
 
 
     def __init__(self):
-        self.file_path = self.FILE_PATH
+        self.file_path = FILE_PATH
         self.directory = os.path.dirname(self.file_path)
 
 
@@ -101,7 +85,7 @@ class FileHandler:
         if not data:
             return None
         device = DEVICE_PREFIX + f'{device_number}'
-        return data.get(device, {}).get('slave_address', None)
+        return data.get(device, {}).get(SLAVE_ADDRESS, None)
     
 
     def get_device_name(self, device_number) -> str:
@@ -112,7 +96,7 @@ class FileHandler:
         if not data:
             return None
         device = DEVICE_PREFIX + f'{device_number}'
-        return data.get(device, {}).get('device_name', None)
+        return data.get(device, {}).get(DEVICE_NAME, None)
 
 
 
@@ -124,7 +108,7 @@ class FileHandler:
         # Read all data from the stored json file
         data = self.get_raw_device_data()
         if not data:
-            return None
+            return 0
         count = 0
         for key in data:
             # Increase the counter if the key contains the device prefix (device_) and the device prefix is followed by some digits.
@@ -214,8 +198,29 @@ class FileHandler:
         pass
 
 
-    def update_register_addresses(self, device_number) -> bool:
-        pass
+    def update_register_details(self, device_number, user_input) -> bool:
+        print(user_input)
+        data = self.get_raw_device_data()
+        existing_register_count = self.get_register_count(device_number)
+        if not data:
+            return None
+        device = DEVICE_PREFIX + f'{device_number}'
+
+        for i in range(int(user_input['quantity'])) :
+            temp_dict = dict()
+            temp_key = REGISTER_PREFIX + str(existing_register_count + i + 1) # If x registers exist, the next register will be x+1
+
+            # Assigning values to all the registr attributes
+
+            REGISTER_TEMPLATE[REGISTER_ADDRESS] = int(user_input[REGISTERS][REGISTER_ADDRESS]) + i  # If the user wants to read say 10 registers after register 1000, this line of code increments the addresses to register number 1011
+            REGISTER_TEMPLATE[FUNCTION_CODE] = user_input[REGISTERS][FUNCTION_CODE]
+            temp_dict[temp_key] = REGISTER_TEMPLATE
+            data[device][REGISTERS].update(temp_dict)
+ 
+
+        # data["device_" + str(device_id)]['registers'].update({new_register_start:parent_value})
+        with open(self.file_path, 'w') as file:
+            json.dump(data, file, indent=4)
 
 
     def update_register_name(self, device_number, register_address) -> bool:
@@ -230,35 +235,22 @@ class FileHandler:
 
 
 
-
+    """
+    This method receives a dictionary representing a new device from the user
+    and appends it to the existing configuration or writes it directly to
+    the file if it's a new device.
+    """
     def add_device(self, user_input) -> bool:
-        # print(user_input)
-        # Get the quantity of registers to poll from. 
-        # reg_quantity = user_input_dict["quantity"]
-        # device_id = user_input_dict["device"]
-        # device = "device_" + str(device_id)
-        # unit_id = str(user_input_dict["slave_address"])
-        # with open(path_to_register_setup, 'w') as f:
-        #     parent_data = {}
-        #     register_data = {}
-        #     # Loop through the list of registers entered by the user
-        #     for i in range(int(reg_quantity)):
-        #         parent_key = "register_" + str(i+1)  # This is the initial  name assigned to the variable that will be read from the register. The user will be allowed to rename the register later. 
-        #         parent_value = {} 
-        #         # Assigning values to all the registr attributes
-        #         # parent_value["address"] = int(user_input_dict["registers"]["address"]) + i # If the user wants to read say 10 registers after register 1000, this line of code increments the addresses to register number 1011
-        #         # parent_value["Register_name"] = user_input_dict["registers"]["Register_name"] 
-        #         # parent_value["function_code"] = user_input_dict["registers"]["function_code"]
-        #         # parent_value["Units"] = user_input_dict["registers"]["Units"]
-        #         # parent_value["Gain"] = user_input_dict["registers"]["Gain"]
-        #         # parent_value["Data_type"] = user_input_dict["registers"]["Data_type"]
-        #         # parent_value["Access_type"] = user_input_dict["registers"]["Access_type"]
-        #         # parent_data[parent_key] = parent_value 
-        #     json.dump({device: {'slave_address':unit_id, 'registers':parent_data}},f) # Appenining the register attributes with the json structure
-        #     register_data[parent_key] = parent_value 
-        #     json.dump({device: {'slave_address':unit_id, 'registers':register_data}},f) # Appenining the register attributes with the json structure
-        #     print("JSON file created!")
-        pass
+        # If there is no existing device, write the new device into the json file.
+        if self.get_device_count() == 0:
+            with open(self.file_path, 'w') as file:
+                json.dump(user_input, file)
+        # There are existing devices, so we need to read the whole configuration file and append the new one to it, then save it again.
+        else:
+            data = self.get_raw_device_data()
+            data.update(user_input)
+            with open(self.file_path, 'w') as file:
+                json.dump(data, file)
 
 
 
@@ -271,7 +263,7 @@ class FileHandler:
         pass
 
 
-    def save_register_data(self, user_input:dict) -> bool: ######################
+    def __save_register_data(self, user_input:dict) -> bool: ######################
         # device_id = user_input_dict["device"]
         # reg_quantity = user_input_dict["quantity"]
         # # Read the register setup file
@@ -292,10 +284,8 @@ class FileHandler:
         #     parent_value["Data_type"] = user_input_dict["registers"]["Data_type"]
         #     parent_value["Access_type"] = user_input_dict["registers"]["Access_type"] 
 
-        #     # Update the existing json file with the new register parameters
-        #     data["device_" + str(device_id)]['registers'].update({new_register_start:parent_value})
-        #     with open(path_to_register_setup, 'w') as f:
-        #         json.dump(data, f, indent=4)
+            # Update the existing json file with the new register parameters
+
         # print("JSON file created!")
         pass
 
