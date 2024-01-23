@@ -1,5 +1,5 @@
 from PyQt5.QtWidgets import QWidget,  QGroupBox, QWidget,  QPushButton, QTableWidget, QVBoxLayout, QLabel, QLineEdit, QComboBox, QDialog,QHBoxLayout
-from file_handler import FileHandler as fh
+from file_handler import FileHandler
 
 NAME_COLUMN = 0
 ADDRESS_COLUMN = 1
@@ -37,12 +37,14 @@ class TableWidget(QWidget):
     def __init__(self, device_number, columns = 3, ):
         super().__init__()
 
+        self.file = FileHandler()
+
         self.device_number = device_number
         self.columns = columns
-        self.rows = fh.get_register_count(self.device_number)
-        self.device_name = fh.get_device_name(self.device_number)
-        self.slave_address = fh.get_slave_address(self.device_number)
-        self.device_protocols = fh.get_modbus_protocol(self.device_name)
+        self.rows = self.file.get_register_count(self.device_number)
+        self.device_name = self.file.get_device_name(self.device_number)
+        self.slave_address = self.file.get_slave_address(self.device_number)
+        self.device_protocols = self.file.get_modbus_protocol(self.device_name)
 
         self.connection_status = False
 
@@ -240,7 +242,7 @@ class TableWidget(QWidget):
         user_input["registers"] = self.REGISTER_PROPERTIES
 
         #interface.generate_setup_file(user_input)
-        fh.save_register_data(user_input)
+        self.file.save_register_data(user_input)
         # self.update_register_table(self.reg_address.text(),self.reg_quantity.text())
         self.update_register_table()
         self.table_widget.update()
@@ -254,7 +256,7 @@ class TableWidget(QWidget):
         To extract the name -> register_1[0]
         To extract the value -> register_1[1]
         """
-        results = fh.get_register_names_and_addresses(self.device_number)
+        results = self.file.get_register_names_and_addresses(self.device_number)
         for index, register in enumerate(results):
             self.table_widget.setItem(index, NAME_COLUMN, register[0])
             self.table_widget.setItem(index, ADDRESS_COLUMN, register[1])
