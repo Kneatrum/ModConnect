@@ -157,7 +157,7 @@ class TableWidget(QWidget):
         
         if self.action_menu.currentIndex() == 1: # If the selectec option is Add registers (index 1)
             self.table_widget.itemChanged.disconnect(self.onItemChanged) # Disconnect the ItemChanged signal to alow us to reload the GUI
-            self.add_registers() # Show the message box for adding registers
+            self.show_register_dialog() # Show the message box for adding registers
             self.action_menu.setCurrentIndex(0)
             self.table_widget.itemChanged.connect(self.onItemChanged)    # Reconnect the ItemChanged signal to allow us to update the register names
         elif self.action_menu.currentIndex() == 2: # If the selectec option is Delete registers (index 2)
@@ -180,7 +180,7 @@ class TableWidget(QWidget):
 
 
 
-    def add_register_data(self):
+    def show_register_dialog(self):
         self.register_setup_dialog = QDialog(self)
         self.register_setup_dialog.setWindowTitle("Register Setup")
 
@@ -216,8 +216,8 @@ class TableWidget(QWidget):
         r_set_h_layout_4 = QHBoxLayout(self)
         self.rset_submit_button = QPushButton("Submit")
         r_set_h_layout_4.addWidget(self.rset_submit_button)
-        self.rset_submit_button.clicked.connect(self.get_user_input)
-        self.register_setup_dialog.accept()
+        self.rset_submit_button.clicked.connect(self.on_button_clicked)
+        # self.register_setup_dialog.accept()
 
         # Add all the layouts to the main vertical layout
         # rset_main_layout.addLayout(r_set_h_layout_1)
@@ -229,10 +229,16 @@ class TableWidget(QWidget):
         self.register_setup_dialog.exec_() 
 
 
+    def on_button_clicked(self):
+        user_input = self.get_user_input()
+        self.file_handler.update_register_details(self.device_number, user_input)
+        self.update_register_table()
+        self.register_setup_dialog.accept()
+        self.table_widget.update()
+
 
         # This function gets the user input values and the default values from the constructor function and sends them to interface.py
-    def get_user_input(self):
-       
+    def get_user_input(self) -> dict:
         user_input = {} # An empty dictionary to store user input
         self.REGISTER_PROPERTIES['address'] = int(self.reg_address.text())
         self.REGISTER_PROPERTIES['function_code'] = self.READ_FUNCTION_CODES[self.function_code.currentText()]
@@ -241,12 +247,11 @@ class TableWidget(QWidget):
         user_input["device"] = self.device_number
         user_input['quantity'] = self.register_quantity
         user_input["registers"] = self.REGISTER_PROPERTIES
+        return user_input
 
-        #interface.generate_setup_file(user_input)
-        self.file_handler.save_register_data(user_input)
+        
         # self.update_register_table(self.reg_address.text(),self.reg_quantity.text())
-        self.update_register_table()
-        self.table_widget.update()
+        
 
 
 
@@ -257,7 +262,7 @@ class TableWidget(QWidget):
         To extract the name -> results[register][0]
         To extract the value -> results[register][1]
         """
-        print("Device :", self.device_number)
+
         results = self.file_handler.get_register_names_and_addresses(self.device_number)
         self.table_widget.setRowCount(0)
         for index, register in enumerate(results):
