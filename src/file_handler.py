@@ -60,6 +60,7 @@ class FileHandler:
     def create_data_directory(self):
         if not self.data_directory_exists():
             os.mkdir(self.directory)  
+            self.create_data_file()
 
 
     def create_data_file(self):
@@ -69,7 +70,6 @@ class FileHandler:
 
     def create_path_if_not_exists(self):
         self.create_data_directory()
-        self.create_data_file()
         
 
     def get_raw_device_data(self) -> dict:
