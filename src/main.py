@@ -1,34 +1,37 @@
 import sys
 from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QApplication, QScrollArea, QGroupBox, QWidget, QMenu, QAction, QMenuBar, QPushButton, QTableWidget,QTableWidgetItem, QVBoxLayout, QLabel, QLineEdit, QComboBox, QDialog,QHBoxLayout,QRadioButton
 from PyQt5 import QtWidgets
-from PyQt5 import QtGui
 from PyQt5 import QtCore
-from file_handler import FileHandler as fh
-import random
-import time
+from file_handler import FileHandler 
+from tableview import TableWidget as tablewidget
+from serial_ports import SerialPorts
 
+from PyQt5.QtWidgets import  QScrollArea, \
+    QGroupBox, QWidget, QMenu, QAction, \
+    QMenuBar, QPushButton,  QVBoxLayout, \
+    QLabel, QLineEdit, QComboBox, \
+    QDialog, QHBoxLayout, QRadioButton
+
+from constants import SLAVE_ADDRESS, \
+        BAUD_RATE, PORT, DEVICE_NAME, HOST, \
+        CONNECTION_PARAMETERS, RTU_PARAMETERS, \
+        TCP_PARAMETERS, DEVICE_PREFIX, BYTESIZE, \
+        TIMEOUT, PARITY, STOP_BITS, BYTESIZE, \
+        PARITY_ITEMS, STOP_BIT_ITEMS, BAUD_RATE_ITEMS, \
+        BYTESIZE_ITEMS, TIMEOUT_ITEMS, REGISTERS
 
 
 
 class MainWindow(QtWidgets.QMainWindow):
 
-    def __init__(self,rows = 0, columns = 3, device = 1, slave_address = 1, register_quantity = 1, register_name = "N/A", units = "N/A", gain = 1, data_type = "N/A", access_type = "RO"):
+    def __init__(self):
         super().__init__()
 
-        fh.create_path_if_not_exists()
+        self.file_handler = FileHandler()
+
+        self.file_handler.create_path_if_not_exists()
         
         # Initializing the main window
-        self.rows = rows
-        self.columns = columns
-        self.device = device
-        self.slave_address = slave_address
-        self.register_quantity = register_quantity
-        self.register_name = register_name
-        self.units = units
-        self.gain = gain
-        self.data_type = data_type
-        self.access_type = access_type
 
         self.main_widget = None
 
@@ -64,7 +67,7 @@ class MainWindow(QtWidgets.QMainWindow):
         editMenu.addAction(copyAction)
         editMenu.addAction(pasteAction)
         self.setMenuBar(menubar)
-
+        
         # Display all the registered devices on the screen
         self.add_devices_to_layout()
         # Update the registers after every one second.
@@ -77,37 +80,38 @@ class MainWindow(QtWidgets.QMainWindow):
         
 
     def update_cells(self): 
-        connected_devices = interface.tcp_connections_dict # Get the list of all connected TCP devices. 
-        # print(connected_devices)
-        tcp_device_count = len(connected_devices) # Find out the number of the devices connected.
-        if tcp_device_count > 0:
-            devices_on_display = self.main_widget.findChildren(QTableWidget) # Get a list of the devices on the main display.
-            if devices_on_display:
-                for device_number in connected_devices.keys():  # Loop through the devices
-                    device = device_number
-                    client = connected_devices[device]
-                    is_conected = client.is_socket_open()
-                    device_label = "connection_status_label_device_" + str(device)
-                    labels = self.main_widget.findChildren(QLabel,device_label)
-                    if is_conected:
-                        register_data =interface.read_tcp_registers(client,device) # Get the dictionary that contains the registers and their data
-                        if register_data is None: return
-                        for row in range(devices_on_display[device-1].rowCount()): # Loop through the rows and update the register details
-                            labels[0].setText("Connected")  # Change the text of the label
-                            labels[0].setStyleSheet("background-color: rgb(144, 238, 144); padding: 25px;") # rgb(144, 238, 144) For light green
-                            register_list = list(register_data.values()) # Only get the values and convert them to a list for easy access in this for loop
-                            devices_on_display[device_number-1].setItem(row, 2, QTableWidgetItem(str(register_list[row]))) # Updating the register column (column 2) with the register values
-                    else:
-                        # If the device is disconnected, remove it from the list of connected devices
-                        device_to_remove = device
-                        # Create a new dictionary without the specified device
-                        interface.tcp_connections_dict = {key: value for key, value in connected_devices.items() if key != device_to_remove}
+        # connected_devices = interface.tcp_connections_dict # Get the list of all connected TCP devices. 
+        # # print(connected_devices)
+        # tcp_device_count = len(connected_devices) # Find out the number of the devices connected.
+        # if tcp_device_count > 0:
+        #     devices_on_display = self.main_widget.findChildren(QTableWidget) # Get a list of the devices on the main display.
+        #     if devices_on_display:
+        #         for device_number in connected_devices.keys():  # Loop through the devices
+        #             device = device_number
+        #             client = connected_devices[device]
+        #             is_conected = client.is_socket_open()
+        #             device_label = "connection_status_label_device_" + str(device)
+        #             labels = self.main_widget.findChildren(QLabel,device_label)
+        #             if is_conected:
+        #                 register_data =interface.read_tcp_registers(client,device) # Get the dictionary that contains the registers and their data
+        #                 if register_data is None: return
+        #                 for row in range(devices_on_display[device-1].rowCount()): # Loop through the rows and update the register details
+        #                     labels[0].setText("Connected")  # Change the text of the label
+        #                     labels[0].setStyleSheet("background-color: rgb(144, 238, 144); padding: 25px;") # rgb(144, 238, 144) For light green
+        #                     register_list = list(register_data.values()) # Only get the values and convert them to a list for easy access in this for loop
+        #                     devices_on_display[device_number-1].setItem(row, 2, QTableWidgetItem(str(register_list[row]))) # Updating the register column (column 2) with the register values
+        #             else:
+        #                 # If the device is disconnected, remove it from the list of connected devices
+        #                 device_to_remove = device
+        #                 # Create a new dictionary without the specified device
+        #                 interface.tcp_connections_dict = {key: value for key, value in connected_devices.items() if key != device_to_remove}
 
-                        # Change the name of the label to Disconnected and set the background colour to gray
-                        labels = self.main_widget.findChildren(QLabel,device_label)
-                        labels[0].setText("Disconnected")  # Change the text of the label
-                        labels[0].setStyleSheet("background-color: rgb(212, 212, 212); padding: 25px;") # rgb(212, 212, 212) for gray
-                        client.close()
+        #                 # Change the name of the label to Disconnected and set the background colour to gray
+        #                 labels = self.main_widget.findChildren(QLabel,device_label)
+        #                 labels[0].setText("Disconnected")  # Change the text of the label
+        #                 labels[0].setStyleSheet("background-color: rgb(212, 212, 212); padding: 25px;") # rgb(212, 212, 212) for gray
+        #                 client.close()
+        pass
 
 
 
@@ -115,11 +119,11 @@ class MainWindow(QtWidgets.QMainWindow):
             
 
     def on_new_button_clicked(self):
-        self.new_device_setup_dialog()
-        config = self.submit_button_clicked()
+        self.show_new_device_dialog()
+        user_input = self.get_user_input()
          
         # print("Adding a new device")
-        fh.add_device(config)
+        self.file_handler.add_device(user_input)
         self.add_devices_to_layout()
 
 
@@ -128,19 +132,9 @@ class MainWindow(QtWidgets.QMainWindow):
     
     '''
     def add_devices_to_layout(self):
-        saved_devices = fh.get_device_count()
-
+        saved_devices = self.file_handler.get_device_count()
         if saved_devices:
-            print("Found saved devices")
-            self.main_widget = self.device_widget_setup(saved_devices)
-            self.setCentralWidget(self.main_widget)
-            # Add a small space between the menu bar and the central widget
-            self.centralWidget().layout().setContentsMargins(0, 20, 0, 50)
-            self.show()
-        else:
-            # interface.append_device()
-            # saved_devices = interface.saved_device_count()
-            self.main_widget = self.device_widget_setup(saved_devices)
+            self.main_widget = self.table_widget_setup(saved_devices)
             self.setCentralWidget(self.main_widget)
             # Add a small space between the menu bar and the central widget
             self.centralWidget().layout().setContentsMargins(0, 20, 0, 50)
@@ -148,25 +142,15 @@ class MainWindow(QtWidgets.QMainWindow):
         
 
     
-    def device_widget_setup(self,saved_devices):
-        if( saved_devices != None ):
+    def table_widget_setup(self,saved_devices):
+        if saved_devices:
             # Create a central widget
             central_widget = QWidget()
             # Create a horizontal layout to add the table widgets
             self.horizontal_layout = QHBoxLayout()
-            # Read the register setup file and save the content in the 'data' variable
-            data = interface.read_register_setup_file()
-            # Loop through the register setup and create widgets for each device
-            for i in range(len(saved_devices)):
-                self.device = i+1
-                registers_per_device = saved_devices["device_"+str(self.device)]
-                widget = TableWidget(self.device, registers_per_device) # Create and instance of our table widget
-                # widget.table_widget.setRowCount(saved_devices["device"+str(self.device)]) # Set the number of rows to the number of registers we have
+            for index in range(saved_devices):
+                widget = tablewidget(index + 1) # Create and instance of our table widget. Adding 1 to prevent having device_0
                 self.horizontal_layout.addWidget(widget) # Create the table widgets and add them in the horizontal layout
-                # Add the register parameters in the rows and columns of each device
-                for j in range(registers_per_device):
-                    widget.table_widget.setItem(j, 0, QTableWidgetItem(data["device_" + str(self.device)]["registers"]["register_" + str(j+1)]["Register_name"])) # Update the register name
-                    widget.table_widget.setItem(j, 1, QTableWidgetItem(str(data["device_" + str(self.device)]["registers"]["register_" + str(j+1)]["address"]))) # Update the string version of the register address
             self.horizontal_layout.addStretch() 
             
 
@@ -191,14 +175,15 @@ class MainWindow(QtWidgets.QMainWindow):
   
 
   
-    def new_device_setup_dialog(self):
+    def show_new_device_dialog(self):
         self.register_setup_dialog = QDialog(self)
         self.register_setup_dialog.setWindowTitle("Connect")
 
         # Create the main Vertical layout
         device_setup_main_layout = QVBoxLayout()
 
-        self.device_number = self.device
+        
+        self.device_number = self.file_handler.get_device_count() + 1
 
         # Create a QGroupBox for the entire dialog
         dialog_group_box = QGroupBox("Device " + str(self.device_number), self)
@@ -313,7 +298,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.com_ports_label = QLabel("COM")
         com_ports_layout.addWidget(self.com_ports_label)  # Add the label to the horizontal layout
 
-        self.com_port_items = interface.get_available_ports()
+        self.com_port_items = SerialPorts.get_available_ports()
         # Create a list of the available com port
         self.com_ports = QComboBox()  # Create a drop-down list of com ports
         self.com_ports.addItems(self.com_port_items)  # Add com ports to the dropdown list for "Modbus RTU"
@@ -324,10 +309,10 @@ class MainWindow(QtWidgets.QMainWindow):
         self.baud_rate_label = QLabel("Baud Rate")
         baud_rate_layout.addWidget(self.baud_rate_label)  # Add the label to the horizontal layout
 
-        self.baud_rate_items = ["9600","14400","19200","38400","57600","115200"]
+       
         # Create a list of baud rates for "Modbus RTU"
         self.baud_rates = QComboBox()  # Create a drop-down list of the baud rates for "Modbus RTU"
-        self.baud_rates.addItems(self.baud_rate_items)  # Add baud rates to the dropdown list for "Modbus RTU"
+        self.baud_rates.addItems(BAUD_RATE_ITEMS)  # Add baud rates to the dropdown list for "Modbus RTU"
         baud_rate_layout.addWidget(self.baud_rates)  # Add baud rates to the widget for "Modbus RTU"
 
 
@@ -336,10 +321,10 @@ class MainWindow(QtWidgets.QMainWindow):
         self.parity_label = QLabel("Parity")
         parity_layout.addWidget(self.parity_label)  # Add the label to the horizontal layout
 
-        self.parity_items = ["None","Even","Odd","Mark","Space"]
+    
         # Create a list of Parity options
         self.parity_options = QComboBox()  # Create a drop-down list of the Parity options.
-        self.parity_options.addItems(self.parity_items)  # Add the parity options to the dropdown list.
+        self.parity_options.addItems(PARITY_ITEMS)  # Add the parity options to the dropdown list.
         parity_layout.addWidget(self.parity_options)  # Add the parity options to the widget.
 
         # Create a Horizontal layout and add a dropdown list of the Stop bits 
@@ -347,10 +332,10 @@ class MainWindow(QtWidgets.QMainWindow):
         self.stop_bits_label = QLabel("Stop bits")
         stop_bits_layout.addWidget(self.stop_bits_label)  # Add the label to the horizontal layout
 
-        self.stop_bits_items = ["1","1.5","2"]
+   
         # Create a list of stop bits options
         self.stop_bits_options = QComboBox()  # Create a drop-down list of the stop bits options.
-        self.stop_bits_options.addItems(self.stop_bits_items)  # Add the stop bits options to the dropdown list.
+        self.stop_bits_options.addItems(STOP_BIT_ITEMS)  # Add the stop bits options to the dropdown list.
         stop_bits_layout.addWidget(self.stop_bits_options)  # Add the stop bits options to the widget.
 
         # Create a Horizontal layout and add a dropdown list of the byte size options
@@ -358,10 +343,10 @@ class MainWindow(QtWidgets.QMainWindow):
         self.byte_size_label = QLabel("Byte size")
         byte_size_layout.addWidget(self.byte_size_label)  # Add the label to the horizontal layout
 
-        self.byte_size_items = ["8","7"]
+
         # Create a list of byte size options
         self.byte_size_options = QComboBox()  # Create a drop-down list of the byte size options.
-        self.byte_size_options.addItems(self.byte_size_items)  # Add the byte size options to the dropdown list.
+        self.byte_size_options.addItems(BYTESIZE_ITEMS)  # Add the byte size options to the dropdown list.
         byte_size_layout.addWidget(self.byte_size_options)  # Add the byte size options to the widget.
 
         # Create a Horizontal layout and add list of timeout in seconds
@@ -369,15 +354,15 @@ class MainWindow(QtWidgets.QMainWindow):
         self.timeout_label = QLabel("Byte size")
         timeout_layout.addWidget(self.timeout_label)  # Add the label to the horizontal layout
 
-        self.timeout_items = ["1","2","3"]
+
         # Create a list of byte size options
         self.timeout_options = QComboBox()  # Create a drop-down list of the seconds.
-        self.timeout_options.addItems(self.timeout_items)  # Add the timeout options to the dropdown list.
+        self.timeout_options.addItems(TIMEOUT_ITEMS)  # Add the timeout options to the dropdown list.
         timeout_layout.addWidget(self.timeout_options)  # Add the timeout options to the widget.
 
         # Create a QPushButton for the submit button
         submit_button = QPushButton("Submit")
-        submit_button.clicked.connect(self.submit_button_clicked)
+        submit_button.clicked.connect(self.get_user_input)
 
         # Create a layout for the dialog
         submit_button_layout = QVBoxLayout()
@@ -424,40 +409,43 @@ class MainWindow(QtWidgets.QMainWindow):
         self.register_setup_dialog.exec_()
 
 
-    def submit_button_clicked(self) -> dict:
-        print("Submitted")
+
+
+    def get_user_input(self) -> dict:
         # Check which radio button is selected (Modbus TCP or Modbus RTU)
+        temp_dict = {}
         if self.modbus_tcp_radio.isChecked(): 
             tcp_client_dict = {}
-            slave_address_dict = {}
-            device_name_dict = {}
             # Modbus TCP is selected
-            slave_address_dict['slave_address'] = self.tcp_slave_id.text()
-            device_name_dict['device_name'] = self.tcp_custom_name.text()
-            tcp_client_dict['host'] = self.ip_address.text()
-            tcp_client_dict['port'] = self.port.text()
+            slave_address_value = self.tcp_slave_id.text()
+            device_name_value = self.tcp_custom_name.text()
+            tcp_client_dict[HOST] = self.ip_address.text()
+            tcp_client_dict[PORT] = self.port.text()
 
-            cfg = {'slave_address': slave_address_dict, 'device_name': device_name_dict, 'connection_params': {'rtu': {}, 'tcp':tcp_client_dict}, 'registers':{}}
+            temp_dict = {SLAVE_ADDRESS: slave_address_value, DEVICE_NAME: device_name_value, CONNECTION_PARAMETERS: {RTU_PARAMETERS: {}, TCP_PARAMETERS:tcp_client_dict}, REGISTERS:{}}
+            temp_dict = {f'{DEVICE_PREFIX}{self.device_number}': temp_dict}
             self.register_setup_dialog.accept()
-            return cfg
-
         elif self.modbus_rtu_radio.isChecked():
             rtu_client_dict = {}
             slave_address_dict = {}
             device_name_dict = {}
             # Modbus RTU is selected
-            device_name_dict['device_name'] = self.rtu_custom_name.text()
-            slave_address_dict['slave_address'] = self.rtu_slave_id.text()
-            rtu_client_dict['port'] = self.com_ports.currentText()  # Get the selected COM Port
-            rtu_client_dict['baudrate'] = self.baud_rates.currentText()
-            rtu_client_dict['parity'] = self.parity_options.currentText()
-            rtu_client_dict['stopbits'] = self.stop_bits_options.currentText()
-            rtu_client_dict['bytesize'] = self.byte_size_options.currentText()
-            rtu_client_dict['timeout'] = self.timeout_options.currentText()
+            device_name_dict[DEVICE_NAME] = self.rtu_custom_name.text()
+            slave_address_dict[SLAVE_ADDRESS] = self.rtu_slave_id.text()
+            rtu_client_dict[PORT] = self.com_ports.currentText()  # Get the selected COM Port
+            rtu_client_dict[BAUD_RATE] = self.baud_rates.currentText()
+            rtu_client_dict[PARITY] = self.parity_options.currentText()
+            rtu_client_dict[STOP_BITS] = self.stop_bits_options.currentText()
+            rtu_client_dict[BYTESIZE] = self.byte_size_options.currentText()
+            rtu_client_dict[TIMEOUT] = self.timeout_options.currentText()
 
-            cfg = {'slave_address': slave_address_dict, 'device_name': device_name_dict, 'connection_params': {'rtu': rtu_client_dict, 'tcp':{}}, 'registers':{}}
+            temp_dict = {SLAVE_ADDRESS: slave_address_dict, DEVICE_NAME: device_name_dict, CONNECTION_PARAMETERS: {RTU_PARAMETERS: rtu_client_dict, TCP_PARAMETERS:{}}, REGISTERS:{}}
+            temp_dict = {f'{DEVICE_PREFIX}{self.device_number}': temp_dict}
             self.register_setup_dialog.accept()
-            return cfg
+        return temp_dict
+        
+    
+        
 
 
         
