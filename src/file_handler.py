@@ -175,7 +175,10 @@ class FileHandler:
                 # We may not need to use a dictionary here. Maybe a list of the addresses is enough.
                 result = dict()
                 for reg in data[device][REGISTERS]:
-                    result[reg] = list(data[device][REGISTERS][reg][REGISTER_NAME], data[device][REGISTERS][reg][REGISTER_ADDRESS])
+                    temp_list = []
+                    temp_list.append(data[device][REGISTERS][reg][REGISTER_NAME])
+                    temp_list.append(data[device][REGISTERS][reg][REGISTER_ADDRESS])
+                    result[reg] = temp_list
         return result
 
 
@@ -296,3 +299,5 @@ class FileHandler:
         # print("JSON file created!")
         pass
 
+martin =  FileHandler()
+print(martin.get_register_names_and_addresses(1))
