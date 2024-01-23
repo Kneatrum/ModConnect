@@ -75,11 +75,23 @@ class FileHandler:
     def get_raw_device_data(self) -> dict:
         if not self.data_path_exists():
             print("Data directory does not exist")
-            return None
-        with open(self.file_path, 'r') as file:
-            data = json.load(file)
-        return data
-    
+            return {}
+        try:
+            with open(self.file_path, 'r') as file:
+                # Check if there is content in the file
+                content = file.read()
+            if not content:
+                print("File is empty")
+                return {}
+            data = json.loads(content)
+            return data
+        except FileNotFoundError:
+            print("File not found")
+            return {}
+        except json.decoder.JSONDecodeError as e:
+            print(f"Error decoding: {e}")
+            return {}
+        
 
     def get_slave_address(self, device_number) -> int:
         if not self.data_path_exists():
