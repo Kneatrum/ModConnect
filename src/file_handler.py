@@ -6,6 +6,7 @@ It acts as link between the file system and other classes in their modules.
 import os
 import json
 import re
+import copy
 from constants import SLAVE_ADDRESS, \
         DEVICE_NAME, CONNECTION_PARAMETERS,  \
         DEVICE_PREFIX, REGISTERS, REGISTER_ADDRESS, \
@@ -128,7 +129,6 @@ class FileHandler:
         # First find the device with the device number.
         count = 0
         for key in data:
-            count = 0
             device = DEVICE_PREFIX + f'{device_number}'
             if re.search(device, key):
                 # Now count the number of registers in the device
@@ -201,25 +201,30 @@ class FileHandler:
 
     def update_register_details(self, device_number, user_input) -> bool:
         print(user_input)
-        data = self.get_raw_device_data()
         existing_register_count = self.get_register_count(device_number)
+        print(f'Existing count: {existing_register_count} Device number: {device_number}')
+        data = self.get_raw_device_data()
         if not data:
             return None
         device = DEVICE_PREFIX + f'{device_number}'
+        quantity = int(user_input['quantity']) 
 
-        for i in range(int(user_input['quantity'])) :
+        for i in range(quantity) :
             temp_dict = dict()
-            temp_key = REGISTER_PREFIX + str(existing_register_count + i + 1) # If x registers exist, the next register will be x+1
 
-            # Assigning values to all the registr attributes
+            # If the existing register count is 1 for example, the next should be 2. Hence the additional of 1
+            temp_key = REGISTER_PREFIX + str(existing_register_count + i + 1) 
+            
+            # Make a temporary copy of the registers template
+            temp_register_template = copy.copy(REGISTER_TEMPLATE)
 
-            REGISTER_TEMPLATE[REGISTER_ADDRESS] = int(user_input[REGISTERS][REGISTER_ADDRESS]) + i  # If the user wants to read say 10 registers after register 1000, this line of code increments the addresses to register number 1011
-            REGISTER_TEMPLATE[FUNCTION_CODE] = user_input[REGISTERS][FUNCTION_CODE]
-            temp_dict[temp_key] = REGISTER_TEMPLATE
+            # Assign values to the keys that we are interested in for now 
+            temp_register_template[REGISTER_ADDRESS] =  user_input[REGISTERS][REGISTER_ADDRESS] + i  # If the user wants to read say 10 registers after register 1000, this line of code increments the addresses to register number 1011
+            temp_register_template[FUNCTION_CODE] = user_input[REGISTERS][FUNCTION_CODE]
+            temp_dict[temp_key] = temp_register_template
             data[device][REGISTERS].update(temp_dict)
- 
 
-        # data["device_" + str(device_id)]['registers'].update({new_register_start:parent_value})
+        # Finally, save the new configuration
         with open(self.file_path, 'w') as file:
             json.dump(data, file, indent=4)
 
@@ -290,5 +295,3 @@ class FileHandler:
         # print("JSON file created!")
         pass
 
-martin =  FileHandler()
-print(martin.get_register_names_and_addresses(1))
