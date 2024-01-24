@@ -126,6 +126,7 @@ class FileHandler:
         if not data:
             return None
         # First find the device with the device number.
+        count = 0
         for key in data:
             count = 0
             device = DEVICE_PREFIX + f'{device_number}'
