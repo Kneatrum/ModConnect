@@ -139,13 +139,20 @@ class FileHandler:
         return count
 
 
-    """
-    This method returns a register_x dictionary containing a list of the 
-    register name and the address.
-    Example:
-    register_1: [register_name, register_address]
-    """
-    def get_register_names_and_addresses(self, device_number) -> dict:
+    def get_register_attributes(self, device_number: int, list_of_variables: list) -> dict:
+        """
+        This method returns a dictionary containing a list of the 
+        register name and the address.
+
+        args:
+            device_number: This is used as the unique identifier for the stored devices.
+
+        returns:
+            dictionary: A dictionary with the register key and a list containing the name and the register address.
+
+        Example:
+        register_1: [register_name, register_address]
+        """
         if not self.data_path_exists():
             print("Data path not found")
             return None
@@ -160,14 +167,28 @@ class FileHandler:
                 # We may not need to use a dictionary here. Maybe a list of the addresses is enough.
                 result = dict()
                 for reg in data[device][REGISTERS]:
-                    temp_list = []
-                    temp_list.append(data[device][REGISTERS][reg][REGISTER_NAME])
-                    temp_list.append(data[device][REGISTERS][reg][REGISTER_ADDRESS])
-                    result[reg] = temp_list
+                    temp_dict = {}
+                    for item in list_of_variables:
+                        temp_dict[item] = data[device][REGISTERS][reg][item]
+                    result[reg] = temp_dict
         return result
 
 
-    def get_connection_params(self, device_number) -> dict: 
+    def get_connection_params(self, device_number: int) -> dict: 
+        """
+        This method reads the stored json data from the default filepath 
+        and gets the connection parameters. eg: RTU and/or TCP
+
+        args:
+            device_number: This is used as the unique identifier for the stored devices.
+
+        returns:
+            dictionary: A dictionary of the available protocols as the key 
+            and its connection parameters as the value. 
+            
+        Example:
+        {'tcp': {'host': '127.0.0.1', 'port': 503}}
+        """
         if not self.data_path_exists():
             print("Data path not found")
             return None
@@ -202,7 +223,6 @@ class FileHandler:
     def update_register_details(self, device_number, user_input) -> bool:
         print(user_input)
         existing_register_count = self.get_register_count(device_number)
-        print(f'Existing count: {existing_register_count} Device number: {device_number}')
         data = self.get_raw_device_data()
         if not data:
             return None
