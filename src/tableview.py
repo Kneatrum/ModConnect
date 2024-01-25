@@ -1,5 +1,7 @@
 from PyQt5.QtWidgets import QWidget,  QGroupBox, QWidget,  QPushButton, QTableWidget, QVBoxLayout, QLabel, QLineEdit, QComboBox, QDialog,QHBoxLayout, QTableWidgetItem
 from file_handler import FileHandler
+from modbus_protocols import ModbusTCP, ModbusRTU
+from constants import REGISTER_NAME, REGISTER_ADDRESS, REGISTER_PREFIX, TCP_METHOD, RTU_METHOD
 
 NAME_COLUMN = 0
 ADDRESS_COLUMN = 1
@@ -37,6 +39,7 @@ class TableWidget(QWidget):
     def __init__(self, device_number:int, columns = 3, ):
         super().__init__()
 
+        self.clients = dict()
         self.file_handler = FileHandler()
 
         self.device_number = device_number
@@ -44,8 +47,18 @@ class TableWidget(QWidget):
         self.rows = self.file_handler.get_register_count(self.device_number)
         self.device_name = self.file_handler.get_device_name(self.device_number)
         self.slave_address = self.file_handler.get_slave_address(self.device_number)
-        self.device_protocols = self.file_handler.get_modbus_protocol(self.device_name)
+        self.device_protocols = self.file_handler.get_modbus_protocol(self.device_number)
 
+        self.table_widget_default_attrs = [REGISTER_NAME, REGISTER_ADDRESS]
+
+
+        for method in self.device_protocols:
+            if method == RTU_METHOD:
+                self.clients[RTU_METHOD] = ModbusRTU().generate_client(self.device_number)
+            elif method == TCP_METHOD:
+                self.clients[TCP_METHOD] = ModbusTCP().generate_client(self.device_number)
+        
+        
         self.connection_status = False
 
         
@@ -257,18 +270,22 @@ class TableWidget(QWidget):
 
     def update_register_table(self):
         """
-        The below method returns a dictionary with a list of name and value
-        Example: register_1: [name, value]
-        To extract the name -> results[register][0]
-        To extract the value -> results[register][1]
+        This method updates the register table widget with 
+        the defaul attributes which are:
+
+        Register name: This is the first column of the table widget.
+        Register address: This is the second column of the table widget.
+
+        The attributes are passed in form of a list.
         """
 
-        results = self.file_handler.get_register_names_and_addresses(self.device_number)
+
+        results = self.file_handler.get_register_attributes(self.device_number, self.table_widget_default_attrs)
         self.table_widget.setRowCount(0)
-        for index, register in enumerate(results):
+        for index in range(len(results)):
             self.table_widget.insertRow(index)
-            self.table_widget.setItem(index, NAME_COLUMN, QTableWidgetItem(results[register][0]))
-            self.table_widget.setItem(index, ADDRESS_COLUMN, QTableWidgetItem(str(results[register][1]))) # Convert address to a string for it to be displayed.
+            self.table_widget.setItem(index, NAME_COLUMN, QTableWidgetItem(results[REGISTER_PREFIX + str(index + 1)][REGISTER_NAME]))
+            self.table_widget.setItem(index, ADDRESS_COLUMN, QTableWidgetItem(str(results[REGISTER_PREFIX + str(index + 1)][REGISTER_ADDRESS]))) # Convert address to a string for it to be displayed.
 
 
 
