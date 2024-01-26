@@ -51,13 +51,7 @@ class TableWidget(QWidget):
 
         self.table_widget_default_attrs = [REGISTER_NAME, REGISTER_ADDRESS]
 
-
-        for method in self.device_protocols:
-            if method == RTU_METHOD:
-                self.clients[RTU_METHOD] = ModbusRTU().generate_client(self.device_number)
-            elif method == TCP_METHOD:
-                self.clients[TCP_METHOD] = ModbusTCP().generate_client(self.device_number)
-        
+        self.assign_client(self.device_number)
         
         self.connection_status = False
 
@@ -177,7 +171,7 @@ class TableWidget(QWidget):
             self.action_menu.setCurrentIndex(0)
         elif self.action_menu.currentIndex() == 3: # If the selected option is Connect (index 3)
             self.action_menu.setCurrentIndex(0)
-            if self.connect_to_device(self.device):
+            if self.connect_to_device():
                 light_green = "rgb(144, 238, 144)"
                 self.set_conection_status("Connected",light_green)
             
@@ -288,16 +282,51 @@ class TableWidget(QWidget):
             self.table_widget.setItem(index, ADDRESS_COLUMN, QTableWidgetItem(str(results[REGISTER_PREFIX + str(index + 1)][REGISTER_ADDRESS]))) # Convert address to a string for it to be displayed.
 
 
+    def assign_client(self, device_number):
+        """
+        This method loops through the modbus protocols associated 
 
-    def connect_to_device(self,device) -> bool:
-        # print("Connect to device",device)
-        # if interface.connect_to_client(device):
-        #     print("#####Success")
-        #     return True
-        # else:
-        #     print("#####Failure")
-        #     return False
-        pass
+        with the device and assiggns the respective clients to the device.
+
+        The clients are added to a self.clients() dictionary.
+        """
+        for method in self.device_protocols:
+            if method == RTU_METHOD:
+                rtu_connection = ModbusRTU(device_number)
+                self.clients[RTU_METHOD] = rtu_connection.client
+            elif method == TCP_METHOD:
+                tcp_connection = ModbusTCP(device_number)
+                self.clients[TCP_METHOD] = tcp_connection.client
+
+
+    def connect_to_device(self) -> bool:
+        """
+        This method connects to the client registered with the table widget.
+
+        If more than one client is registered, the user is prompted to select one of the clients.
+        """
+        if len(self.clients) > 1:
+            #TODO: Implement the below functionality
+            print("Prompt user to select their prefered device")
+
+            #Meanwhile, connect to the TCP  by default
+            tcp_client = self.clients.get(TCP_METHOD)
+            if tcp_client:
+                if tcp_client.connect():
+                    return True
+        else:
+            if RTU_METHOD in self.clients:
+                rtu_client = self.clients.get(RTU_METHOD)
+                if rtu_client:
+                    if rtu_client.connect():
+                        return True
+            elif TCP_METHOD in self.clients:
+                tcp_client = self.clients.get(TCP_METHOD)
+                if tcp_client:
+                    if tcp_client.connect():
+                        return True
+        return False
+
 
         
 
