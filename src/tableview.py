@@ -1,6 +1,6 @@
 from PyQt5.QtWidgets import QWidget,  QGroupBox, QWidget,  QPushButton, QTableWidget, QVBoxLayout, QLabel, QLineEdit, QComboBox, QDialog,QHBoxLayout, QTableWidgetItem
 from file_handler import FileHandler
-from modbus_protocols import ModbusTCP, ModbusRTU
+from modbus_clients import ModbusTCP, ModbusRTU
 from constants import REGISTER_NAME, REGISTER_ADDRESS, REGISTER_PREFIX, TCP_METHOD, RTU_METHOD
 
 NAME_COLUMN = 0
