@@ -34,13 +34,7 @@ class ModbusClient:
 
 
 class ModbusRTU(ModbusClient):
-    def __init__(self, device_number):
-        self.file_handler = FileHandler()
-        self.device_number = device_number
-        self.client = self.generate_client()
- 
     def generate_client(self):
-        
         connection_attributes = self.file_handler.get_connection_params(self.device_number)[RTU_METHOD]
         client = ModbusSerialClient(
         method=RTU_METHOD,
@@ -56,11 +50,6 @@ class ModbusRTU(ModbusClient):
     
 
 class ModbusTCP(ModbusClient):
-    def __init__(self, device_number):
-        self.file_handler = FileHandler()
-        self.device_number = device_number
-        self.client = self.generate_client()
-
     def generate_client(self):
         connection_attributes = self.file_handler.get_connection_params(self.device_number)[TCP_METHOD]
         host = connection_attributes[HOST]
