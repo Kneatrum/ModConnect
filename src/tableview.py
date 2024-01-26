@@ -55,6 +55,8 @@ class TableWidget(QWidget):
         
         self.connection_status = False
 
+        self.active_client = None
+
         
 
 
@@ -310,20 +312,20 @@ class TableWidget(QWidget):
             print("Prompt user to select their prefered device")
 
             #Meanwhile, connect to the TCP  by default
-            tcp_client = self.clients.get(TCP_METHOD)
-            if tcp_client:
-                if tcp_client.connect():
+            self.active_client = self.clients.get(TCP_METHOD)
+            if self.active_client:
+                if self.active_client.connect():
                     return True
         else:
             if RTU_METHOD in self.clients:
-                rtu_client = self.clients.get(RTU_METHOD)
-                if rtu_client:
-                    if rtu_client.connect():
+                self.active_client = self.clients.get(RTU_METHOD)
+                if self.active_client:
+                    if self.active_client.connect():
                         return True
             elif TCP_METHOD in self.clients:
-                tcp_client = self.clients.get(TCP_METHOD)
-                if tcp_client:
-                    if tcp_client.connect():
+                self.active_client = self.clients.get(TCP_METHOD)
+                if self.active_client:
+                    if self.active_client.connect():
                         return True
         return False
 
