@@ -19,9 +19,10 @@ class ModbusClient:
     def __init__(self, device_number):
             self.file_handler = FileHandler()
             self.device_number = device_number
-            self.client = self.generate_client()
+            self.client = self._generate_client()
+            
 
-    def generate_client(self):
+    def _generate_client(self):
         """
         This method should get the device_number's connection parameters 
         
@@ -29,31 +30,55 @@ class ModbusClient:
         """
         raise NotImplementedError("Subclasses must implement generate_client method")
     
+    def is_connected(self):
+        """
+        This method checks if the client is connected
+        
+        args: None
+        
+        return: True or False.
+        """
+        raise NotImplementedError("Subclasses must implement is_connected method")
+    
 
 
 
 
 class ModbusRTU(ModbusClient):
-    def generate_client(self):
-        connection_attributes = self.file_handler.get_connection_params(self.device_number)[RTU_METHOD]
-        client = ModbusSerialClient(
-        method=RTU_METHOD,
-        port=connection_attributes[SERIAL_PORT], 
-        baudrate=int(connection_attributes[BAUD_RATE]), 
-        parity=connection_attributes[PARITY], 
-        stopbits=int(connection_attributes[STOP_BITS]),  
-        bytesize=int(connection_attributes[BYTESIZE]), 
-        timeout=float(connection_attributes[TIMEOUT])
-        )
-        return client
-    
+    def _generate_client(self):
+        device_protocols = self.file_handler.get_modbus_protocol(self.device_number)
+        if RTU_METHOD in device_protocols:
+            connection_attributes = self.file_handler.get_connection_params(self.device_number)[RTU_METHOD]
+            client = ModbusSerialClient(
+                method=RTU_METHOD,
+                port=connection_attributes[SERIAL_PORT], 
+                baudrate=int(connection_attributes[BAUD_RATE]), 
+                parity=connection_attributes[PARITY], 
+                stopbits=int(connection_attributes[STOP_BITS]),  
+                bytesize=int(connection_attributes[BYTESIZE]), 
+                timeout=float(connection_attributes[TIMEOUT])
+            )
+            return client
+        return None
     
 
+    def is_connected(self):
+        if self.client and self.client.is_socket() and self.client.is_open():
+            return True
+        return False
+
 class ModbusTCP(ModbusClient):
-    def generate_client(self):
-        connection_attributes = self.file_handler.get_connection_params(self.device_number)[TCP_METHOD]
-        host = connection_attributes[HOST]
-        port = connection_attributes[PORT]
-        client = ModbusTcpClient(host, port)
-        return client
+    def _generate_client(self):
+        device_protocols = self.file_handler.get_modbus_protocol(self.device_number)
+        if TCP_METHOD in device_protocols:
+            connection_attributes = self.file_handler.get_connection_params(self.device_number)[TCP_METHOD]
+            host = connection_attributes[HOST]
+            port = connection_attributes[PORT]
+            client = ModbusTcpClient(host, port)
+            return client
+        return None
     
+    def is_connected(self):
+        if self.client and self.client.is_socket_open():
+            return True
+        return False
