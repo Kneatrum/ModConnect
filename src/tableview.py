@@ -39,7 +39,7 @@ class TableWidget(QWidget):
     def __init__(self, device_number:int, columns = 3, ):
         super().__init__()
 
-        self.clients = dict()
+         
         self.file_handler = FileHandler()
 
         self.device_number = device_number
@@ -47,15 +47,15 @@ class TableWidget(QWidget):
         self.rows = self.file_handler.get_register_count(self.device_number)
         self.device_name = self.file_handler.get_device_name(self.device_number)
         self.slave_address = self.file_handler.get_slave_address(self.device_number)
-        self.device_protocols = self.file_handler.get_modbus_protocol(self.device_number)
+        
 
         self.table_widget_default_attrs = [REGISTER_NAME, REGISTER_ADDRESS]
 
-        self.assign_client(self.device_number)
+        self.connection_methods = self.get_available_connection_methods(self.device_number)
         
         self.connection_status = False
 
-        self.active_client = None
+        self.selected_connection = None
 
         
 
@@ -171,6 +171,10 @@ class TableWidget(QWidget):
             self.table_widget.itemChanged.connect(self.onItemChanged)    # Reconnect the ItemChanged signal to allow us to update the register names
         elif self.action_menu.currentIndex() == 2: # If the selectec option is Delete registers (index 2)
             self.action_menu.setCurrentIndex(0)
+            if self.selected_connection:
+                print(f"Is device connected? :{self.selected_connection.is_connected()}")
+            else:
+                print("No device connected")
         elif self.action_menu.currentIndex() == 3: # If the selected option is Connect (index 3)
             self.action_menu.setCurrentIndex(0)
             if self.connect_to_device():
@@ -284,21 +288,26 @@ class TableWidget(QWidget):
             self.table_widget.setItem(index, ADDRESS_COLUMN, QTableWidgetItem(str(results[REGISTER_PREFIX + str(index + 1)][REGISTER_ADDRESS]))) # Convert address to a string for it to be displayed.
 
 
-    def assign_client(self, device_number):
+    def get_available_connection_methods(self, device_number):
         """
-        This method loops through the modbus protocols associated 
+        This method returns a dictionary of available connection methods.
 
-        with the device and assiggns the respective clients to the device.
+        arguments: 
+            device_number
 
-        The clients are added to a self.clients() dictionary.
+        return: 
+            dictionary of available connection
         """
-        for method in self.device_protocols:
-            if method == RTU_METHOD:
-                rtu_connection = ModbusRTU(device_number)
-                self.clients[RTU_METHOD] = rtu_connection.client
-            elif method == TCP_METHOD:
-                tcp_connection = ModbusTCP(device_number)
-                self.clients[TCP_METHOD] = tcp_connection.client
+        temp_dict = {}
+        rtu_connection = ModbusRTU(device_number)
+        if rtu_connection.client:
+            temp_dict[RTU_METHOD] = rtu_connection
+
+        tcp_connection = ModbusTCP(device_number)
+        if tcp_connection.client:
+            temp_dict[TCP_METHOD] = tcp_connection
+
+        return temp_dict
 
 
     def connect_to_device(self) -> bool:
@@ -312,23 +321,31 @@ class TableWidget(QWidget):
             print("Prompt user to select their prefered device")
 
             #Meanwhile, connect to the TCP  by default
-            self.active_client = self.clients.get(TCP_METHOD)
-            if self.active_client:
-                if self.active_client.connect():
+            if self.selected_connection is not None:
+                print("A device is already connected")
+                return False
+            self.selected_connection = self.clients.get(TCP_METHOD)
+            if self.selected_connection:
+                if self.selected_connection.client.connect():
                     return True
         else:
             if RTU_METHOD in self.clients:
-                self.active_client = self.clients.get(RTU_METHOD)
-                if self.active_client:
-                    if self.active_client.connect():
+                if self.selected_connection is not None:
+                    print("A device is already connected")
+                    return False
+                self.selected_connection = self.clients.get(RTU_METHOD)
+                if self.selected_connection:
+                    if self.selected_connection.client.connect():
                         return True
             elif TCP_METHOD in self.clients:
-                self.active_client = self.clients.get(TCP_METHOD)
-                if self.active_client:
-                    if self.active_client.connect():
+                if self.selected_connection is not None:
+                    print("A device is already connected")
+                    return False
+                self.selected_connection = self.clients.get(TCP_METHOD)
+                if self.selected_connection:
+                    if self.selected_connection.client.connect():
                         return True
         return False
-
 
         
 
