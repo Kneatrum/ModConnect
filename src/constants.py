@@ -86,3 +86,4 @@ WRITE_FUNCTION_CODES = {
 
 TCP_METHOD = "tcp"
 RTU_METHOD = "rtu"
+DEFAULT_METHOD = "default_method"

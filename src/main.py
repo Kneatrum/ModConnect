@@ -18,7 +18,8 @@ from constants import SLAVE_ADDRESS, \
         TCP_PARAMETERS, DEVICE_PREFIX, BYTESIZE, \
         TIMEOUT, PARITY, STOP_BITS, BYTESIZE, \
         PARITY_ITEMS, STOP_BIT_ITEMS, BAUD_RATE_ITEMS, \
-        BYTESIZE_ITEMS, TIMEOUT_ITEMS, REGISTERS
+        BYTESIZE_ITEMS, TIMEOUT_ITEMS, REGISTERS, \
+        DEFAULT_METHOD
 
 
 
@@ -422,7 +423,7 @@ class MainWindow(QtWidgets.QMainWindow):
             tcp_client_dict[HOST] = self.ip_address.text()
             tcp_client_dict[PORT] = self.port.text()
 
-            temp_dict = {SLAVE_ADDRESS: slave_address_value, DEVICE_NAME: device_name_value, CONNECTION_PARAMETERS: {RTU_PARAMETERS: {}, TCP_PARAMETERS:tcp_client_dict}, REGISTERS:{}}
+            temp_dict = {SLAVE_ADDRESS: slave_address_value, DEVICE_NAME: device_name_value, CONNECTION_PARAMETERS: {RTU_PARAMETERS: {}, TCP_PARAMETERS:tcp_client_dict, DEFAULT_METHOD: {}}, REGISTERS:{}}
             temp_dict = {f'{DEVICE_PREFIX}{self.device_number}': temp_dict}
             self.register_setup_dialog.accept()
         elif self.modbus_rtu_radio.isChecked():
@@ -439,7 +440,7 @@ class MainWindow(QtWidgets.QMainWindow):
             rtu_client_dict[BYTESIZE] = self.byte_size_options.currentText()
             rtu_client_dict[TIMEOUT] = self.timeout_options.currentText()
 
-            temp_dict = {SLAVE_ADDRESS: slave_address_dict, DEVICE_NAME: device_name_dict, CONNECTION_PARAMETERS: {RTU_PARAMETERS: rtu_client_dict, TCP_PARAMETERS:{}}, REGISTERS:{}}
+            temp_dict = {SLAVE_ADDRESS: slave_address_dict, DEVICE_NAME: device_name_dict, CONNECTION_PARAMETERS: {RTU_PARAMETERS: rtu_client_dict, TCP_PARAMETERS:{}, DEFAULT_METHOD: {}}, REGISTERS:{}}
             temp_dict = {f'{DEVICE_PREFIX}{self.device_number}': temp_dict}
             self.register_setup_dialog.accept()
         return temp_dict
