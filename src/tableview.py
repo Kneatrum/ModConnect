@@ -62,7 +62,12 @@ class TableWidget(QWidget):
 
 
         # Add a label for the register group or device group
-        label_name = "Device " + str(self.device_number) # Create an initial name "Device " + the index of the register group. For example, Device 1
+        device_name = self.file_handler.get_device_name(self.device_number)
+        if device_name:
+            label_name = device_name
+        else:
+            label_name = "Device " + str(self.device_number) # Create an initial name "Device " + the index of the register group. For example, Device 1
+            
 
         # Create a QGroupBox
         group_box = QGroupBox(label_name, self)
