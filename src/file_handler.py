@@ -315,6 +315,30 @@ class FileHandler:
                 default_method = data[device][CONNECTION_PARAMETERS].get(DEFAULT_METHOD)
                 return default_method
         return None
-            
+    
 
+    def set_default_modbus_method(self, device_number: int, default_method: str) -> bool:
+        """
+        This method sets the default modbus method.
+
+        arguments:
+            device_number (int): The device number. Acts as a unique identifier in the json file.
+
+            default_method (str): The default modbus method to be set. Can be either 'tcp' or 'rtu'.
+
+        return:
+            None
+        """ 
+        data = self.get_raw_device_data()
+        if not data:
+            return False
+        device = DEVICE_PREFIX + f'{device_number}'
+
+        data[device][CONNECTION_PARAMETERS][DEFAULT_METHOD] = default_method
+
+        # Finally, save new modbus method
+        with open(self.file_path, 'w') as file:
+            json.dump(data, file, indent=4)
+        
+        return True
 
