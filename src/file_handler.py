@@ -11,7 +11,7 @@ from constants import SLAVE_ADDRESS, \
         DEVICE_NAME, CONNECTION_PARAMETERS,  \
         DEVICE_PREFIX, REGISTERS, REGISTER_ADDRESS, \
         REGISTER_NAME, REGISTER_PREFIX, FILE_PATH, \
-        FUNCTION_CODE, REGISTER_TEMPLATE
+        FUNCTION_CODE, REGISTER_TEMPLATE, DEFAULT_METHOD
 
 
 
@@ -289,29 +289,32 @@ class FileHandler:
         pass
 
 
-    def __save_register_data(self, user_input:dict) -> bool: ######################
-        # device_id = user_input_dict["device"]
-        # reg_quantity = user_input_dict["quantity"]
-        # # Read the register setup file
-        # data = read_register_setup_file()
-        # # Loop through the list of registers entered by the user and update the the register setup file
-        # for i in range(int(reg_quantity)):
-        #     existing_register_count = register_count_under_device(data,device_id) # Find the number of registers that exist
-        #     # print("Existing register count {}".format(existing_register_count))
-        #     new_register_start = "register_" + str(existing_register_count + 1) # If x registers exist, the next register will be x+1
-        #     # print("New register start {}".format(new_register_start))
-        #     parent_value = {} 
-        #     # Assigning values to all the registr attributes
-        #     parent_value["address"] = int(user_input_dict["registers"]["address"]) + i # If the user wants to read say 10 registers after register 1000, this line of code increments the addresses to register number 1011
-        #     parent_value["Register_name"] = user_input_dict["registers"]["Register_name"] 
-        #     parent_value["function_code"] = user_input_dict["registers"]["function_code"]
-        #     parent_value["Units"] = user_input_dict["registers"]["Units"]
-        #     parent_value["Gain"] = user_input_dict["registers"]["Gain"]
-        #     parent_value["Data_type"] = user_input_dict["registers"]["Data_type"]
-        #     parent_value["Access_type"] = user_input_dict["registers"]["Access_type"] 
+    def get_default_modbus_method(self, device_number) -> bool: 
+        """
+        This method returns the default modbus method
 
-            # Update the existing json file with the new register parameters
+        arguments: 
+            Device number.
 
-        # print("JSON file created!")
-        pass
+        returns:
+            The default modbus method (rtu or tcp), or None if it has not been defined.
+        """
+        if not self.data_path_exists():
+            print("Data path not found")
+            return None
+        data = self.get_raw_device_data()
+        if not data:
+            return None
+        
+
+        # First find the device with the device number.
+        for key in data:
+            device = DEVICE_PREFIX + f'{device_number}'
+            if re.search(device, key):
+                # Get and return the default modbus method
+                default_method = data[device][CONNECTION_PARAMETERS].get(DEFAULT_METHOD)
+                return default_method
+        return None
+            
+
 
