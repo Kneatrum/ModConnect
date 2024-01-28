@@ -312,7 +312,7 @@ class FileHandler:
             device = DEVICE_PREFIX + f'{device_number}'
             if re.search(device, key):
                 # Get and return the default modbus method
-                default_method = data[device][CONNECTION_PARAMETERS].get(DEFAULT_METHOD)
+                default_method = data[device].get(DEFAULT_METHOD)
                 return default_method
         return None
     
@@ -334,7 +334,7 @@ class FileHandler:
             return False
         device = DEVICE_PREFIX + f'{device_number}'
 
-        data[device][CONNECTION_PARAMETERS][DEFAULT_METHOD] = default_method
+        data[device][DEFAULT_METHOD] = default_method
 
         # Finally, save new modbus method
         with open(self.file_path, 'w') as file:
