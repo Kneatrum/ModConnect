@@ -1,7 +1,8 @@
-from PyQt5.QtWidgets import QWidget,  QGroupBox, QWidget,  QPushButton, QTableWidget, QVBoxLayout, QLabel, QLineEdit, QComboBox, QDialog,QHBoxLayout, QTableWidgetItem
+from PyQt5.QtWidgets import QWidget,  QGroupBox, QWidget,  QPushButton, QTableWidget, QVBoxLayout, QLabel, QLineEdit, QComboBox, QDialog,QHBoxLayout, QTableWidgetItem, QCheckBox
 from file_handler import FileHandler
 from modbus_clients import ModbusTCP, ModbusRTU
-from constants import REGISTER_NAME, REGISTER_ADDRESS, REGISTER_PREFIX, TCP_METHOD, RTU_METHOD
+from constants import REGISTER_NAME, REGISTER_ADDRESS, REGISTER_PREFIX, TCP_METHOD, RTU_METHOD, \
+                        HOST, PORT, SERIAL_PORT, BAUD_RATE, PARITY, STOP_BITS, BYTESIZE
 
 NAME_COLUMN = 0
 ADDRESS_COLUMN = 1
@@ -47,30 +48,27 @@ class TableWidget(QWidget):
         self.rows = self.file_handler.get_register_count(self.device_number)
         self.device_name = self.file_handler.get_device_name(self.device_number)
         self.slave_address = self.file_handler.get_slave_address(self.device_number)
-        
-
+        self.modbus_method_label = ""
         self.table_widget_default_attrs = [REGISTER_NAME, REGISTER_ADDRESS]
-
         self.connection_methods = self.get_available_connection_methods(self.device_number)
-        
         self.connection_status = False
-
         self.selected_connection = None
+
+        self.modbus_connection_label = QLabel("")
+        
+
 
         
 
 
 
         # Add a label for the register group or device group
-        device_name = self.file_handler.get_device_name(self.device_number)
-        if device_name:
-            label_name = device_name
-        else:
-            label_name = "Device " + str(self.device_number) # Create an initial name "Device " + the index of the register group. For example, Device 1
+        if not self.device_name:
+            self.device_name = "Device " + str(self.device_number) # Create an initial name "Device " + the index of the register group. For example, Device 1
             
 
         # Create a QGroupBox
-        group_box = QGroupBox(label_name, self)
+        group_box = QGroupBox(self.device_name, self)
         group_box.setMinimumWidth(450) # set minimum width
         group_box.setMaximumWidth(450) # set maximum width
 
@@ -86,8 +84,24 @@ class TableWidget(QWidget):
                 
         # Set the object name of the connection status label
         self.connection_status_label.setObjectName("connection_status_label_device_" + str(self.device_number))
+
+
+        check_box_h_layout = QHBoxLayout()
+        self.tcp_checkbox = QCheckBox('TCP')
+        self.rtu_checkbox = QCheckBox('RTU')
+        self.tcp_checkbox.stateChanged.connect(self.on_tcp_box_status_changed)
+        self.rtu_checkbox.stateChanged.connect(self.on_rtu_box_status_changed)
+        check_box_h_layout.addWidget(self.tcp_checkbox)
+        check_box_h_layout.addWidget(self.rtu_checkbox)
         
 
+        # Create the connection status Qlabel
+        # self.modbus_connection_label = QLabel(self.modbus_method_label)
+        self.modbus_method_label = self.create_modbus_connection_label()
+        self.modbus_connection_label.setText(self.modbus_method_label)
+
+        self.edit_connection_button = QPushButton('Edit Connection')
+        self.edit_connection_button.clicked.connect(self.on_edit_connection_button_clicked)
 
 
         # Add a dropdown menu and add actions to it
@@ -115,27 +129,38 @@ class TableWidget(QWidget):
         
         # Create a horizontal layout to hold action label and combo box vlayouy and connection status label
         top_horizontal_layout = QHBoxLayout()
+        first_column = QVBoxLayout()
+        second_column = QVBoxLayout()
+        third_column = QVBoxLayout()
         
 
-        # Create a horizontal layout to hold the connection status
-        con_status_h_layout = QHBoxLayout()
-        con_status_h_layout.addWidget(self.connection_status_label)
 
+
+        # Create a horizontal layout to hold the connection status
+        con_status_v_layout = QVBoxLayout()
+        con_status_v_layout.addWidget(self.connection_status_label)
+
+        
+        connection_v_layout = QVBoxLayout()
+        connection_v_layout.addWidget(self.modbus_connection_label)
+        connection_v_layout.addWidget(self.edit_connection_button)
 
         # Create a vertical box layout for the qlabel and combo box
         action_status_combo_box_v_layout = QVBoxLayout() 
-        action_status_combo_box_v_layout.addSpacing(10)
         action_status_combo_box_v_layout.addWidget(self.actions_label) # Add the action label to the layout
         action_status_combo_box_v_layout.addWidget(self.action_menu) # Add the action dropdown menu to the layout
-        action_status_combo_box_v_layout.addSpacing(20)
-
-        top_horizontal_layout.addLayout(action_status_combo_box_v_layout)
-        top_horizontal_layout.addSpacing(200)
-        top_horizontal_layout.addLayout(con_status_h_layout)
-
-        
 
 
+        first_column.addLayout(check_box_h_layout)
+        first_column.addLayout(con_status_v_layout)
+        second_column.addLayout(connection_v_layout)
+        third_column.addLayout(action_status_combo_box_v_layout)
+
+
+
+        top_horizontal_layout.addLayout(first_column)
+        top_horizontal_layout.addLayout(second_column)
+        top_horizontal_layout.addLayout(third_column)
         
 
         
@@ -165,6 +190,34 @@ class TableWidget(QWidget):
             pass
 
 
+    def on_rtu_box_status_changed(self):
+        if self.rtu_checkbox.isChecked():
+            self.tcp_checkbox.setChecked(False)
+            self.file_handler.set_default_modbus_method(self.device_number, RTU_METHOD)
+            result = self.file_handler.get_connection_params(self.device_number)
+            modbus_protocols = self.file_handler.get_modbus_protocol(self.device_number)
+            if RTU_METHOD in modbus_protocols:
+                self.modbus_method_label = f'Modbus RTU\n{PORT.upper()}: {result[RTU_METHOD].get(SERIAL_PORT)}\n{BAUD_RATE.upper()}: {result[RTU_METHOD].get(BAUD_RATE)}\n{result[RTU_METHOD].get(BYTESIZE)}, {result[RTU_METHOD].get(PARITY)}, {result[RTU_METHOD].get(STOP_BITS)}'
+                self.modbus_connection_label.setText(self.modbus_method_label)
+                # self.modbus_connection_label.setText("Nyenye")
+
+        
+
+    def on_tcp_box_status_changed(self):
+        if self.tcp_checkbox.isChecked():
+                self.rtu_checkbox.setChecked(False)
+                self.file_handler.set_default_modbus_method(self.device_number, TCP_METHOD)
+                result = self.file_handler.get_connection_params(self.device_number)
+                modbus_protocols = self.file_handler.get_modbus_protocol(self.device_number)
+                if TCP_METHOD in modbus_protocols:
+                    self.modbus_method_label = f'Modbus TCP\n{HOST.upper()}: {result[TCP_METHOD].get(HOST)}\n{PORT.upper()}: {result[TCP_METHOD].get(PORT)}'
+                    self.modbus_connection_label.setText(self.modbus_method_label)
+                    # self.modbus_connection_label.setText("Nyenye")
+
+        
+
+    def on_edit_connection_button_clicked(self):
+        pass
    
 
     def on_drop_down_menu_current_index_changed(self):
@@ -192,6 +245,57 @@ class TableWidget(QWidget):
     def set_conection_status(self,text,background_color):
         self.connection_status_label.setText(text)
         self.connection_status_label.setStyleSheet("background-color: " + background_color + "; padding: 25px;")
+
+
+    def create_modbus_connection_label(self) -> str:
+        """
+        This method creates a string that shows the connection parameters used for the specific modbus connection.
+
+        argument: 
+            None
+
+        return:
+            label (str): A string that shows the connection parameters.
+
+        TCP Example:
+            HOST: 192.168.0.1
+            PORT: 502
+
+        RTU Example:
+            PORT: COM1
+            BAUDRATE: 19200
+            8, N, 1
+        """
+        label = ""
+        result = self.file_handler.get_connection_params(self.device_number)
+        modbus_protocols = self.file_handler.get_modbus_protocol(self.device_number)
+        if len(modbus_protocols) > 1:
+            default_method = self.file_handler.get_default_modbus_method(self.device_number)
+            if not default_method:
+                # Set the default method to TCP if it is not set.
+                self.file_handler.set_default_modbus_method(self.device_number, TCP_METHOD)
+                default_method = TCP_METHOD
+                label = f'Modbus TCP\n{HOST.upper()}: {result[TCP_METHOD].get(HOST)}\n{PORT.upper()}: {result[TCP_METHOD].get(PORT)}'
+                self.tcp_checkbox.setChecked(True)
+            else:
+                if default_method == TCP_METHOD:
+                    label = f'Modbus TCP\n{HOST.upper()}: {result[TCP_METHOD].get(HOST)}\n{PORT.upper()}: {result[TCP_METHOD].get(PORT)}'
+                    self.tcp_checkbox.setChecked(True)
+                elif default_method == RTU_METHOD:
+                    label = f'Modbus RTU\n{PORT.upper()}: {result[RTU_METHOD].get(SERIAL_PORT)}\n{BAUD_RATE.upper()}: {result[RTU_METHOD].get(BAUD_RATE)}\n{result[RTU_METHOD].get(BYTESIZE)}, {result[RTU_METHOD].get(PARITY)}, {result[RTU_METHOD].get(STOP_BITS)}'
+                    self.rtu_checkbox.setChecked(True)
+        elif len(modbus_protocols) == 1:
+            if TCP_METHOD in modbus_protocols:
+                label = f'Modbus TCP\n{HOST.upper()}: {result[TCP_METHOD].get(HOST)}\n{PORT.upper()}: {result[TCP_METHOD].get(PORT)}'
+                self.tcp_checkbox.setChecked(True)
+                self.tcp_checkbox.setDisabled(True)
+                self.rtu_checkbox.setDisabled(True)
+            elif RTU_METHOD in modbus_protocols:
+                label = f'Modbus RTU\n{PORT.upper()}: {result[RTU_METHOD].get(SERIAL_PORT)}\n{BAUD_RATE.upper()}: {result[RTU_METHOD].get(BAUD_RATE)}\n{result[RTU_METHOD].get(BYTESIZE)}, {result[RTU_METHOD].get(PARITY)}, {result[RTU_METHOD].get(STOP_BITS)}'
+                self.rtu_checkbox.setChecked(True)
+                self.rtu_checkbox.setDisabled(True)
+                self.tcp_checkbox.setDisabled(True)
+        return label
         
 
     
@@ -283,8 +387,6 @@ class TableWidget(QWidget):
 
         The attributes are passed in form of a list.
         """
-
-
         results = self.file_handler.get_register_attributes(self.device_number, self.table_widget_default_attrs)
         self.table_widget.setRowCount(0)
         for index in range(len(results)):
