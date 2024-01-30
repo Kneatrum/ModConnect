@@ -35,14 +35,43 @@ class FileHandler:
 
 
     def data_directory_exists(self) -> bool:
+        """
+        This method checks if the data directory exists.
+
+        Args:
+            None
+
+        returns:
+            bool: True if the data directory exists and false otherwise.
+        """
         return os.path.exists(self.directory)
     
 
     def data_path_exists(self) -> bool:
+        """
+        This method simply checks if the path to our json file exists.
+
+        arguments: 
+            None
+
+        returns:
+            bool: True if the path to our json file exists or False otherwise.
+        """
         return os.path.exists(self.file_path)
     
 
     def create_data_directory(self):
+        """
+        This method checks if the data directory exists and creates it if it does not exist
+
+        then it creates the json data file.
+
+        arguments:
+            None
+
+        returns:
+            None
+        """
         if not self.data_directory_exists():
             os.mkdir(self.directory)  
             self.create_data_file()
@@ -58,6 +87,15 @@ class FileHandler:
         
 
     def get_raw_device_data(self) -> dict:
+        """
+        This method returns all register data stored in our json file.
+
+        arguments:
+            None
+
+        returns:
+            data (dict): A dictionary full of register data or an empty dictionary if no data is available. 
+        """
         if not self.data_path_exists():
             print("Data directory does not exist")
             return {}
@@ -102,6 +140,15 @@ class FileHandler:
 
 
     def get_device_count(self):
+        """
+        This method returns the number of all devices that are registered.
+
+        arguments: 
+            None
+
+        returns:
+            count (int): The total number of devices.
+        """
         # If the path for our data does not exist, return
         if not self.data_path_exists():
             print("Data file not found")
@@ -120,6 +167,15 @@ class FileHandler:
 
     
     def get_register_count(self, device_number) -> int:
+        """
+        This method returns the number of registers in a specific device
+
+        argument: 
+            device_number (int): The device number. This is always a unique number
+        
+        returns:
+            count (int): The number of registers in the device.
+        """
         if not self.data_path_exists():
             print("Data path not found")
             return None
@@ -210,6 +266,15 @@ class FileHandler:
     
 
     def get_modbus_protocol(self, device_number) -> list:
+        """
+        This method returns a list of all modbus protocol methods registered in a specific device.
+
+        arguments: 
+            device_number (int): The device number (always unique)
+
+        returns:
+            list: A list of all modbus protocol methods registered.
+        """
         result = self.get_connection_params(device_number)
         return list(result.keys())
 
@@ -221,7 +286,16 @@ class FileHandler:
 
 
     def update_register_details(self, device_number, user_input) -> bool:
-        print(user_input)
+        """
+        This method adds new registers to a specific device's window or table widget.
+
+        arguments:
+            device_number (int): The device number (always unique)
+            user_input (dict): A dictionary containing all the register data gathered from the user.
+
+        returns:
+            bool: True if the the register was added successfully or false otherwise
+        """
         existing_register_count = self.get_register_count(device_number)
         data = self.get_raw_device_data()
         if not data:
