@@ -52,17 +52,10 @@ class TableWidget(QWidget):
         self.table_widget_default_attrs = [REGISTER_NAME, REGISTER_ADDRESS]
         self.connection_methods = self.get_available_connection_methods(self.device_number)
         self.connection_status = False
-        self.selected_connection = None
+        self.selected_connection = self.__set_selected_connection()
         self.list_of_registers = self.get_register_info()
 
         self.modbus_connection_label = QLabel("")
-        
-
-
-        
-
-
-
         # Add a label for the register group or device group
         if not self.device_name:
             self.device_name = "Device " + str(self.device_number) # Create an initial name "Device " + the index of the register group. For example, Device 1
@@ -459,6 +452,28 @@ class TableWidget(QWidget):
         temp_list = [REGISTER_ADDRESS, FUNCTION_CODE]
         register_info  = self.file_handler.get_register_attributes(self.device_number, temp_list)
         return register_info     
+
+
+    def __set_selected_connection(self):
+        """
+        This method checks for the default modbus connection and sets the appropriate connection method
+
+        which can be either TCP or RTU
+
+        arguments:
+            None
+
+        returns:
+            modbus_object (object): An instance of either Modbus RTU or Modbus TCP
+        """
+        modbus_object = None
+        result = self.file_handler.get_default_modbus_method(self.device_number)
+        if result == TCP_METHOD:
+            modbus_object = ModbusTCP()
+        elif result == RTU_METHOD:
+            modbus_object = ModbusRTU()
+        return modbus_object
+    
 
 
     def delete_register(self):
