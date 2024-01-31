@@ -198,13 +198,14 @@ class FileHandler:
     def get_register_attributes(self, device_number: int, list_of_variables: list) -> dict:
         """
         This method returns a dictionary containing a list of the 
-        register name and the address.
+        specified register attributes
 
         args:
             device_number: This is used as the unique identifier for the stored devices.
+            list_of_variables (list): A list of register attributes
 
         returns:
-            dictionary: A dictionary with the register key and a list containing the name and the register address.
+            dictionary: A dictionary containing the register attributes.
 
         Example:
         register_1: [register_name, register_address]
@@ -416,3 +417,7 @@ class FileHandler:
         
         return True
 
+
+test = FileHandler()
+temp =  [REGISTER_NAME, REGISTER_ADDRESS]
+print(test.get_register_attributes(2,temp))
