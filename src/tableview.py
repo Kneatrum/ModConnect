@@ -53,6 +53,7 @@ class TableWidget(QWidget):
         self.connection_methods = self.get_available_connection_methods(self.device_number)
         self.connection_status = False
         self.selected_connection = None
+        self.list_of_registers = self.get_register_addresses()
 
         self.modbus_connection_label = QLabel("")
         
@@ -454,7 +455,11 @@ class TableWidget(QWidget):
                         return True
         return False
 
-        
+    def get_register_addresses(self):
+        temp_list = [REGISTER_ADDRESS]
+        result = self.file_handler.get_register_attributes(self.device_number, temp_list)
+        addresses = [register_info['address'] for register_info in result.values()]  
+        return addresses     
 
 
     def delete_register(self):
