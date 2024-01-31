@@ -415,38 +415,15 @@ class TableWidget(QWidget):
         """
         This method connects to the client registered with the table widget.
 
-        If more than one client is registered, the user is prompted to select one of the clients.
+        arguments:
+            None
+        returns:
+            bool: True if connected successfully or False otherwise
         """
-        if len(self.clients) > 1:
-            #TODO: Implement the below functionality
-            print("Prompt user to select their prefered device")
-
-            #Meanwhile, connect to the TCP  by default
-            if self.selected_connection is not None:
-                print("A device is already connected")
-                return False
-            self.selected_connection = self.clients.get(TCP_METHOD)
-            if self.selected_connection:
-                if self.selected_connection.client.connect():
-                    return True
+        if self.selected_connection.client.connect():
+            return True
         else:
-            if RTU_METHOD in self.clients:
-                if self.selected_connection is not None:
-                    print("A device is already connected")
-                    return False
-                self.selected_connection = self.clients.get(RTU_METHOD)
-                if self.selected_connection:
-                    if self.selected_connection.client.connect():
-                        return True
-            elif TCP_METHOD in self.clients:
-                if self.selected_connection is not None:
-                    print("A device is already connected")
-                    return False
-                self.selected_connection = self.clients.get(TCP_METHOD)
-                if self.selected_connection:
-                    if self.selected_connection.client.connect():
-                        return True
-        return False
+            return False
 
     def get_register_info(self):
         temp_list = [REGISTER_ADDRESS, FUNCTION_CODE]
