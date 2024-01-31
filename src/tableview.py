@@ -2,7 +2,7 @@ from PyQt5.QtWidgets import QWidget,  QGroupBox, QWidget,  QPushButton, QTableWi
 from file_handler import FileHandler
 from modbus_clients import ModbusTCP, ModbusRTU
 from constants import REGISTER_NAME, REGISTER_ADDRESS, REGISTER_PREFIX, TCP_METHOD, RTU_METHOD, \
-                        HOST, PORT, SERIAL_PORT, BAUD_RATE, PARITY, STOP_BITS, BYTESIZE
+                        HOST, PORT, SERIAL_PORT, BAUD_RATE, PARITY, STOP_BITS, BYTESIZE, FUNCTION_CODE
 
 NAME_COLUMN = 0
 ADDRESS_COLUMN = 1
@@ -53,7 +53,7 @@ class TableWidget(QWidget):
         self.connection_methods = self.get_available_connection_methods(self.device_number)
         self.connection_status = False
         self.selected_connection = None
-        self.list_of_registers = self.get_register_addresses()
+        self.list_of_registers = self.get_register_info()
 
         self.modbus_connection_label = QLabel("")
         
@@ -455,11 +455,10 @@ class TableWidget(QWidget):
                         return True
         return False
 
-    def get_register_addresses(self):
-        temp_list = [REGISTER_ADDRESS]
-        result = self.file_handler.get_register_attributes(self.device_number, temp_list)
-        addresses = [register_info['address'] for register_info in result.values()]  
-        return addresses     
+    def get_register_info(self):
+        temp_list = [REGISTER_ADDRESS, FUNCTION_CODE]
+        register_info  = self.file_handler.get_register_attributes(self.device_number, temp_list)
+        return register_info     
 
 
     def delete_register(self):
