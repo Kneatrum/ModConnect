@@ -50,10 +50,10 @@ class TableWidget(QWidget):
         self.slave_address = self.file_handler.get_slave_address(self.device_number)
         self.modbus_method_label = ""
         self.table_widget_default_attrs = [REGISTER_NAME, REGISTER_ADDRESS]
-        self.connection_methods = self.get_available_connection_methods(self.device_number)
+        self.connection_methods = self.__get_available_connection_methods(self.device_number)
         self.connection_status = False
         self.selected_connection = self.__set_selected_connection()
-        self.list_of_registers = self.get_register_info()
+        self.list_of_registers = self.__get_register_info()
 
         self.modbus_connection_label = QLabel("")
         # Add a label for the register group or device group
@@ -106,7 +106,7 @@ class TableWidget(QWidget):
         self.action_menu.setFixedWidth(150)
         view = self.action_menu.view() # Get the view of the combo box
         view.setRowHidden(0, True) # Hide the first row of the combo box view
-        self.action_menu.currentIndexChanged.connect(self.on_drop_down_menu_current_index_changed) # Trigger an action when the user selects an option
+        self.action_menu.currentIndexChanged.connect(self.__on_drop_down_menu_current_index_changed) # Trigger an action when the user selects an option
 
 
         # Create a table to display the registers
@@ -214,7 +214,7 @@ class TableWidget(QWidget):
         pass
    
 
-    def on_drop_down_menu_current_index_changed(self):
+    def __on_drop_down_menu_current_index_changed(self):
         
         if self.action_menu.currentIndex() == 1: # If the selectec option is Add registers (index 1)
             self.table_widget.itemChanged.disconnect(self.onItemChanged) # Disconnect the ItemChanged signal to alow us to reload the GUI
@@ -389,7 +389,7 @@ class TableWidget(QWidget):
             self.table_widget.setItem(index, ADDRESS_COLUMN, QTableWidgetItem(str(results[REGISTER_PREFIX + str(index + 1)][REGISTER_ADDRESS]))) # Convert address to a string for it to be displayed.
 
 
-    def get_available_connection_methods(self, device_number):
+    def __get_available_connection_methods(self, device_number):
         """
         This method returns a dictionary of available connection methods.
 
@@ -425,7 +425,7 @@ class TableWidget(QWidget):
         else:
             return False
 
-    def get_register_info(self):
+    def __get_register_info(self):
         temp_list = [REGISTER_ADDRESS, FUNCTION_CODE]
         register_info  = self.file_handler.get_register_attributes(self.device_number, temp_list)
         return register_info     
