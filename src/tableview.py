@@ -446,9 +446,9 @@ class TableWidget(QWidget):
         modbus_object = None
         result = self.file_handler.get_default_modbus_method(self.device_number)
         if result == TCP_METHOD:
-            modbus_object = ModbusTCP()
+            modbus_object = ModbusTCP(self.device_number)
         elif result == RTU_METHOD:
-            modbus_object = ModbusRTU()
+            modbus_object = ModbusRTU(self.device_number)
         return modbus_object
     
 
