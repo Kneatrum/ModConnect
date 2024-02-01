@@ -63,7 +63,7 @@ class ModbusRTU(ModbusClient):
     
 
     def is_connected(self):
-        if self.client and self.client.is_socket() and self.client.is_open():
+        if self.client and self.client.is_socket_open():
             return True
         return False
 
