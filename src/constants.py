@@ -42,6 +42,8 @@ GAIN = 'gain'
 DATA_TYPE = 'data_type'
 ACCESS_TYPE = 'access_type'
 
+DEFAULT_QUANTITY = 1
+
 REGISTER_TEMPLATE = {
     REGISTER_ADDRESS: 0,
     REGISTER_NAME: "",
