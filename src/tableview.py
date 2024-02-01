@@ -1,8 +1,11 @@
 from PyQt5.QtWidgets import QWidget,  QGroupBox, QWidget,  QPushButton, QTableWidget, QVBoxLayout, QLabel, QLineEdit, QComboBox, QDialog,QHBoxLayout, QTableWidgetItem, QCheckBox
 from file_handler import FileHandler
 from modbus_clients import ModbusTCP, ModbusRTU
+from pymodbus.payload import BinaryPayloadDecoder
+from pymodbus.constants import Endian
 from constants import REGISTER_NAME, REGISTER_ADDRESS, REGISTER_PREFIX, TCP_METHOD, RTU_METHOD, \
-                        HOST, PORT, SERIAL_PORT, BAUD_RATE, PARITY, STOP_BITS, BYTESIZE, FUNCTION_CODE
+                        HOST, PORT, SERIAL_PORT, BAUD_RATE, PARITY, STOP_BITS, BYTESIZE, \
+                        FUNCTION_CODE, DEFAULT_QUANTITY
 
 NAME_COLUMN = 0
 ADDRESS_COLUMN = 1
@@ -421,6 +424,8 @@ class TableWidget(QWidget):
             bool: True if connected successfully or False otherwise
         """
         if self.selected_connection.client.connect():
+            results = self.read_registers()
+            print(f"Results: {results}")
             return True
         else:
             return False
@@ -451,6 +456,41 @@ class TableWidget(QWidget):
             modbus_object = ModbusRTU(self.device_number)
         return modbus_object
     
+
+    def read_registers(self):
+        if self.selected_connection.is_connected():
+            register_results = []
+            for register in self.list_of_registers:
+                if self.list_of_registers[register][FUNCTION_CODE]  == 1:
+                    address = self.list_of_registers[register].get(REGISTER_ADDRESS)
+                    if address is not None or address == 0:
+                        response = self.selected_connection.client.read_coils(address, DEFAULT_QUANTITY, unit=self.slave_address)
+                        decoder = BinaryPayloadDecoder.fromRegisters(response.registers, byteorder=Endian.BIG, wordorder=Endian.BIG)
+                        data = decoder.decode_16bit_uint()
+                        register_results.append(data)
+                elif self.list_of_registers[register][FUNCTION_CODE] == 2:
+                    address = self.list_of_registers[register].get(REGISTER_ADDRESS)
+                    if address is not None or address == 0:
+                        response = self.selected_connection.client.read_discrete_inputs(address, DEFAULT_QUANTITY, unit=self.slave_address)
+                        decoder = BinaryPayloadDecoder.fromRegisters(response.registers, byteorder=Endian.BIG, wordorder=Endian.BIG)
+                        data = decoder.decode_16bit_uint()
+                        register_results.append(data)
+                elif self.list_of_registers[register][FUNCTION_CODE] == 3:
+                    address = self.list_of_registers[register].get(REGISTER_ADDRESS)
+                    if address is not None or address == 0:
+                        response = self.selected_connection.client.read_holding_registers(address, DEFAULT_QUANTITY, unit=self.slave_address)
+                        decoder = BinaryPayloadDecoder.fromRegisters(response.registers, byteorder=Endian.BIG, wordorder=Endian.BIG)
+                        data = decoder.decode_16bit_uint()
+                        register_results.append(data)
+                elif self.list_of_registers[register][FUNCTION_CODE] == 4:
+                    address = self.list_of_registers[register].get(REGISTER_ADDRESS)
+                    if address is not None or address == 0:
+                        response = self.selected_connection.client.read_input_registers(address, DEFAULT_QUANTITY, unit=self.slave_address)
+                        decoder = BinaryPayloadDecoder.fromRegisters(response.registers, byteorder=Endian.BIG, wordorder=Endian.BIG)
+                        data = decoder.decode_16bit_uint()
+                        register_results.append(data)
+            return register_results
+                
 
 
     def delete_register(self):
