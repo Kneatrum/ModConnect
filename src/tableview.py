@@ -424,8 +424,6 @@ class TableWidget(QWidget):
             bool: True if connected successfully or False otherwise
         """
         if self.selected_connection.client.connect():
-            results = self.read_registers()
-            print(f"Results: {results}")
             return True
         else:
             return False
