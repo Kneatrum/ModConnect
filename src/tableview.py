@@ -58,6 +58,8 @@ class TableWidget(QWidget):
         self.selected_connection = self.__set_selected_connection()
         self.list_of_registers = self.__get_register_info()
 
+        self.register_data = []
+
         self.modbus_connection_label = QLabel("")
         # Add a label for the register group or device group
         if not self.device_name:
@@ -457,7 +459,7 @@ class TableWidget(QWidget):
 
     def read_registers(self):
         if self.selected_connection.is_connected():
-            register_results = []
+            self.register_data.clear()
             for register in self.list_of_registers:
                 if self.list_of_registers[register][FUNCTION_CODE]  == 1:
                     address = self.list_of_registers[register].get(REGISTER_ADDRESS)
@@ -465,29 +467,28 @@ class TableWidget(QWidget):
                         response = self.selected_connection.client.read_coils(address, DEFAULT_QUANTITY, unit=self.slave_address)
                         decoder = BinaryPayloadDecoder.fromRegisters(response.registers, byteorder=Endian.BIG, wordorder=Endian.BIG)
                         data = decoder.decode_16bit_uint()
-                        register_results.append(data)
+                        self.register_data.append(data)
                 elif self.list_of_registers[register][FUNCTION_CODE] == 2:
                     address = self.list_of_registers[register].get(REGISTER_ADDRESS)
                     if address is not None or address == 0:
                         response = self.selected_connection.client.read_discrete_inputs(address, DEFAULT_QUANTITY, unit=self.slave_address)
                         decoder = BinaryPayloadDecoder.fromRegisters(response.registers, byteorder=Endian.BIG, wordorder=Endian.BIG)
                         data = decoder.decode_16bit_uint()
-                        register_results.append(data)
+                        self.register_data.append(data)
                 elif self.list_of_registers[register][FUNCTION_CODE] == 3:
                     address = self.list_of_registers[register].get(REGISTER_ADDRESS)
                     if address is not None or address == 0:
                         response = self.selected_connection.client.read_holding_registers(address, DEFAULT_QUANTITY, unit=self.slave_address)
                         decoder = BinaryPayloadDecoder.fromRegisters(response.registers, byteorder=Endian.BIG, wordorder=Endian.BIG)
                         data = decoder.decode_16bit_uint()
-                        register_results.append(data)
+                        self.register_data.append(data)
                 elif self.list_of_registers[register][FUNCTION_CODE] == 4:
                     address = self.list_of_registers[register].get(REGISTER_ADDRESS)
                     if address is not None or address == 0:
                         response = self.selected_connection.client.read_input_registers(address, DEFAULT_QUANTITY, unit=self.slave_address)
                         decoder = BinaryPayloadDecoder.fromRegisters(response.registers, byteorder=Endian.BIG, wordorder=Endian.BIG)
                         data = decoder.decode_16bit_uint()
-                        register_results.append(data)
-            return register_results
+                        self.register_data.append(data)
                 
 
 
