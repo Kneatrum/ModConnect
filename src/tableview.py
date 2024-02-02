@@ -394,6 +394,12 @@ class TableWidget(QWidget):
             self.table_widget.setItem(index, ADDRESS_COLUMN, QTableWidgetItem(str(results[REGISTER_PREFIX + str(index + 1)][REGISTER_ADDRESS]))) # Convert address to a string for it to be displayed.
 
 
+    def update_register_data(self):
+        for row, data in enumerate(self.register_data):
+            self.table_widget.setItem(row, ADDRESS_COLUMN, QTableWidgetItem(str(data)))
+
+
+
     def __get_available_connection_methods(self, device_number):
         """
         This method returns a dictionary of available connection methods.
