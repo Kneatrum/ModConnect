@@ -58,6 +58,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
         openAction = QAction('Open', self)
         saveAction = QAction('Save', self)
+        saveAction.triggered.connect(self.start_ui_refresh)
         fileMenu.addAction(newAction)
         fileMenu.addAction(openAction)
         fileMenu.addAction(saveAction)
