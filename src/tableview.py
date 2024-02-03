@@ -396,7 +396,8 @@ class TableWidget(QWidget):
 
     def update_register_data(self):
         for row, data in enumerate(self.register_data):
-            self.table_widget.setItem(row, ADDRESS_COLUMN, QTableWidgetItem(str(data)))
+            self.table_widget.setItem(row, VALUE_COLUMN, QTableWidgetItem(str(data)))
+        self.table_widget.viewport().update()
 
 
 
