@@ -78,6 +78,9 @@ class MainWindow(QtWidgets.QMainWindow):
         self.timer.timeout.connect(self.update_cells)
         self.timer.start(1000) # Update cells every 1 second
 
+        # Timer for updating register data on each table widget.
+        self.table_widget_timer = QtCore.QTimer()
+        self.table_widget_timer.timeout.connect(self.observer.update_table_widget)
 
 
         
