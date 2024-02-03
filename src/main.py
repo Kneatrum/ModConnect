@@ -5,6 +5,7 @@ from PyQt5 import QtCore
 from file_handler import FileHandler 
 from tableview import TableWidget as tablewidget
 from serial_ports import SerialPorts
+from register_reader import Observer
 
 from PyQt5.QtWidgets import  QScrollArea, \
     QGroupBox, QWidget, QMenu, QAction, \
