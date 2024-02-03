@@ -36,6 +36,7 @@ class MainWindow(QtWidgets.QMainWindow):
         # Initializing the main window
 
         self.main_widget = None
+        self.observer =  Observer()
 
 
         
