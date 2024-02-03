@@ -118,6 +118,8 @@ class MainWindow(QtWidgets.QMainWindow):
 
 
 
+    def start_ui_refresh(self):
+        self.table_widget_timer.start(1000)
 
             
 
