@@ -37,7 +37,6 @@ class MainWindow(QtWidgets.QMainWindow):
 
         self.main_widget = None
         self.observer = Observer()
-        self.observer.signals.updateRequested.connect(self.observer.update_register_table_view)
 
 
         
