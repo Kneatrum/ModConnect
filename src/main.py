@@ -36,7 +36,8 @@ class MainWindow(QtWidgets.QMainWindow):
         # Initializing the main window
 
         self.main_widget = None
-        self.observer =  Observer()
+        self.observer = Observer()
+        self.observer.signals.updateRequested.connect(self.observer.update_register_table_view)
 
 
         
@@ -74,10 +75,7 @@ class MainWindow(QtWidgets.QMainWindow):
         
         # Display all the registered devices on the screen
         self.add_devices_to_layout()
-        # Update the registers after every one second.
-        self.timer = QtCore.QTimer()
-        self.timer.timeout.connect(self.update_cells)
-        self.timer.start(1000) # Update cells every 1 second
+
 
         # Timer for updating register data on each table widget.
         self.table_widget_timer = QtCore.QTimer()
@@ -86,39 +84,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
         
 
-    def update_cells(self): 
-        # connected_devices = interface.tcp_connections_dict # Get the list of all connected TCP devices. 
-        # # print(connected_devices)
-        # tcp_device_count = len(connected_devices) # Find out the number of the devices connected.
-        # if tcp_device_count > 0:
-        #     devices_on_display = self.main_widget.findChildren(QTableWidget) # Get a list of the devices on the main display.
-        #     if devices_on_display:
-        #         for device_number in connected_devices.keys():  # Loop through the devices
-        #             device = device_number
-        #             client = connected_devices[device]
-        #             is_conected = client.is_socket_open()
-        #             device_label = "connection_status_label_device_" + str(device)
-        #             labels = self.main_widget.findChildren(QLabel,device_label)
-        #             if is_conected:
-        #                 register_data =interface.read_tcp_registers(client,device) # Get the dictionary that contains the registers and their data
-        #                 if register_data is None: return
-        #                 for row in range(devices_on_display[device-1].rowCount()): # Loop through the rows and update the register details
-        #                     labels[0].setText("Connected")  # Change the text of the label
-        #                     labels[0].setStyleSheet("background-color: rgb(144, 238, 144); padding: 25px;") # rgb(144, 238, 144) For light green
-        #                     register_list = list(register_data.values()) # Only get the values and convert them to a list for easy access in this for loop
-        #                     devices_on_display[device_number-1].setItem(row, 2, QTableWidgetItem(str(register_list[row]))) # Updating the register column (column 2) with the register values
-        #             else:
-        #                 # If the device is disconnected, remove it from the list of connected devices
-        #                 device_to_remove = device
-        #                 # Create a new dictionary without the specified device
-        #                 interface.tcp_connections_dict = {key: value for key, value in connected_devices.items() if key != device_to_remove}
 
-        #                 # Change the name of the label to Disconnected and set the background colour to gray
-        #                 labels = self.main_widget.findChildren(QLabel,device_label)
-        #                 labels[0].setText("Disconnected")  # Change the text of the label
-        #                 labels[0].setStyleSheet("background-color: rgb(212, 212, 212); padding: 25px;") # rgb(212, 212, 212) for gray
-        #                 client.close()
-        pass
 
 
 
