@@ -78,7 +78,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
         # Timer for updating register data on each table widget.
         self.table_widget_timer = QtCore.QTimer()
-        self.table_widget_timer.timeout.connect(self.observer.update_table_widget)
+        self.table_widget_timer.timeout.connect(self.observer.refresh_gui)
 
 
         
