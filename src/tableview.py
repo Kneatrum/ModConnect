@@ -199,8 +199,7 @@ class TableWidget(QWidget):
             if RTU_METHOD in modbus_protocols:
                 self.modbus_method_label = f'Modbus RTU\n{PORT.upper()}: {result[RTU_METHOD].get(SERIAL_PORT)}\n{BAUD_RATE.upper()}: {result[RTU_METHOD].get(BAUD_RATE)}\n{result[RTU_METHOD].get(BYTESIZE)}, {result[RTU_METHOD].get(PARITY)}, {result[RTU_METHOD].get(STOP_BITS)}'
                 self.modbus_connection_label.setText(self.modbus_method_label)
-                # self.modbus_connection_label.setText("Nyenye")
-
+                
         
 
     def on_tcp_box_status_changed(self):
@@ -212,7 +211,7 @@ class TableWidget(QWidget):
                 if TCP_METHOD in modbus_protocols:
                     self.modbus_method_label = f'Modbus TCP\n{HOST.upper()}: {result[TCP_METHOD].get(HOST)}\n{PORT.upper()}: {result[TCP_METHOD].get(PORT)}'
                     self.modbus_connection_label.setText(self.modbus_method_label)
-                    # self.modbus_connection_label.setText("Nyenye")
+                    
 
         
 
