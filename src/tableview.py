@@ -41,7 +41,7 @@ class TableWidget(QWidget):
     }
 
 
-    def __init__(self, device_number:int, columns = 3, ):
+    def __init__(self, device_number:int, columns = 3):
         super().__init__()
 
          
