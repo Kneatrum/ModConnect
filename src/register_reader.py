@@ -2,13 +2,30 @@
 This module implements the observer pattern in reading and updating the register table or table widget.
 """
 
-import time
-import threading
+from PyQt5.QtCore import QRunnable, QThreadPool
+
+
+class Worker(QRunnable):
+    def __init__(self, fn, *args, **kwargs):
+        super(Worker, self).__init__()
+
+        # Store constructor arguments (re-used for processing)
+        self.fn = fn
+        self.args = args
+        self.kwargs = kwargs
+
+    def run(self):
+        '''
+        Initialise the runner function with passed args, kwargs.
+        '''
+        # Retrieve args/kwargs here; and fire processing using them
+        self.fn(*self.args, **self.kwargs)
 
 
 class Observer:
     def __init__(self):
         self.table_widgets =[]
+        self.threadpool = QThreadPool()
 
     
     def add_table_widget(self, table_view):
@@ -20,21 +37,13 @@ class Observer:
 
     def update_table_widget(self):
         # Reading register data.
-        threads = []
         for table_view in self.table_widgets:
-            thread = threading.Thread(target=table_view.read_registers)
-            thread.start()
-            threads.append(thread)
-        
-        for thread in threads:
-            thread.join()
-        
+            table_view.read_registers()
+            
         # Updating register data.
-        threads = []
         for table_view in self.table_widgets:
-            thread = threading.Thread(target=table_view.update_register_data)
-            thread.start()
-            threads.append(thread)
+            table_view.update_register_data()
 
-        for process in threads:
-            process.join()
+    def refresh_gui(self):
+        worker = Worker(lambda: self.update_table_widget())
+        self.threadpool.start(worker)
