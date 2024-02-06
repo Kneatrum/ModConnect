@@ -3,7 +3,7 @@ This module implements the observer pattern in reading and updating the register
 """
 
 from PyQt5.QtCore import QRunnable, QThreadPool
-
+from time import perf_counter
 
 class Worker(QRunnable):
     def __init__(self, fn, *args, **kwargs):
@@ -35,15 +35,22 @@ class Observer:
     def remove_table_widget(self, table_view):
         self.table_widgets.remove(table_view)
 
-    def update_table_widget(self):
+    def read_all_registers(self):
         # Reading register data.
+        read_start = perf_counter()
         for table_view in self.table_widgets:
             table_view.read_registers()
-            
+        read_end = perf_counter()
+        print(f"Reading registers :{read_end - read_start}" )
+    
+    def update_all_table_widgets(self):
         # Updating register data.
+        update_start = perf_counter()
         for table_view in self.table_widgets:
             table_view.update_register_data()
+        update_end = perf_counter()
+        print(f"Updating gui:{update_end - update_start}")
 
     def refresh_gui(self):
-        worker = Worker(lambda: self.update_table_widget())
+        worker = Worker(lambda: self.update_all_table_widgets())
         self.threadpool.start(worker)
