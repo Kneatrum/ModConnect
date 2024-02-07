@@ -437,10 +437,7 @@ class TableWidget(QWidget):
         else:
             return False
 
-    def __get_register_info(self):
-        temp_list = [REGISTER_ADDRESS, FUNCTION_CODE]
-        register_info  = self.file_handler.get_register_attributes(self.device_number, temp_list)
-        return register_info     
+     
 
 
     def __set_selected_connection(self):
