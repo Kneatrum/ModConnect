@@ -232,6 +232,47 @@ class FileHandler:
         return result
 
 
+    def get_registers_to_read(self, device_number: int) -> dict:
+        """
+        This method returns a dictionary containing register batches.
+
+        A register batch is marked by a sigle register with the quantity not equal to None.
+
+        The quantity will be used to reade the respective registers in batches.
+
+        args:
+            device_number: This is used as the unique identifier for the stored devices.
+
+        returns:
+            dictionary: A dictionary containing the register attributes.
+
+        Example:
+        register_1: {address: 1, quantity: 10, function_code: 3}
+        register_11: {address: 11, quantity: 5, function_code: 4}
+        register_16: {address: 16, quantity: 5, function_code: 3}
+        """
+        if not self.data_path_exists():
+            print("Data path not found")
+            return None
+        data = self.get_raw_device_data()
+        if not data:
+            return None
+        # First find the device with the device number.
+        for key in data:
+            device = DEVICE_PREFIX + f'{device_number}'
+            if re.search(device, key):
+                result = dict()
+                # Loop through all the registers looking for one that has a quantity that is not None.
+                for register in data[device][REGISTERS]:
+                    if data[device][REGISTERS][register].get(REGISTER_QUANTITY) is not None:
+                        temp_dict = {}
+                        temp_dict[REGISTER_ADDRESS] = data[device][REGISTERS][register].get(REGISTER_ADDRESS)
+                        temp_dict[REGISTER_QUANTITY] = data[device][REGISTERS][register].get(REGISTER_QUANTITY)
+                        temp_dict[FUNCTION_CODE] = data[device][REGISTERS][register].get(FUNCTION_CODE)
+                        result[register] = temp_dict
+        return result
+
+
     def get_connection_params(self, device_number: int) -> dict: 
         """
         This method reads the stored json data from the default filepath 
