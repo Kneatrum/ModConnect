@@ -314,6 +314,8 @@ class FileHandler:
             temp_register_template = copy.copy(REGISTER_TEMPLATE)
 
             # Assign values to the keys that we are interested in for now 
+            if i == 0: temp_register_template[REGISTER_QUANTITY] = quantity # Add the quantity to the first register only.
+            temp_register_template[REGISTER_QUANTITY] = None # The rest of the register quantity should be None.
             temp_register_template[REGISTER_ADDRESS] =  user_input[REGISTERS][REGISTER_ADDRESS] + i  # If the user wants to read say 10 registers after register 1000, this line of code increments the addresses to register number 1011
             temp_register_template[FUNCTION_CODE] = user_input[REGISTERS][FUNCTION_CODE]
             temp_dict[temp_key] = temp_register_template
