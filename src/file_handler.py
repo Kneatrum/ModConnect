@@ -196,14 +196,14 @@ class FileHandler:
         return count
 
 
-    def get_register_attributes(self, device_number: int, list_of_variables: list) -> dict:
+    def get_register_attributes(self, device_number: int, list_of_attributes: list) -> dict:
         """
         This method returns a dictionary containing a list of the 
         specified register attributes
 
         args:
             device_number: This is used as the unique identifier for the stored devices.
-            list_of_variables (list): A list of register attributes
+            list_of_attributes (list): A list of register attributes
 
         returns:
             dictionary: A dictionary containing the register attributes.
@@ -224,11 +224,11 @@ class FileHandler:
                 # Now count the number of registers in the device
                 # We may not need to use a dictionary here. Maybe a list of the addresses is enough.
                 result = dict()
-                for reg in data[device][REGISTERS]:
+                for register in data[device][REGISTERS]:
                     temp_dict = {}
-                    for item in list_of_variables:
-                        temp_dict[item] = data[device][REGISTERS][reg][item]
-                    result[reg] = temp_dict
+                    for register_attribute in list_of_attributes:
+                        temp_dict[register_attribute] = data[device][REGISTERS][register][register_attribute]
+                    result[register] = temp_dict
         return result
 
 
