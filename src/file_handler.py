@@ -462,6 +462,3 @@ class FileHandler:
         return True
 
 
-test = FileHandler()
-temp =  [REGISTER_NAME, REGISTER_ADDRESS]
-print(test.get_register_attributes(2,temp))
