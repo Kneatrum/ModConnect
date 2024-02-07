@@ -6,7 +6,7 @@ from pymodbus.constants import Endian
 from pymodbus.exceptions import ModbusIOException
 from constants import REGISTER_NAME, REGISTER_ADDRESS, REGISTER_PREFIX, TCP_METHOD, RTU_METHOD, \
                         HOST, PORT, SERIAL_PORT, BAUD_RATE, PARITY, STOP_BITS, BYTESIZE, \
-                        FUNCTION_CODE, DEFAULT_QUANTITY
+                        FUNCTION_CODE, REGISTER_QUANTITY
 
 NAME_COLUMN = 0
 ADDRESS_COLUMN = 1
@@ -57,7 +57,7 @@ class TableWidget(QWidget):
         self.connection_methods = self.__get_available_connection_methods(self.device_number)
         self.connection_status = False
         self.selected_connection = self.__set_selected_connection()
-        self.list_of_registers = self.__get_register_info()
+        self.list_of_registers = self.file_handler.get_registers_to_read(self.device_number)
 
         self.register_data = []
 
@@ -467,9 +467,10 @@ class TableWidget(QWidget):
             for register in self.list_of_registers:
                 if self.list_of_registers[register][FUNCTION_CODE]  == 1:
                     address = self.list_of_registers[register].get(REGISTER_ADDRESS)
+                    quantity = self.list_of_registers[register].get(REGISTER_QUANTITY)
                     if address is not None or address == 0:
                         try:
-                            response = self.selected_connection.client.read_coils(address, DEFAULT_QUANTITY, unit=self.slave_address)
+                            response = self.selected_connection.client.read_coils(address, quantity, unit=self.slave_address)
                             if response.isError():
                                 self.register_data.append("Error")
                                 return None
@@ -481,9 +482,10 @@ class TableWidget(QWidget):
                             return None
                 elif self.list_of_registers[register][FUNCTION_CODE] == 2:
                     address = self.list_of_registers[register].get(REGISTER_ADDRESS)
+                    quantity = self.list_of_registers[register].get(REGISTER_QUANTITY)
                     if address is not None or address == 0:
                         try:
-                            response = self.selected_connection.client.read_discrete_inputs(address, DEFAULT_QUANTITY, unit=self.slave_address)
+                            response = self.selected_connection.client.read_discrete_inputs(address, quantity, unit=self.slave_address)
                             if response.isError():
                                 self.register_data.append("Error")
                                 return None
@@ -495,9 +497,10 @@ class TableWidget(QWidget):
                             return None
                 elif self.list_of_registers[register][FUNCTION_CODE] == 3:
                     address = self.list_of_registers[register].get(REGISTER_ADDRESS)
+                    quantity = self.list_of_registers[register].get(REGISTER_QUANTITY)
                     if address is not None or address == 0:
                         try:
-                            response = self.selected_connection.client.read_holding_registers(address, DEFAULT_QUANTITY, unit=self.slave_address)
+                            response = self.selected_connection.client.read_holding_registers(address, quantity, unit=self.slave_address)
                             if response.isError():
                                 self.register_data.append("Error")
                                 return None
@@ -509,9 +512,10 @@ class TableWidget(QWidget):
                             return None
                 elif self.list_of_registers[register][FUNCTION_CODE] == 4:
                     address = self.list_of_registers[register].get(REGISTER_ADDRESS)
+                    quantity = self.list_of_registers[register].get(REGISTER_QUANTITY)
                     if address is not None or address == 0:
                         try:
-                            response = self.selected_connection.client.read_input_registers(address, DEFAULT_QUANTITY, unit=self.slave_address)
+                            response = self.selected_connection.client.read_input_registers(address, quantity, unit=self.slave_address)
                             if response.isError():
                                 self.register_data.append("Error")
                             decoder = BinaryPayloadDecoder.fromRegisters(response.registers, byteorder=Endian.BIG, wordorder=Endian.BIG)
