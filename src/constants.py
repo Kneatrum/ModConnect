@@ -36,16 +36,18 @@ REGISTERS = 'registers'
 REGISTER_PREFIX = 'register_'
 REGISTER_ADDRESS = 'address'
 REGISTER_NAME = 'register_name'
+REGISTER_QUANTITY = 'quantity'
 FUNCTION_CODE = 'function_code'
 UNITS = 'units'
 GAIN = 'gain'
 DATA_TYPE = 'data_type'
 ACCESS_TYPE = 'access_type'
 
-DEFAULT_QUANTITY = 1
+
 
 REGISTER_TEMPLATE = {
     REGISTER_ADDRESS: 0,
+    REGISTER_QUANTITY: None,
     REGISTER_NAME: "",
     FUNCTION_CODE: 0,
     UNITS: "N/A",
