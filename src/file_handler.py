@@ -344,7 +344,7 @@ class FileHandler:
         if not data:
             return None
         device = DEVICE_PREFIX + f'{device_number}'
-        quantity = int(user_input['quantity']) 
+        quantity = int(user_input[REGISTER_QUANTITY]) 
 
         for i in range(quantity) :
             temp_dict = dict()
