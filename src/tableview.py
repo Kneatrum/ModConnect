@@ -462,7 +462,6 @@ class TableWidget(QWidget):
     
 
     def read_registers(self):
-        if self.selected_connection.is_connected():
         self.register_data.clear()
         for register in self.list_of_registers:
             if self.list_of_registers[register][FUNCTION_CODE]  == 1:
