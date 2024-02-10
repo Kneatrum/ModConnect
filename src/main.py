@@ -106,6 +106,7 @@ class MainWindow(QtWidgets.QMainWindow):
     
     '''
     def add_devices_to_layout(self):
+        self.observer.table_widgets.clear()
         saved_devices = self.file_handler.get_device_count()
         if saved_devices:
             self.main_widget = self.table_widget_setup(saved_devices)
