@@ -6,6 +6,9 @@ from file_handler import FileHandler
 from tableview import TableWidget as tablewidget
 from serial_ports import SerialPorts
 from register_reader import Observer
+from threading import Thread
+import threading
+import time
 
 from PyQt5.QtWidgets import  QScrollArea, \
     QGroupBox, QWidget, QMenu, QAction, \
@@ -77,10 +80,43 @@ class MainWindow(QtWidgets.QMainWindow):
 
 
         # Timer for updating register data on each table widget.
-        self.table_widget_timer = QtCore.QTimer()
-        self.table_widget_timer.timeout.connect(self.observer.refresh_gui)
+        # self.table_widget_timer = QtCore.QTimer()
+        # self.table_widget_timer.timeout.connect(self.observer.refresh_gui)
+
+        self.main_thread = threading.main_thread()
+        self.connected_devices = []
+        self.ready_to_poll_event =  threading.Event()
+        print("Threads : ", self.main_thread)
+        print("Thread count : ", threading.active_count())
+        self.t1 = threading.Thread(target=self.register_reading_loop)
+        t2 = threading.Thread(target=self.monitor_connected_devices)
+        
+        t2.start()
 
 
+    def monitor_connected_devices(self):
+        while self.main_thread.is_alive():
+            if not self.ready_to_poll_event.is_set():
+                if len(self.connected_devices) > 0:
+                    self.ready_to_poll_event.set()
+                elif len(self.connected_devices) == 0:
+                    self.ready_to_poll_event.clear()
+
+            for device in self.observer.table_widgets:
+                if device not in self.connected_devices:
+                    if device.selected_connection.is_connected():
+                        self.connected_devices.append(device)
+                else:
+                    if not device.selected_connection.is_connected():
+                        self.connected_devices.remove(device)
+            print("                 Connected devices : ", len(self.connected_devices))
+            time.sleep(0.5)
+
+    def register_reading_loop(self):
+        while self.main_thread.is_alive():
+            self.observer.read_all_registers()
+            print("Done reading\n")
+            time.sleep(1)
         
 
 
@@ -88,7 +124,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
 
     def start_ui_refresh(self):
-        self.table_widget_timer.start(1000)
+        self.t1.start()
 
             
 
