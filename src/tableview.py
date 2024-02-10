@@ -463,67 +463,67 @@ class TableWidget(QWidget):
 
     def read_registers(self):
         if self.selected_connection.is_connected():
-            self.register_data.clear()
-            for register in self.list_of_registers:
-                if self.list_of_registers[register][FUNCTION_CODE]  == 1:
-                    address = self.list_of_registers[register].get(REGISTER_ADDRESS)
-                    quantity = self.list_of_registers[register].get(REGISTER_QUANTITY)
-                    if address is not None or address == 0:
-                        try:
-                            response = self.selected_connection.client.read_coils(address, quantity, unit=self.slave_address)
-                            if response.isError():
-                                self.register_data.append("Error")
-                                return None
-                            decoder = BinaryPayloadDecoder.fromRegisters(response.registers, byteorder=Endian.BIG, wordorder=Endian.BIG)
-                            data = decoder.decode_16bit_uint()
-                            self.register_data.append(data)
-                        except ModbusIOException as e:
-                            self.register_data.append("Comm Error")
+        self.register_data.clear()
+        for register in self.list_of_registers:
+            if self.list_of_registers[register][FUNCTION_CODE]  == 1:
+                address = self.list_of_registers[register].get(REGISTER_ADDRESS)
+                quantity = self.list_of_registers[register].get(REGISTER_QUANTITY)
+                if address is not None or address == 0:
+                    try:
+                        response = self.selected_connection.client.read_coils(address, quantity, unit=self.slave_address)
+                        if response.isError():
+                            self.register_data.append("Error")
                             return None
-                elif self.list_of_registers[register][FUNCTION_CODE] == 2:
-                    address = self.list_of_registers[register].get(REGISTER_ADDRESS)
-                    quantity = self.list_of_registers[register].get(REGISTER_QUANTITY)
-                    if address is not None or address == 0:
-                        try:
-                            response = self.selected_connection.client.read_discrete_inputs(address, quantity, unit=self.slave_address)
-                            if response.isError():
-                                self.register_data.append("Error")
-                                return None
-                            decoder = BinaryPayloadDecoder.fromRegisters(response.registers, byteorder=Endian.BIG, wordorder=Endian.BIG)
-                            data = decoder.decode_16bit_uint()
-                            self.register_data.append(data)
-                        except ModbusIOException as exception:
-                            self.register_data.append("Comm Error")
+                        decoder = BinaryPayloadDecoder.fromRegisters(response.registers, byteorder=Endian.BIG, wordorder=Endian.BIG)
+                        data = decoder.decode_16bit_uint()
+                        self.register_data.append(data)
+                    except ModbusIOException as e:
+                        self.register_data.append("Comm Error")
+                        return None
+            elif self.list_of_registers[register][FUNCTION_CODE] == 2:
+                address = self.list_of_registers[register].get(REGISTER_ADDRESS)
+                quantity = self.list_of_registers[register].get(REGISTER_QUANTITY)
+                if address is not None or address == 0:
+                    try:
+                        response = self.selected_connection.client.read_discrete_inputs(address, quantity, unit=self.slave_address)
+                        if response.isError():
+                            self.register_data.append("Error")
                             return None
-                elif self.list_of_registers[register][FUNCTION_CODE] == 3:
-                    address = self.list_of_registers[register].get(REGISTER_ADDRESS)
-                    quantity = self.list_of_registers[register].get(REGISTER_QUANTITY)
-                    if address is not None or address == 0:
-                        try:
-                            response = self.selected_connection.client.read_holding_registers(address, quantity, unit=self.slave_address)
-                            if response.isError():
-                                self.register_data.append("Error")
-                                return None
-                            decoder = BinaryPayloadDecoder.fromRegisters(response.registers, byteorder=Endian.BIG, wordorder=Endian.BIG)
-                            data = decoder.decode_16bit_uint()
-                            self.register_data.append(data)
-                        except ModbusIOException as exception:
-                            self.register_data.append("Comm Error")
+                        decoder = BinaryPayloadDecoder.fromRegisters(response.registers, byteorder=Endian.BIG, wordorder=Endian.BIG)
+                        data = decoder.decode_16bit_uint()
+                        self.register_data.append(data)
+                    except ModbusIOException as exception:
+                        self.register_data.append("Comm Error")
+                        return None
+            elif self.list_of_registers[register][FUNCTION_CODE] == 3:
+                address = self.list_of_registers[register].get(REGISTER_ADDRESS)
+                quantity = self.list_of_registers[register].get(REGISTER_QUANTITY)
+                if address is not None or address == 0:
+                    try:
+                        response = self.selected_connection.client.read_holding_registers(address, quantity, unit=self.slave_address)
+                        if response.isError():
+                            self.register_data.append("Error")
                             return None
-                elif self.list_of_registers[register][FUNCTION_CODE] == 4:
-                    address = self.list_of_registers[register].get(REGISTER_ADDRESS)
-                    quantity = self.list_of_registers[register].get(REGISTER_QUANTITY)
-                    if address is not None or address == 0:
-                        try:
-                            response = self.selected_connection.client.read_input_registers(address, quantity, unit=self.slave_address)
-                            if response.isError():
-                                self.register_data.append("Error")
-                            decoder = BinaryPayloadDecoder.fromRegisters(response.registers, byteorder=Endian.BIG, wordorder=Endian.BIG)
-                            data = decoder.decode_16bit_uint()
-                            self.register_data.append(data)
-                        except ModbusIOException as exception:
-                            self.register_data.append("Comm Error")
-                            return None
+                        decoder = BinaryPayloadDecoder.fromRegisters(response.registers, byteorder=Endian.BIG, wordorder=Endian.BIG)
+                        data = decoder.decode_16bit_uint()
+                        self.register_data.append(data)
+                    except ModbusIOException as exception:
+                        self.register_data.append("Comm Error")
+                        return None
+            elif self.list_of_registers[register][FUNCTION_CODE] == 4:
+                address = self.list_of_registers[register].get(REGISTER_ADDRESS)
+                quantity = self.list_of_registers[register].get(REGISTER_QUANTITY)
+                if address is not None or address == 0:
+                    try:
+                        response = self.selected_connection.client.read_input_registers(address, quantity, unit=self.slave_address)
+                        if response.isError():
+                            self.register_data.append("Error")
+                        decoder = BinaryPayloadDecoder.fromRegisters(response.registers, byteorder=Endian.BIG, wordorder=Endian.BIG)
+                        data = decoder.decode_16bit_uint()
+                        self.register_data.append(data)
+                    except ModbusIOException as exception:
+                        self.register_data.append("Comm Error")
+                        return None
                 
 
 
