@@ -25,6 +25,7 @@ class Worker(QRunnable):
 class Observer:
     def __init__(self):
         self.table_widgets =[]
+        self.connected_devices = []
         self.threadpool = QThreadPool()
 
     
@@ -38,16 +39,16 @@ class Observer:
     def read_all_registers(self):
         # Reading register data.
         read_start = perf_counter()
-        for table_view in self.table_widgets:
-            table_view.read_registers()
+        for device in self.connected_devices:
+            device.read_registers()
         read_end = perf_counter()
         print(f"Reading registers :{read_end - read_start}" )
     
     def update_all_table_widgets(self):
         # Updating register data.
         update_start = perf_counter()
-        for table_view in self.table_widgets:
-            table_view.update_register_data()
+        for device in self.connected_devices:
+            device.update_register_data()
         update_end = perf_counter()
         print(f"Updating gui:{update_end - update_start}")
 
