@@ -471,11 +471,9 @@ class TableWidget(QWidget):
                     try:
                         response = self.selected_connection.client.read_coils(address, quantity, unit=self.slave_address)
                         if response.isError():
-                            self.register_data.append("Error")
+                            self.register_data += list("Error")
                             return None
-                        decoder = BinaryPayloadDecoder.fromRegisters(response.registers, byteorder=Endian.BIG, wordorder=Endian.BIG)
-                        data = decoder.decode_16bit_uint()
-                        self.register_data.append(data)
+                        self.register_data += response.registers
                     except ModbusIOException as e:
                         self.register_data.append("Comm Error")
                         return None
@@ -486,11 +484,9 @@ class TableWidget(QWidget):
                     try:
                         response = self.selected_connection.client.read_discrete_inputs(address, quantity, unit=self.slave_address)
                         if response.isError():
-                            self.register_data.append("Error")
+                            self.register_data += list("Error")
                             return None
-                        decoder = BinaryPayloadDecoder.fromRegisters(response.registers, byteorder=Endian.BIG, wordorder=Endian.BIG)
-                        data = decoder.decode_16bit_uint()
-                        self.register_data.append(data)
+                        self.register_data += response.registers
                     except ModbusIOException as exception:
                         self.register_data.append("Comm Error")
                         return None
@@ -501,11 +497,9 @@ class TableWidget(QWidget):
                     try:
                         response = self.selected_connection.client.read_holding_registers(address, quantity, unit=self.slave_address)
                         if response.isError():
-                            self.register_data.append("Error")
+                            self.register_data += list("Error")
                             return None
-                        decoder = BinaryPayloadDecoder.fromRegisters(response.registers, byteorder=Endian.BIG, wordorder=Endian.BIG)
-                        data = decoder.decode_16bit_uint()
-                        self.register_data.append(data)
+                        self.register_data += response.registers
                     except ModbusIOException as exception:
                         self.register_data.append("Comm Error")
                         return None
@@ -516,14 +510,12 @@ class TableWidget(QWidget):
                     try:
                         response = self.selected_connection.client.read_input_registers(address, quantity, unit=self.slave_address)
                         if response.isError():
-                            self.register_data.append("Error")
-                        decoder = BinaryPayloadDecoder.fromRegisters(response.registers, byteorder=Endian.BIG, wordorder=Endian.BIG)
-                        data = decoder.decode_16bit_uint()
-                        self.register_data.append(data)
+                            self.register_data += list("Error")
+                            return None
+                        self.register_data += response.registers
                     except ModbusIOException as exception:
                         self.register_data.append("Comm Error")
                         return None
-                
 
 
     def delete_register(self):
