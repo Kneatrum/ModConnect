@@ -153,7 +153,7 @@ class FileHandler:
         # If the path for our data does not exist, return
         if not self.data_path_exists():
             print("Data file not found")
-            return None
+            return 0
         # Read all data from the stored json file
         data = self.get_raw_device_data()
         if not data:
