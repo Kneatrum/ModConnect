@@ -6,7 +6,6 @@ from file_handler import FileHandler
 from tableview import TableWidget as tablewidget
 from serial_ports import SerialPorts
 from register_reader import Observer
-from threading import Thread
 import threading
 import time
 
@@ -84,7 +83,6 @@ class MainWindow(QtWidgets.QMainWindow):
         # self.table_widget_timer.timeout.connect(self.observer.refresh_gui)
 
         self.main_thread = threading.main_thread()
-        self.connected_devices = []
         self.ready_to_poll_event =  threading.Event()
         print("Threads : ", self.main_thread)
         print("Thread count : ", threading.active_count())
@@ -97,25 +95,25 @@ class MainWindow(QtWidgets.QMainWindow):
     def monitor_connected_devices(self):
         while self.main_thread.is_alive():
             if not self.ready_to_poll_event.is_set():
-                if len(self.connected_devices) > 0:
+                if len(self.observer.connected_devices) > 0:
                     self.ready_to_poll_event.set()
-                elif len(self.connected_devices) == 0:
+                elif len(self.observer.connected_devices) == 0:
                     self.ready_to_poll_event.clear()
 
             for device in self.observer.table_widgets:
-                if device not in self.connected_devices:
+                if device not in self.observer.connected_devices:
                     if device.selected_connection.is_connected():
-                        self.connected_devices.append(device)
+                        self.observer.connected_devices.append(device)
                 else:
                     if not device.selected_connection.is_connected():
-                        self.connected_devices.remove(device)
-            print("                 Connected devices : ", len(self.connected_devices))
+                        self.observer.connected_devices.remove(device)
+            print("\t\t\t\t\tConnected devices : ", len(self.observer.connected_devices))
             time.sleep(0.5)
 
     def register_reading_loop(self):
         while self.main_thread.is_alive():
             self.observer.read_all_registers()
-            print("Done reading\n")
+            self.observer.update_all_table_widgets()
             time.sleep(1)
         
 
@@ -434,7 +432,7 @@ class MainWindow(QtWidgets.QMainWindow):
             tcp_client_dict[HOST] = self.ip_address.text()
             tcp_client_dict[PORT] = self.port.text()
 
-            temp_dict = {SLAVE_ADDRESS: slave_address_value, DEVICE_NAME: device_name_value, CONNECTION_PARAMETERS: {RTU_PARAMETERS: {}, TCP_PARAMETERS:tcp_client_dict, DEFAULT_METHOD: {}}, REGISTERS:{}}
+            temp_dict = {SLAVE_ADDRESS: slave_address_value, DEVICE_NAME: device_name_value, DEFAULT_METHOD: {}, CONNECTION_PARAMETERS: {RTU_PARAMETERS: {}, TCP_PARAMETERS:tcp_client_dict}, REGISTERS:{}}
             temp_dict = {f'{DEVICE_PREFIX}{self.device_number}': temp_dict}
             self.register_setup_dialog.accept()
         elif self.modbus_rtu_radio.isChecked():
@@ -451,7 +449,7 @@ class MainWindow(QtWidgets.QMainWindow):
             rtu_client_dict[BYTESIZE] = self.byte_size_options.currentText()
             rtu_client_dict[TIMEOUT] = self.timeout_options.currentText()
 
-            temp_dict = {SLAVE_ADDRESS: slave_address_dict, DEVICE_NAME: device_name_dict, CONNECTION_PARAMETERS: {RTU_PARAMETERS: rtu_client_dict, TCP_PARAMETERS:{}, DEFAULT_METHOD: {}}, REGISTERS:{}}
+            temp_dict = {SLAVE_ADDRESS: slave_address_dict, DEVICE_NAME: device_name_dict, DEFAULT_METHOD: {}, CONNECTION_PARAMETERS: {RTU_PARAMETERS: rtu_client_dict, TCP_PARAMETERS:{}}, REGISTERS:{}}
             temp_dict = {f'{DEVICE_PREFIX}{self.device_number}': temp_dict}
             self.register_setup_dialog.accept()
         return temp_dict
