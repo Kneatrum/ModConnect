@@ -255,19 +255,6 @@ class TableWidget(QWidget):
         self.connection_status_label.setStyleSheet("background-color: " + background_color + "; padding: 25px;")
 
 
-    def create_modbus_connection_label(self) -> str:
-        """
-        This method creates a string that shows the connection parameters used for the specific modbus connection.
-
-        argument: 
-            None
-
-        return:
-            label (str): A string that shows the connection parameters.
-
-        TCP Example:
-            HOST: 192.168.0.1
-            PORT: 502
 
         
     def set_default_modbus_method_if_not_set(self):
