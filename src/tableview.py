@@ -260,24 +260,6 @@ class TableWidget(QWidget):
             HOST: 192.168.0.1
             PORT: 502
 
-        RTU Example:
-            PORT: COM1
-            BAUDRATE: 19200
-            8, N, 1
-        """
-        label = ""
-        result = self.file_handler.get_connection_params(self.device_number)
-        default_method = self.file_handler.get_default_modbus_method(self.device_number)
-        if default_method == TCP_METHOD:
-            label = f'{HOST.upper()}: {result[TCP_METHOD].get(HOST)}\n{PORT.upper()}: {result[TCP_METHOD].get(PORT)}'
-            self.tcp_checkbox.setChecked(True)
-        elif default_method == RTU_METHOD:
-            label = f'{PORT.upper()}: {result[RTU_METHOD].get(SERIAL_PORT)}\n{BAUD_RATE.upper()}: {result[RTU_METHOD].get(BAUD_RATE)}\n{result[RTU_METHOD].get(BYTESIZE)}, {result[RTU_METHOD].get(PARITY)}, {result[RTU_METHOD].get(STOP_BITS)}'
-            self.rtu_checkbox.setChecked(True)
-        else:
-            print("Default method has not been set")
-            return
-        return label
         
     def set_default_modbus_method_if_not_set(self):
         """
