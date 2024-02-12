@@ -235,6 +235,7 @@ class TableWidget(QWidget):
             self.table_widget.itemChanged.disconnect(self.onItemChanged) # Disconnect the ItemChanged signal to alow us to reload the GUI
             self.show_register_dialog() # Show the message box for adding registers
             self.action_menu.setCurrentIndex(0)
+            self.list_of_registers = self.file_handler.get_registers_to_read(self.device_number) # Update the list of registers.
             self.table_widget.itemChanged.connect(self.onItemChanged)    # Reconnect the ItemChanged signal to allow us to update the register names
         elif self.action_menu.currentIndex() == 2: # If the selectec option is Delete registers (index 2)
             self.action_menu.setCurrentIndex(0)
@@ -507,6 +508,7 @@ class TableWidget(QWidget):
                     except ModbusIOException as exception:
                         self.register_data.append("Comm Error")
                         return None
+        print(self.register_data)
 
 
     def delete_register(self):
