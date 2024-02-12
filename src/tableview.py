@@ -97,7 +97,16 @@ class TableWidget(QWidget):
 
         # Create the connection status Qlabel
         # self.modbus_connection_label = QLabel(self.modbus_method_label)
-        self.modbus_method_label = self.create_modbus_connection_label()
+        connection_params = self.file_handler.get_connection_params(self.device_number)
+        default_method = self.file_handler.get_default_modbus_method(self.device_number)
+        if default_method == TCP_METHOD:
+            self.modbus_method_label = f'{HOST.upper()}: {connection_params[TCP_METHOD].get(HOST)}\n{PORT.upper()}: {connection_params[TCP_METHOD].get(PORT)}'
+            self.tcp_checkbox.setChecked(True)
+        elif default_method == RTU_METHOD:
+            self.modbus_method_label  = f'{PORT.upper()}: {connection_params[RTU_METHOD].get(SERIAL_PORT)}\n{BAUD_RATE.upper()}: {connection_params[RTU_METHOD].get(BAUD_RATE)}\n{connection_params[RTU_METHOD].get(BYTESIZE)}, {connection_params[RTU_METHOD].get(PARITY)}, {connection_params[RTU_METHOD].get(STOP_BITS)}'
+            self.rtu_checkbox.setChecked(True)
+
+         
         self.modbus_connection_label.setText(self.modbus_method_label)
 
         self.edit_connection_button = QPushButton('Edit Connection')
