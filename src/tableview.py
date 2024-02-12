@@ -296,7 +296,29 @@ class TableWidget(QWidget):
                 self.tcp_checkbox.setDisabled(True)
         return label
         
+    def set_default_modbus_method_if_not_set(self):
+        """
+            This function checks whether a default modbus method has been set
 
+            and sets it if it has not been set.
+
+            arguments: 
+                None
+            returns: 
+                None
+        """
+        modbus_protocols = self.file_handler.get_modbus_protocol(self.device_number)
+        if len(modbus_protocols) > 1:
+            default_method = self.file_handler.get_default_modbus_method(self.device_number)
+            if not default_method:
+                # Set the default method to TCP if it is not set.
+                self.file_handler.set_default_modbus_method(self.device_number, TCP_METHOD)
+        elif len(modbus_protocols) == 1:
+            if TCP_METHOD in modbus_protocols:
+                self.file_handler.set_default_modbus_method(self.device_number, TCP_METHOD)
+            elif RTU_METHOD in modbus_protocols:
+                self.file_handler.set_default_modbus_method(self.device_number, RTU_METHOD)
+        return
     
 
 
