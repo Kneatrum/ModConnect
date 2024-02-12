@@ -203,10 +203,10 @@ class TableWidget(QWidget):
         if self.rtu_checkbox.isChecked():
             self.tcp_checkbox.setChecked(False)
             self.file_handler.set_default_modbus_method(self.device_number, RTU_METHOD)
-            result = self.file_handler.get_connection_params(self.device_number)
+            connection_params = self.file_handler.get_connection_params(self.device_number)
             modbus_protocols = self.file_handler.get_modbus_protocol(self.device_number)
             if RTU_METHOD in modbus_protocols:
-                self.modbus_method_label = f'Modbus RTU\n{PORT.upper()}: {result[RTU_METHOD].get(SERIAL_PORT)}\n{BAUD_RATE.upper()}: {result[RTU_METHOD].get(BAUD_RATE)}\n{result[RTU_METHOD].get(BYTESIZE)}, {result[RTU_METHOD].get(PARITY)}, {result[RTU_METHOD].get(STOP_BITS)}'
+                self.modbus_method_label = f'Modbus RTU\n{PORT.upper()}: {connection_params[RTU_METHOD].get(SERIAL_PORT)}\n{BAUD_RATE.upper()}: {connection_params[RTU_METHOD].get(BAUD_RATE)}\n{connection_params[RTU_METHOD].get(BYTESIZE)}, {connection_params[RTU_METHOD].get(PARITY)}, {connection_params[RTU_METHOD].get(STOP_BITS)}'
                 self.modbus_connection_label.setText(self.modbus_method_label)
                 
         
@@ -215,10 +215,10 @@ class TableWidget(QWidget):
         if self.tcp_checkbox.isChecked():
                 self.rtu_checkbox.setChecked(False)
                 self.file_handler.set_default_modbus_method(self.device_number, TCP_METHOD)
-                result = self.file_handler.get_connection_params(self.device_number)
+                connection_params = self.file_handler.get_connection_params(self.device_number)
                 modbus_protocols = self.file_handler.get_modbus_protocol(self.device_number)
                 if TCP_METHOD in modbus_protocols:
-                    self.modbus_method_label = f'Modbus TCP\n{HOST.upper()}: {result[TCP_METHOD].get(HOST)}\n{PORT.upper()}: {result[TCP_METHOD].get(PORT)}'
+                    self.modbus_method_label = f'Modbus TCP\n{HOST.upper()}: {connection_params[TCP_METHOD].get(HOST)}\n{PORT.upper()}: {connection_params[TCP_METHOD].get(PORT)}'
                     self.modbus_connection_label.setText(self.modbus_method_label)
                     
 
