@@ -267,33 +267,16 @@ class TableWidget(QWidget):
         """
         label = ""
         result = self.file_handler.get_connection_params(self.device_number)
-        modbus_protocols = self.file_handler.get_modbus_protocol(self.device_number)
-        if len(modbus_protocols) > 1:
-            default_method = self.file_handler.get_default_modbus_method(self.device_number)
-            if not default_method:
-                # Set the default method to TCP if it is not set.
-                self.file_handler.set_default_modbus_method(self.device_number, TCP_METHOD)
-                default_method = TCP_METHOD
-                label = f'Modbus TCP\n{HOST.upper()}: {result[TCP_METHOD].get(HOST)}\n{PORT.upper()}: {result[TCP_METHOD].get(PORT)}'
-                self.tcp_checkbox.setChecked(True)
-            else:
-                if default_method == TCP_METHOD:
-                    label = f'Modbus TCP\n{HOST.upper()}: {result[TCP_METHOD].get(HOST)}\n{PORT.upper()}: {result[TCP_METHOD].get(PORT)}'
-                    self.tcp_checkbox.setChecked(True)
-                elif default_method == RTU_METHOD:
-                    label = f'Modbus RTU\n{PORT.upper()}: {result[RTU_METHOD].get(SERIAL_PORT)}\n{BAUD_RATE.upper()}: {result[RTU_METHOD].get(BAUD_RATE)}\n{result[RTU_METHOD].get(BYTESIZE)}, {result[RTU_METHOD].get(PARITY)}, {result[RTU_METHOD].get(STOP_BITS)}'
-                    self.rtu_checkbox.setChecked(True)
-        elif len(modbus_protocols) == 1:
-            if TCP_METHOD in modbus_protocols:
-                label = f'Modbus TCP\n{HOST.upper()}: {result[TCP_METHOD].get(HOST)}\n{PORT.upper()}: {result[TCP_METHOD].get(PORT)}'
-                self.tcp_checkbox.setChecked(True)
-                self.tcp_checkbox.setDisabled(True)
-                self.rtu_checkbox.setDisabled(True)
-            elif RTU_METHOD in modbus_protocols:
-                label = f'Modbus RTU\n{PORT.upper()}: {result[RTU_METHOD].get(SERIAL_PORT)}\n{BAUD_RATE.upper()}: {result[RTU_METHOD].get(BAUD_RATE)}\n{result[RTU_METHOD].get(BYTESIZE)}, {result[RTU_METHOD].get(PARITY)}, {result[RTU_METHOD].get(STOP_BITS)}'
-                self.rtu_checkbox.setChecked(True)
-                self.rtu_checkbox.setDisabled(True)
-                self.tcp_checkbox.setDisabled(True)
+        default_method = self.file_handler.get_default_modbus_method(self.device_number)
+        if default_method == TCP_METHOD:
+            label = f'{HOST.upper()}: {result[TCP_METHOD].get(HOST)}\n{PORT.upper()}: {result[TCP_METHOD].get(PORT)}'
+            self.tcp_checkbox.setChecked(True)
+        elif default_method == RTU_METHOD:
+            label = f'{PORT.upper()}: {result[RTU_METHOD].get(SERIAL_PORT)}\n{BAUD_RATE.upper()}: {result[RTU_METHOD].get(BAUD_RATE)}\n{result[RTU_METHOD].get(BYTESIZE)}, {result[RTU_METHOD].get(PARITY)}, {result[RTU_METHOD].get(STOP_BITS)}'
+            self.rtu_checkbox.setChecked(True)
+        else:
+            print("Default method has not been set")
+            return
         return label
         
     def set_default_modbus_method_if_not_set(self):
