@@ -458,6 +458,9 @@ class TableWidget(QWidget):
             modbus_object = ModbusTCP(self.device_number)
         elif result == RTU_METHOD:
             modbus_object = ModbusRTU(self.device_number)
+        else:
+            print("Default method has not been set")
+            return None
         return modbus_object
     
 
