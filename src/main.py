@@ -135,48 +135,74 @@ class MainWindow(QtWidgets.QMainWindow):
         self.main_widget = self.create_central_widget()
 
 
-    '''
-    This is the functions responsible for displaying all the registered devices on the screen.
-    
-    '''
-    def add_devices_to_layout(self):
+    def add_widgets_to_horizontal_layout(self):
+        """
+        This function adds all QTableWidgets to an horizontal layout
+
+        arguments:
+            None
+        returns:
+            layout: the horizontal layout or None
+        """
         self.observer.table_widgets.clear()
         saved_devices = self.file_handler.get_device_count()
         if saved_devices:
-            self.main_widget = self.table_widget_setup(saved_devices)
-            self.setCentralWidget(self.main_widget)
-            # Add a small space between the menu bar and the central widget
-            self.centralWidget().layout().setContentsMargins(0, 20, 0, 50)
-            self.show()
-        
-
-    
-    def table_widget_setup(self,saved_devices):
-        if saved_devices:
             # Create a central widget
-            central_widget = QWidget()
             # Create a horizontal layout to add the table widgets
-            self.horizontal_layout = QHBoxLayout()
+            layout = QHBoxLayout()
             for index in range(saved_devices):
                 widget = tablewidget(index + 1) # Create and instance of our table widget. Adding 1 to prevent having device_0
                 self.observer.add_table_widget(widget)
-                self.horizontal_layout.addWidget(widget) # Create the table widgets and add them in the horizontal layout
-            self.horizontal_layout.addStretch() 
-            
+                layout.addWidget(widget) # Create the table widgets and add them in the horizontal layout
+                layout.addStretch()
+            return layout
+        return None
+    
 
-            # Create a scroll area widget and add the horizontal layout to it
-            scroll_area = QScrollArea()
-            scroll_area.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
-            scroll_area.setWidgetResizable(True)
-            scroll_area.setWidget(QWidget())
-            scroll_area.widget().setLayout(self.horizontal_layout)
+    def create_scroll_area_layout(self, layout):
+        """
+        This function creates a scroll area using a layout that is passed in as a parameter
 
-            # Add the scroll area widget to the main layout
-            self.main_layout = QVBoxLayout()
-            self.main_layout.addWidget(scroll_area)
-            #self.setLayout(self.main_layout)  # Set the main layout
+        arguments: 
+            layout: A horizontal layout containing a number of QTableWidgets to be displayed.
 
-            central_widget.setLayout(self.main_layout) # Assign the main layout to the central widget
+        returns:
+            layout: A vertical layout in a scroll area
+        """
+        # Create a scroll area widget and add the horizontal layout to it
+        scroll_area = QScrollArea()
+        scroll_area.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
+        scroll_area.setWidgetResizable(True)
+        scroll_area.setWidget(QWidget())
+        scroll_area.widget().setLayout(layout)
+        # Add the scroll area widget to the main layout
+        layout = QVBoxLayout()
+        layout.addWidget(scroll_area)
+        return layout
+
+        #self.setLayout(self.main_layout)  # Set the main layout
+        
+
+    def create_central_widget(self):
+            """
+            This function gets a scroll area layout and creates a central widget.
+
+            arguments:
+                scroll_area_layout: The scroll area layout
+
+            returns:
+                central_widget: The central widget which is used to display all the QtableWidgets.
+            """
+            layout = self.add_widgets_to_horizontal_layout()
+            if not layout:
+                print("Could not create a layout")
+                return None
+            scroll_area = self.create_scroll_area_layout(layout)
+            central_widget = QWidget()
+            central_widget.setLayout(scroll_area) # Assign the main layout to the central widget
+            self.setCentralWidget(central_widget)
+            # Add a small space between the menu bar and the central widget
+            self.centralWidget().layout().setContentsMargins(0, 20, 0, 50)  
             return central_widget
         
 
