@@ -132,7 +132,7 @@ class MainWindow(QtWidgets.QMainWindow):
          
         # print("Adding a new device")
         self.file_handler.add_device(user_input)
-        self.add_devices_to_layout()
+        self.main_widget = self.create_central_widget()
 
 
     '''
