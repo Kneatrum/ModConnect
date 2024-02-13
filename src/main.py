@@ -75,7 +75,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.setMenuBar(menubar)
         
         # Display all the registered devices on the screen
-        self.add_devices_to_layout()
+        self.main_widget = self.create_central_widget()
 
 
         # Timer for updating register data on each table widget.
