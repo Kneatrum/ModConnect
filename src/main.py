@@ -39,6 +39,8 @@ class MainWindow(QtWidgets.QMainWindow):
 
         self.main_widget = None
         self.observer = Observer()
+        self.threadpool = QThreadPool()
+        self.connected_devices = []
 
 
         
