@@ -1,11 +1,11 @@
 import sys
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, QThreadPool
 from PyQt5 import QtWidgets
 from PyQt5 import QtCore
 from file_handler import FileHandler 
 from tableview import TableWidget as tablewidget
 from serial_ports import SerialPorts
-from register_reader import Observer
+from register_reader import Observer, Worker
 import threading
 import time
 
@@ -13,7 +13,7 @@ from PyQt5.QtWidgets import  QScrollArea, \
     QGroupBox, QWidget, QMenu, QAction, \
     QMenuBar, QPushButton,  QVBoxLayout, \
     QLabel, QLineEdit, QComboBox, \
-    QDialog, QHBoxLayout, QRadioButton
+    QDialog, QHBoxLayout, QRadioButton, QTableWidget, QTableWidgetItem
 
 from constants import SLAVE_ADDRESS, \
         BAUD_RATE, PORT, DEVICE_NAME, HOST, \
@@ -81,17 +81,12 @@ class MainWindow(QtWidgets.QMainWindow):
         self.main_widget = self.create_central_widget()
 
 
-        # Timer for updating register data on each table widget.
-        # self.table_widget_timer = QtCore.QTimer()
-        # self.table_widget_timer.timeout.connect(self.observer.refresh_gui)
-
         self.main_thread = threading.main_thread()
         self.ready_to_poll_event =  threading.Event()
-        print("Threads : ", self.main_thread)
-        print("Thread count : ", threading.active_count())
-        self.t1 = threading.Thread(target=self.register_reading_loop)
         t2 = threading.Thread(target=self.monitor_connected_devices)
-        
+        t2.start()
+
+
     def start_tasks(self):
         worker = Worker(self.observer.read_all_registers)
         worker.signals.result.connect(self.refresh_gui)
@@ -139,15 +134,9 @@ class MainWindow(QtWidgets.QMainWindow):
                 else:
                     if device.selected_connection and not device.selected_connection.is_connected():
                         self.observer.connected_devices.remove(device)
-            print("\t\t\t\t\tConnected devices : ", len(self.observer.connected_devices))
+            # print("\t\t\t\t\tConnected devices : ", len(self.observer.connected_devices))
             time.sleep(0.5)
 
-    def register_reading_loop(self):
-        while self.main_thread.is_alive():
-            self.observer.read_all_registers()
-            self.observer.update_all_table_widgets()
-            time.sleep(1)
-        
 
 
 
