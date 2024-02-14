@@ -508,7 +508,7 @@ class TableWidget(QWidget):
                     except ModbusIOException as exception:
                         self.register_data.append("Comm Error")
                         return None
-        print(self.register_data)
+        return self.register_data
 
 
     def delete_register(self):
