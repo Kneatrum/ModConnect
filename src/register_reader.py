@@ -2,31 +2,32 @@
 This module implements the observer pattern in reading and updating the register table or table widget.
 """
 
-from PyQt5.QtCore import QRunnable, QThreadPool
+from PyQt5.QtCore import QRunnable, QObject, pyqtSignal
 from time import perf_counter
+import time
+
+class WorkerSignals(QObject):
+    finished = pyqtSignal()
+    result = pyqtSignal(object)
 
 class Worker(QRunnable):
-    def __init__(self, fn, *args, **kwargs):
+    def __init__(self, fn):
         super(Worker, self).__init__()
-
-        # Store constructor arguments (re-used for processing)
         self.fn = fn
-        self.args = args
-        self.kwargs = kwargs
+        self.signals = WorkerSignals()
 
     def run(self):
-        '''
-        Initialise the runner function with passed args, kwargs.
-        '''
-        # Retrieve args/kwargs here; and fire processing using them
-        self.fn(*self.args, **self.kwargs)
+        while True:
+            result = self.fn()
+            self.signals.result.emit(result)
+            self.signals.finished.emit()
+            time.sleep(1)
 
 
 class Observer:
     def __init__(self):
         self.table_widgets =[]
         self.connected_devices = []
-        self.threadpool = QThreadPool()
 
     
     def add_table_widget(self, table_view):
@@ -38,20 +39,11 @@ class Observer:
 
     def read_all_registers(self):
         # Reading register data.
+        result_dict = {}
         read_start = perf_counter()
         for device in self.connected_devices:
-            device.read_registers()
+            result_dict[device.device_number] =   device.read_registers()
         read_end = perf_counter()
         print(f"Reading registers :{read_end - read_start}" )
-    
-    def update_all_table_widgets(self):
-        # Updating register data.
-        update_start = perf_counter()
-        for device in self.connected_devices:
-            device.update_register_data()
-        update_end = perf_counter()
-        print(f"Updating gui:{update_end - update_start}")
+        return result_dict
 
-    def refresh_gui(self):
-        worker = Worker(lambda: self.update_all_table_widgets())
-        self.threadpool.start(worker)
