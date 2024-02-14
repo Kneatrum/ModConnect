@@ -153,7 +153,8 @@ class MainWindow(QtWidgets.QMainWindow):
 
 
     def start_ui_refresh(self):
-        self.t1.start()
+        self.connected_devices = self.main_widget.findChildren(QTableWidget)
+        self.start_tasks()
 
             
 
