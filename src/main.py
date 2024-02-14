@@ -24,7 +24,8 @@ from constants import SLAVE_ADDRESS, \
         BYTESIZE_ITEMS, TIMEOUT_ITEMS, REGISTERS, \
         DEFAULT_METHOD
 
-
+# Constant that stores the index of the column that displays the value of the read registers.
+VALUE_COLUMN = 2
 
 class MainWindow(QtWidgets.QMainWindow):
 
