@@ -89,7 +89,36 @@ class MainWindow(QtWidgets.QMainWindow):
         self.t1 = threading.Thread(target=self.register_reading_loop)
         t2 = threading.Thread(target=self.monitor_connected_devices)
         
-        t2.start()
+    def start_tasks(self):
+        worker = Worker(self.observer.read_all_registers)
+        worker.signals.result.connect(self.refresh_gui)
+        self.threadpool.start(worker)
+
+
+    def refresh_gui(self, result):
+        """
+        This method is responsible for updating the GUI with the register results
+
+        arguments:
+            result (dict): This is a dictionary containing the device number and a list of its registers.
+
+            Example: 
+                {1: [2238, 2238, 2238], 2: [2221, 2221, 2221]}
+
+        returns:
+            None
+        
+        """
+        start_time = time.perf_counter()
+        # The key of the dictionary represents the device number.
+        for device_number in result.keys():
+            # The value of the dictionary is a list of the register results for this particular device number.
+            register_list = result[device_number]
+            # Create a loop to iterate over the QtableWidget's rows and update the value column with the read registers.
+            for row in range(self.connected_devices[device_number - 1].rowCount()):
+                self.connected_devices[device_number - 1].setItem(row, VALUE_COLUMN, QTableWidgetItem(str(register_list[row])))
+        stop_time = time.perf_counter()
+        print("Time :", stop_time - start_time)
 
 
     def monitor_connected_devices(self):
