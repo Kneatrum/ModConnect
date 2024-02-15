@@ -15,9 +15,13 @@ class Worker(QRunnable):
         super(Worker, self).__init__()
         self.fn = fn
         self.signals = WorkerSignals()
+        self.is_running = True
+    
+    def stop(self):
+        self.is_running = False
 
     def run(self):
-        while True:
+        while self.is_running:
             result = self.fn()
             self.signals.result.emit(result)
             self.signals.finished.emit()
