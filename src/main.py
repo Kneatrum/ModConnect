@@ -1,5 +1,5 @@
 import sys
-from PyQt5.QtCore import Qt, QThreadPool
+from PyQt5.QtCore import Qt, QThreadPool, QCoreApplication
 from PyQt5 import QtWidgets
 from PyQt5 import QtCore
 from file_handler import FileHandler 
