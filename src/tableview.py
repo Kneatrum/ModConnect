@@ -100,6 +100,8 @@ class TableWidget(QWidget):
         # self.modbus_connection_label = QLabel(self.modbus_method_label)
         connection_params = self.file_handler.get_connection_params(self.device_number)
         default_method = self.file_handler.get_default_modbus_method(self.device_number)
+        modbus_protocols = self.file_handler.get_modbus_protocol(self.device_number)
+        
         if default_method == TCP_METHOD:
             self.modbus_method_label = f'{HOST.upper()}: {connection_params[TCP_METHOD].get(HOST)}\n{PORT.upper()}: {connection_params[TCP_METHOD].get(PORT)}'
             self.tcp_checkbox.setChecked(True)
@@ -107,6 +109,10 @@ class TableWidget(QWidget):
             self.modbus_method_label  = f'{PORT.upper()}: {connection_params[RTU_METHOD].get(SERIAL_PORT)}\n{BAUD_RATE.upper()}: {connection_params[RTU_METHOD].get(BAUD_RATE)}\n{connection_params[RTU_METHOD].get(BYTESIZE)}, {connection_params[RTU_METHOD].get(PARITY)}, {connection_params[RTU_METHOD].get(STOP_BITS)}'
             self.rtu_checkbox.setChecked(True)
 
+        # If there is only one option, disable the checkboxes
+        if len(modbus_protocols) == 1:
+            self.rtu_checkbox.setDisabled(True)
+            self.tcp_checkbox.setDisabled(True)
          
         self.modbus_connection_label.setText(self.modbus_method_label)
 
@@ -207,7 +213,7 @@ class TableWidget(QWidget):
             connection_params = self.file_handler.get_connection_params(self.device_number)
             modbus_protocols = self.file_handler.get_modbus_protocol(self.device_number)
             if RTU_METHOD in modbus_protocols:
-                self.modbus_method_label = f'Modbus RTU\n{PORT.upper()}: {connection_params[RTU_METHOD].get(SERIAL_PORT)}\n{BAUD_RATE.upper()}: {connection_params[RTU_METHOD].get(BAUD_RATE)}\n{connection_params[RTU_METHOD].get(BYTESIZE)}, {connection_params[RTU_METHOD].get(PARITY)}, {connection_params[RTU_METHOD].get(STOP_BITS)}'
+                self.modbus_method_label = f'{PORT.upper()}: {connection_params[RTU_METHOD].get(SERIAL_PORT)}\n{BAUD_RATE.upper()}: {connection_params[RTU_METHOD].get(BAUD_RATE)}\n{connection_params[RTU_METHOD].get(BYTESIZE)}, {connection_params[RTU_METHOD].get(PARITY)}, {connection_params[RTU_METHOD].get(STOP_BITS)}'
                 self.modbus_connection_label.setText(self.modbus_method_label)
                 
         
@@ -219,7 +225,7 @@ class TableWidget(QWidget):
                 connection_params = self.file_handler.get_connection_params(self.device_number)
                 modbus_protocols = self.file_handler.get_modbus_protocol(self.device_number)
                 if TCP_METHOD in modbus_protocols:
-                    self.modbus_method_label = f'Modbus TCP\n{HOST.upper()}: {connection_params[TCP_METHOD].get(HOST)}\n{PORT.upper()}: {connection_params[TCP_METHOD].get(PORT)}'
+                    self.modbus_method_label = f'{HOST.upper()}: {connection_params[TCP_METHOD].get(HOST)}\n{PORT.upper()}: {connection_params[TCP_METHOD].get(PORT)}'
                     self.modbus_connection_label.setText(self.modbus_method_label)
                     
 
