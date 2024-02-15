@@ -43,6 +43,11 @@ class MainWindow(QtWidgets.QMainWindow):
         self.threadpool = QThreadPool()
         self.connected_devices = []
 
+        self.worker = Worker(self.observer.read_all_registers)
+        self.worker.signals.result.connect(self.refresh_gui)
+        # Stop the worker thread when the application is stopped.
+        QCoreApplication.instance().aboutToQuit.connect(self.worker.stop)
+
 
         
 
