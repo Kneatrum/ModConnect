@@ -93,10 +93,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
 
     def start_tasks(self):
-        worker = Worker(self.observer.read_all_registers)
-        worker.signals.result.connect(self.refresh_gui)
-        self.threadpool.start(worker)
-        worker.setAutoDelete(True)  # Set the worker as a daemon thread
+        self.threadpool.start(self.worker)
 
 
     def refresh_gui(self, result):
