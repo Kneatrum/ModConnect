@@ -13,7 +13,7 @@ from PyQt5.QtWidgets import  QScrollArea, \
     QGroupBox, QWidget, QMenu, QAction, \
     QMenuBar, QPushButton,  QVBoxLayout, \
     QLabel, QLineEdit, QComboBox, \
-    QDialog, QHBoxLayout, QRadioButton, QTableWidget, QTableWidgetItem
+    QDialog, QHBoxLayout, QCheckBox, QTableWidget, QTableWidgetItem, QSizePolicy
 
 from constants import SLAVE_ADDRESS, \
         BAUD_RATE, PORT, DEVICE_NAME, HOST, \
@@ -209,26 +209,26 @@ class MainWindow(QtWidgets.QMainWindow):
         
 
     def create_central_widget(self):
-            """
-            This function gets a scroll area layout and creates a central widget.
+        """
+        This function gets a scroll area layout and creates a central widget.
 
-            arguments:
-                scroll_area_layout: The scroll area layout
+        arguments:
+            scroll_area_layout: The scroll area layout
 
-            returns:
-                central_widget: The central widget which is used to display all the QtableWidgets.
-            """
-            layout = self.add_widgets_to_horizontal_layout()
-            if not layout:
-                print("Could not create a layout")
-                return None
-            scroll_area = self.create_scroll_area_layout(layout)
-            central_widget = QWidget()
-            central_widget.setLayout(scroll_area) # Assign the main layout to the central widget
-            self.setCentralWidget(central_widget)
-            # Add a small space between the menu bar and the central widget
-            self.centralWidget().layout().setContentsMargins(0, 20, 0, 50)  
-            return central_widget
+        returns:
+            central_widget: The central widget which is used to display all the QtableWidgets.
+        """
+        layout = self.add_widgets_to_horizontal_layout()
+        if not layout:
+            print("Could not create a layout")
+            return None
+        scroll_area = self.create_scroll_area_layout(layout)
+        central_widget = QWidget()
+        central_widget.setLayout(scroll_area) # Assign the main layout to the central widget
+        self.setCentralWidget(central_widget)
+        # Add a small space between the menu bar and the central widget
+        self.centralWidget().layout().setContentsMargins(0, 20, 0, 50)  
+        return central_widget
         
 
 
@@ -241,13 +241,106 @@ class MainWindow(QtWidgets.QMainWindow):
         self.register_setup_dialog.setWindowTitle("Connect")
 
         # Create the main Vertical layout
-        device_setup_main_layout = QVBoxLayout()
+        self.device_setup_main_layout = QVBoxLayout()
 
         
         self.device_number = self.file_handler.get_device_count() + 1
 
         # Create a QGroupBox for the entire dialog
-        dialog_group_box = QGroupBox("Device " + str(self.device_number), self)
+        self.dialog_group_box = QGroupBox("Device " + str(self.device_number), self)
+
+
+
+
+
+        # Create a horizontal layout for the Modbus options (radio buttons)
+        modbus_options_layout = QHBoxLayout()
+        
+        self.modbus_tcp_check_box = QCheckBox("Modbus TCP")
+        self.modbus_rtu_check_box = QCheckBox("Modbus RTU")
+        
+        # Add radio buttons to the layout
+        modbus_options_layout.addWidget(self.modbus_tcp_check_box)
+        modbus_options_layout.addWidget(self.modbus_rtu_check_box)
+        modbus_options_layout.setAlignment(Qt.AlignTop)
+        
+        # Add the Modbus options layout to the main layout
+        self.device_setup_main_layout.addLayout(modbus_options_layout)
+
+        # Create a QPushButton for the submit button
+        submit_button = QPushButton("Submit")
+        submit_button.clicked.connect(self.get_user_input)
+
+        # Create a layout for the dialog
+        self.submit_button_layout = QVBoxLayout()
+        self.submit_button_layout.addWidget(submit_button)
+
+        self.modbus_rtu_group_box = self.create_modbus_rtu_group_box()
+        self.modbus_tcp_group_box = self.create_modbus_tcp_group_box()
+        self.modbus_rtu_group_box.setAlignment(Qt.AlignTop)
+        self.modbus_tcp_group_box.setAlignment(Qt.AlignTop)
+
+
+    
+        # Connect radio buttons to show/hide the respective group boxes
+        self.modbus_tcp_check_box.toggled.connect(self.update_qdialog)
+        self.modbus_rtu_check_box.toggled.connect(self.update_qdialog)
+
+        # # Add the "Modbus RTU" group box to the main layout
+        # self.device_setup_main_layout.addWidget(self.modbus_rtu_group_box)
+
+        # Add the "Modbus RTU" group box to the main layout
+        self.device_setup_main_layout.addWidget(self.modbus_tcp_group_box)
+
+        self.device_setup_main_layout.addLayout(self.submit_button_layout)
+
+
+        # Add the main layout to the main group box
+        self.dialog_group_box.setLayout(self.device_setup_main_layout)
+
+        # Execute the dialog box
+        self.register_setup_dialog.setLayout(self.device_setup_main_layout)
+        self.register_setup_dialog.exec_()
+
+    def update_qdialog(self):
+        if self.modbus_tcp_check_box.isChecked() and self.modbus_rtu_check_box.isChecked():
+            self.device_setup_main_layout.addWidget(self.modbus_tcp_group_box)
+            self.device_setup_main_layout.addWidget(self.modbus_rtu_group_box)
+            self.device_setup_main_layout.addLayout(self.submit_button_layout)
+            self.modbus_tcp_group_box.setVisible(True)
+            self.modbus_rtu_group_box.setVisible(True)
+        elif self.modbus_rtu_check_box.isChecked() and not self.modbus_tcp_check_box.isChecked():
+            self.device_setup_main_layout.addWidget(self.modbus_rtu_group_box)
+            if self.device_setup_main_layout.indexOf(self.modbus_tcp_group_box) != -1:
+                self.device_setup_main_layout.removeWidget(self.modbus_tcp_group_box)
+            self.device_setup_main_layout.addLayout(self.submit_button_layout)
+            self.modbus_rtu_group_box.setVisible(True)
+        elif self.modbus_tcp_check_box.isChecked() and not self.modbus_rtu_check_box.isChecked():
+            self.device_setup_main_layout.addWidget(self.modbus_tcp_group_box)
+            if self.device_setup_main_layout.indexOf(self.modbus_rtu_group_box) != -1:
+                self.device_setup_main_layout.removeWidget(self.modbus_rtu_group_box)
+            self.device_setup_main_layout.addLayout(self.submit_button_layout)
+            self.modbus_tcp_group_box.setVisible(True)
+        elif not self.modbus_tcp_check_box.isChecked() and not self.modbus_rtu_check_box.isChecked():
+            # self.device_setup_main_layout.removeWidget(self.modbus_rtu_group_box)
+            # self.device_setup_main_layout.removeWidget(self.modbus_tcp_group_box)
+            # self.device_setup_main_layout.removeWidget(self.submit_button_layout)
+            pass
+
+
+    
+            
+
+
+        
+
+
+
+
+    def create_modbus_tcp_group_box(self):
+        # Create a QGroupBox for the "Set" elements
+        modbus_tcp_group_box = QGroupBox("Modbus TCP", self)
+        modbus_tcp_group_box.setFixedWidth(450)  # Set a fixed width to prevent resizing
 
         # Create the first horizontal layout and a provison for assigning a custom name to the "Modbus TCP" device
         tcp_custom_name_layout = QHBoxLayout()
@@ -257,25 +350,6 @@ class MainWindow(QtWidgets.QMainWindow):
         # Add label and slave widgets to the first horizontal layout for "Modbus TCP"
         tcp_custom_name_layout.addWidget(self.tcp_custom_name_label)
         tcp_custom_name_layout.addWidget(self.tcp_custom_name)
-
-
-
-        # Create a horizontal layout for the Modbus options (radio buttons)
-        modbus_options_layout = QHBoxLayout()
-        
-        self.modbus_tcp_radio = QRadioButton("Modbus TCP")
-        self.modbus_rtu_radio = QRadioButton("Modbus RTU")
-        
-        # Add radio buttons to the layout
-        modbus_options_layout.addWidget(self.modbus_tcp_radio)
-        modbus_options_layout.addWidget(self.modbus_rtu_radio)
-        
-        # Add the Modbus options layout to the main layout
-        device_setup_main_layout.addLayout(modbus_options_layout)
-
-        # Create a QGroupBox for the "Set" elements
-        modbus_tcp_group_box = QGroupBox("Modbus TCP", self)
-        modbus_tcp_group_box.setFixedWidth(450)  # Set a fixed width to prevent resizing
 
         # Create the first horizontal layout and add Slave ID label and its edit box for "Modbus TCP"
         tcp_slave_id_h_layout = QHBoxLayout()
@@ -326,16 +400,18 @@ class MainWindow(QtWidgets.QMainWindow):
 
         # Set the layout of the "Modbus TCP" group box
         modbus_tcp_group_box.setLayout(modbust_tcp_group_box_layout)
+        modbus_tcp_group_box.setFixedSize(300, 200)
+        modbus_tcp_group_box.hide()
+        return modbus_tcp_group_box
 
 
+
+    def create_modbus_rtu_group_box(self):
         """
         Create a QGroupBox for the "Modbus RTU" elements
         
         """
         modbus_rtu_group_box = QGroupBox("Modbus RTU", self)
-        modbus_rtu_group_box.setFixedWidth(450)  # Set a fixed width to prevent resizing
-
-
         # Create the first horizontal layout and a provison for assigning a custom name to the "Modbus TCP" device
         rtu_custom_name_layout = QHBoxLayout()
         self.rtu_custom_name_label = QLabel("Custom Name")
@@ -421,15 +497,6 @@ class MainWindow(QtWidgets.QMainWindow):
         self.timeout_options.addItems(TIMEOUT_ITEMS)  # Add the timeout options to the dropdown list.
         timeout_layout.addWidget(self.timeout_options)  # Add the timeout options to the widget.
 
-        # Create a QPushButton for the submit button
-        submit_button = QPushButton("Submit")
-        submit_button.clicked.connect(self.get_user_input)
-
-        # Create a layout for the dialog
-        submit_button_layout = QVBoxLayout()
-        submit_button_layout.addWidget(submit_button)
-
-
         # Create a vertical layout for the elements inside the "Modbus RTU" group box
         modbus_rtu_group_box_layout = QVBoxLayout()
         modbus_rtu_group_box_layout.addLayout(rtu_custom_name_layout)
@@ -440,42 +507,22 @@ class MainWindow(QtWidgets.QMainWindow):
         modbus_rtu_group_box_layout.addLayout(stop_bits_layout)
         modbus_rtu_group_box_layout.addLayout(byte_size_layout)
         modbus_rtu_group_box_layout.addLayout(timeout_layout)
-        
-
 
         # Set the layout of the "Modbus RTU" group box
         modbus_rtu_group_box.setLayout(modbus_rtu_group_box_layout)
+        modbus_rtu_group_box.setFixedSize(300,300)
 
         # Initially hide "Modbus TCP" and "Modbus RTU" group boxes
-        modbus_tcp_group_box.hide()
         modbus_rtu_group_box.hide()
 
-        # Connect radio buttons to show/hide the respective group boxes
-        self.modbus_tcp_radio.toggled.connect(lambda: modbus_tcp_group_box.setVisible(self.modbus_tcp_radio.isChecked()))
-        self.modbus_rtu_radio.toggled.connect(lambda: modbus_rtu_group_box.setVisible(self.modbus_rtu_radio.isChecked()))
-
-        # Add the "Modbus RTU" group box to the main layout
-        device_setup_main_layout.addWidget(modbus_rtu_group_box)
-
-        # Add the "Modbus RTU" group box to the main layout
-        device_setup_main_layout.addWidget(modbus_tcp_group_box)
-
-        device_setup_main_layout.addLayout(submit_button_layout)
-
-        # Add the main layout to the main group box
-        dialog_group_box.setLayout(device_setup_main_layout)
-
-        # Execute the dialog box
-        self.register_setup_dialog.setLayout(device_setup_main_layout)
-        self.register_setup_dialog.exec_()
-
+        return modbus_rtu_group_box
 
 
 
     def get_user_input(self) -> dict:
         # Check which radio button is selected (Modbus TCP or Modbus RTU)
         temp_dict = {}
-        if self.modbus_tcp_radio.isChecked(): 
+        if self.modbus_tcp_check_box.isChecked(): 
             tcp_client_dict = {}
             # Modbus TCP is selected
             slave_address_value = self.tcp_slave_id.text()
@@ -486,7 +533,7 @@ class MainWindow(QtWidgets.QMainWindow):
             temp_dict = {SLAVE_ADDRESS: slave_address_value, DEVICE_NAME: device_name_value, DEFAULT_METHOD: {}, CONNECTION_PARAMETERS: {RTU_PARAMETERS: {}, TCP_PARAMETERS:tcp_client_dict}, REGISTERS:{}}
             temp_dict = {f'{DEVICE_PREFIX}{self.device_number}': temp_dict}
             self.register_setup_dialog.accept()
-        elif self.modbus_rtu_radio.isChecked():
+        elif self.modbus_rtu_check_box.isChecked():
             rtu_client_dict = {}
             slave_address_dict = {}
             device_name_dict = {}
