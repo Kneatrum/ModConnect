@@ -152,12 +152,13 @@ class MainWindow(QtWidgets.QMainWindow):
             
 
     def on_new_button_clicked(self):
-        self.show_new_device_dialog()
-        user_input = self.get_user_input()
+        new_device = AddNewDevice()
+        new_device.show()
+        # user_input = self.get_user_input()
          
-        # print("Adding a new device")
-        self.file_handler.add_device(user_input)
-        self.main_widget = self.create_central_widget()
+        # # print("Adding a new device")
+        # self.file_handler.add_device(user_input)
+        # self.main_widget = self.create_central_widget()
 
 
     def add_widgets_to_horizontal_layout(self):
@@ -236,7 +237,11 @@ class MainWindow(QtWidgets.QMainWindow):
   
 
   
-    def show_new_device_dialog(self):
+class AddNewDevice(QDialog):
+    def __init__(self):
+        super().__init__()
+        self.file_handler = FileHandler()
+
         self.register_setup_dialog = QDialog(self)
         self.register_setup_dialog.setWindowTitle("Connect")
 
@@ -250,10 +255,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.dialog_group_box = QGroupBox("Device " + str(self.device_number), self)
 
 
-
-
-
-        # Create a horizontal layout for the Modbus options (radio buttons)
+    # Create a horizontal layout for the Modbus options (radio buttons)
         modbus_options_layout = QHBoxLayout()
         
         self.modbus_tcp_check_box = QCheckBox("Modbus TCP")
@@ -269,7 +271,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
         # Create a QPushButton for the submit button
         submit_button = QPushButton("Submit")
-        submit_button.clicked.connect(self.get_user_input)
+        # submit_button.clicked.connect(self.get_user_input)
 
         # Create a layout for the dialog
         self.submit_button_layout = QVBoxLayout()
@@ -277,14 +279,18 @@ class MainWindow(QtWidgets.QMainWindow):
 
         self.modbus_rtu_group_box = self.create_modbus_rtu_group_box()
         self.modbus_tcp_group_box = self.create_modbus_tcp_group_box()
-        self.modbus_rtu_group_box.setAlignment(Qt.AlignTop)
-        self.modbus_tcp_group_box.setAlignment(Qt.AlignTop)
+        self.modbus_tcp_group_box.setVisible(False)
+        self.modbus_rtu_group_box.setVisible(False)
+
 
 
     
         # Connect radio buttons to show/hide the respective group boxes
-        self.modbus_tcp_check_box.toggled.connect(self.update_qdialog)
-        self.modbus_rtu_check_box.toggled.connect(self.update_qdialog)
+        self.modbus_tcp_check_box.toggled.connect(self.toggle_tcp_groupbox)
+        self.modbus_rtu_check_box.toggled.connect(self.toggle_rtu_groupbox)
+
+        self.modbus_tcp_group_box.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
+        self.modbus_rtu_group_box.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
 
         # # Add the "Modbus RTU" group box to the main layout
         # self.device_setup_main_layout.addWidget(self.modbus_rtu_group_box)
@@ -294,6 +300,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
         self.device_setup_main_layout.addLayout(self.submit_button_layout)
 
+        self.device_setup_main_layout.setSizeConstraint(QVBoxLayout.SetFixedSize)  # Set size constraint
 
         # Add the main layout to the main group box
         self.dialog_group_box.setLayout(self.device_setup_main_layout)
@@ -301,6 +308,18 @@ class MainWindow(QtWidgets.QMainWindow):
         # Execute the dialog box
         self.register_setup_dialog.setLayout(self.device_setup_main_layout)
         self.register_setup_dialog.exec_()
+
+
+    def toggle_tcp_groupbox(self,state):
+        self.modbus_tcp_group_box.setVisible(state == 2)
+
+    def toggle_rtu_groupbox(self,state):
+        self.modbus_rtu_group_box.setVisible(state == 2)
+
+
+
+    
+
 
     def update_qdialog(self):
         if self.modbus_tcp_check_box.isChecked() and self.modbus_rtu_check_box.isChecked():
@@ -322,19 +341,12 @@ class MainWindow(QtWidgets.QMainWindow):
             self.device_setup_main_layout.addLayout(self.submit_button_layout)
             self.modbus_tcp_group_box.setVisible(True)
         elif not self.modbus_tcp_check_box.isChecked() and not self.modbus_rtu_check_box.isChecked():
-            # self.device_setup_main_layout.removeWidget(self.modbus_rtu_group_box)
-            # self.device_setup_main_layout.removeWidget(self.modbus_tcp_group_box)
+            if self.device_setup_main_layout.indexOf(self.modbus_rtu_group_box) != -1:
+                self.device_setup_main_layout.removeWidget(self.modbus_rtu_group_box)
+            if self.device_setup_main_layout.indexOf(self.modbus_tcp_group_box) != -1:
+                self.device_setup_main_layout.removeWidget(self.modbus_tcp_group_box)
             # self.device_setup_main_layout.removeWidget(self.submit_button_layout)
-            pass
-
-
-    
-            
-
-
         
-
-
 
 
     def create_modbus_tcp_group_box(self):
@@ -401,7 +413,6 @@ class MainWindow(QtWidgets.QMainWindow):
         # Set the layout of the "Modbus TCP" group box
         modbus_tcp_group_box.setLayout(modbust_tcp_group_box_layout)
         modbus_tcp_group_box.setFixedSize(300, 200)
-        modbus_tcp_group_box.hide()
         return modbus_tcp_group_box
 
 
@@ -446,7 +457,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.baud_rate_label = QLabel("Baud Rate")
         baud_rate_layout.addWidget(self.baud_rate_label)  # Add the label to the horizontal layout
 
-       
+    
         # Create a list of baud rates for "Modbus RTU"
         self.baud_rates = QComboBox()  # Create a drop-down list of the baud rates for "Modbus RTU"
         self.baud_rates.addItems(BAUD_RATE_ITEMS)  # Add baud rates to the dropdown list for "Modbus RTU"
@@ -469,7 +480,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.stop_bits_label = QLabel("Stop bits")
         stop_bits_layout.addWidget(self.stop_bits_label)  # Add the label to the horizontal layout
 
-   
+
         # Create a list of stop bits options
         self.stop_bits_options = QComboBox()  # Create a drop-down list of the stop bits options.
         self.stop_bits_options.addItems(STOP_BIT_ITEMS)  # Add the stop bits options to the dropdown list.
@@ -513,8 +524,6 @@ class MainWindow(QtWidgets.QMainWindow):
         modbus_rtu_group_box.setFixedSize(300,300)
 
         # Initially hide "Modbus TCP" and "Modbus RTU" group boxes
-        modbus_rtu_group_box.hide()
-
         return modbus_rtu_group_box
 
 
