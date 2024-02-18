@@ -259,12 +259,6 @@ class AddNewDevice(QDialog):
         # Add the Modbus options layout to the main layout
         self.device_setup_main_layout.addLayout(modbus_options_layout)
 
-        # Create a QPushButton for the submit button
-        # submit_button.clicked.connect(self.get_user_input)
-        # Create a layout for the dialog
-        self.submit_button_layout = QVBoxLayout()
-        self.submit_button_layout.addWidget(QPushButton("Submit"))
-
         # Generate Modbus RTU and Modbus TCP group boxes and set them as invisible.
         self.modbus_rtu_group_box = self.create_modbus_rtu_group_box()
         self.modbus_tcp_group_box = self.create_modbus_tcp_group_box()
@@ -275,13 +269,20 @@ class AddNewDevice(QDialog):
         self.modbus_tcp_check_box.stateChanged.connect(self.toggle_tcp_groupbox)
         self.modbus_rtu_check_box.stateChanged.connect(self.toggle_rtu_groupbox)
 
+        self.modbus_tcp_check_box.toggled.connect(self.update_button_visibility)
+        self.modbus_rtu_check_box.toggled.connect(self.update_button_visibility)
+
         self.modbus_tcp_group_box.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
         self.modbus_rtu_group_box.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
+
+        # Create a QPushButton for the submit button
+        self.submit_button = QPushButton("Submit")
+        self.submit_button.setVisible(False)
 
         # Add the "Modbus RTU", "Modbus TCP" and submit button to the main layout.
         self.device_setup_main_layout.addWidget(self.modbus_rtu_group_box)
         self.device_setup_main_layout.addWidget(self.modbus_tcp_group_box)
-        self.device_setup_main_layout.addLayout(self.submit_button_layout)
+        self.device_setup_main_layout.addWidget(self.submit_button)
 
         self.device_setup_main_layout.setSizeConstraint(QVBoxLayout.SetFixedSize)  # Set size constraint
 
@@ -291,12 +292,16 @@ class AddNewDevice(QDialog):
 
 
     def toggle_tcp_groupbox(self,state):
-        self.modbus_tcp_group_box.setVisible(state == 2)
+        self.modbus_tcp_group_box.setVisible(state)
+        self.update_button_visibility()
 
 
     def toggle_rtu_groupbox(self,state):
-        self.modbus_rtu_group_box.setVisible(state == 2)
+        self.modbus_rtu_group_box.setVisible(state)
+        self.update_button_visibility()
 
+    def update_button_visibility(self):
+        self.submit_button.setVisible(self.modbus_tcp_group_box.isVisible() or self.modbus_rtu_group_box.isVisible())
         
 
 
