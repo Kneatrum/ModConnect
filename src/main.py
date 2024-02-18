@@ -242,110 +242,61 @@ class AddNewDevice(QDialog):
         super().__init__()
         self.file_handler = FileHandler()
 
-        self.register_setup_dialog = QDialog(self)
-        self.register_setup_dialog.setWindowTitle("Connect")
+        self.setWindowTitle("Connect")
 
         # Create the main Vertical layout
         self.device_setup_main_layout = QVBoxLayout()
-
         
         self.device_number = self.file_handler.get_device_count() + 1
 
-        # Create a QGroupBox for the entire dialog
-        self.dialog_group_box = QGroupBox("Device " + str(self.device_number), self)
-
-
-    # Create a horizontal layout for the Modbus options (radio buttons)
+        # Create a horizontal layout for the Modbus options (radio buttons)
         modbus_options_layout = QHBoxLayout()
-        
         self.modbus_tcp_check_box = QCheckBox("Modbus TCP")
         self.modbus_rtu_check_box = QCheckBox("Modbus RTU")
-        
         # Add radio buttons to the layout
         modbus_options_layout.addWidget(self.modbus_tcp_check_box)
         modbus_options_layout.addWidget(self.modbus_rtu_check_box)
-        modbus_options_layout.setAlignment(Qt.AlignTop)
-        
         # Add the Modbus options layout to the main layout
         self.device_setup_main_layout.addLayout(modbus_options_layout)
 
         # Create a QPushButton for the submit button
-        submit_button = QPushButton("Submit")
         # submit_button.clicked.connect(self.get_user_input)
-
         # Create a layout for the dialog
         self.submit_button_layout = QVBoxLayout()
-        self.submit_button_layout.addWidget(submit_button)
+        self.submit_button_layout.addWidget(QPushButton("Submit"))
 
+        # Generate Modbus RTU and Modbus TCP group boxes and set them as invisible.
         self.modbus_rtu_group_box = self.create_modbus_rtu_group_box()
         self.modbus_tcp_group_box = self.create_modbus_tcp_group_box()
         self.modbus_tcp_group_box.setVisible(False)
         self.modbus_rtu_group_box.setVisible(False)
 
-
-
-    
         # Connect radio buttons to show/hide the respective group boxes
-        self.modbus_tcp_check_box.toggled.connect(self.toggle_tcp_groupbox)
-        self.modbus_rtu_check_box.toggled.connect(self.toggle_rtu_groupbox)
+        self.modbus_tcp_check_box.stateChanged.connect(self.toggle_tcp_groupbox)
+        self.modbus_rtu_check_box.stateChanged.connect(self.toggle_rtu_groupbox)
 
         self.modbus_tcp_group_box.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
         self.modbus_rtu_group_box.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
 
-        # # Add the "Modbus RTU" group box to the main layout
-        # self.device_setup_main_layout.addWidget(self.modbus_rtu_group_box)
-
-        # Add the "Modbus RTU" group box to the main layout
+        # Add the "Modbus RTU", "Modbus TCP" and submit button to the main layout.
+        self.device_setup_main_layout.addWidget(self.modbus_rtu_group_box)
         self.device_setup_main_layout.addWidget(self.modbus_tcp_group_box)
-
         self.device_setup_main_layout.addLayout(self.submit_button_layout)
 
         self.device_setup_main_layout.setSizeConstraint(QVBoxLayout.SetFixedSize)  # Set size constraint
 
-        # Add the main layout to the main group box
-        self.dialog_group_box.setLayout(self.device_setup_main_layout)
-
         # Execute the dialog box
-        self.register_setup_dialog.setLayout(self.device_setup_main_layout)
-        self.register_setup_dialog.exec_()
+        self.setLayout(self.device_setup_main_layout)
+        self.exec_()
 
 
     def toggle_tcp_groupbox(self,state):
         self.modbus_tcp_group_box.setVisible(state == 2)
 
+
     def toggle_rtu_groupbox(self,state):
         self.modbus_rtu_group_box.setVisible(state == 2)
 
-
-
-    
-
-
-    def update_qdialog(self):
-        if self.modbus_tcp_check_box.isChecked() and self.modbus_rtu_check_box.isChecked():
-            self.device_setup_main_layout.addWidget(self.modbus_tcp_group_box)
-            self.device_setup_main_layout.addWidget(self.modbus_rtu_group_box)
-            self.device_setup_main_layout.addLayout(self.submit_button_layout)
-            self.modbus_tcp_group_box.setVisible(True)
-            self.modbus_rtu_group_box.setVisible(True)
-        elif self.modbus_rtu_check_box.isChecked() and not self.modbus_tcp_check_box.isChecked():
-            self.device_setup_main_layout.addWidget(self.modbus_rtu_group_box)
-            if self.device_setup_main_layout.indexOf(self.modbus_tcp_group_box) != -1:
-                self.device_setup_main_layout.removeWidget(self.modbus_tcp_group_box)
-            self.device_setup_main_layout.addLayout(self.submit_button_layout)
-            self.modbus_rtu_group_box.setVisible(True)
-        elif self.modbus_tcp_check_box.isChecked() and not self.modbus_rtu_check_box.isChecked():
-            self.device_setup_main_layout.addWidget(self.modbus_tcp_group_box)
-            if self.device_setup_main_layout.indexOf(self.modbus_rtu_group_box) != -1:
-                self.device_setup_main_layout.removeWidget(self.modbus_rtu_group_box)
-            self.device_setup_main_layout.addLayout(self.submit_button_layout)
-            self.modbus_tcp_group_box.setVisible(True)
-        elif not self.modbus_tcp_check_box.isChecked() and not self.modbus_rtu_check_box.isChecked():
-            if self.device_setup_main_layout.indexOf(self.modbus_rtu_group_box) != -1:
-                self.device_setup_main_layout.removeWidget(self.modbus_rtu_group_box)
-            if self.device_setup_main_layout.indexOf(self.modbus_tcp_group_box) != -1:
-                self.device_setup_main_layout.removeWidget(self.modbus_tcp_group_box)
-            # self.device_setup_main_layout.removeWidget(self.submit_button_layout)
         
 
 
