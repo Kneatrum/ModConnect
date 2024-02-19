@@ -33,6 +33,7 @@ class MainWindow(QtWidgets.QMainWindow):
         super().__init__()
 
         self.file_handler = FileHandler()
+        self.new_device = AddNewDevice()
 
         self.file_handler.create_path_if_not_exists()
         
