@@ -274,6 +274,7 @@ class AddNewDevice(QDialog):
         # Create a QPushButton for the submit button
         self.submit_button = QPushButton("Submit")
         self.submit_button.setVisible(False)
+        self.submit_button.clicked.connect(self.submit_user_input)
 
         # Add the "Modbus RTU", "Modbus TCP" and submit button to the main layout.
         self.device_setup_main_layout.addWidget(self.modbus_rtu_group_box)
