@@ -153,13 +153,8 @@ class MainWindow(QtWidgets.QMainWindow):
             
 
     def on_new_button_clicked(self):
-        new_device = AddNewDevice()
-        new_device.show()
-        # user_input = self.get_user_input()
-         
-        # # print("Adding a new device")
-        # self.file_handler.add_device(user_input)
-        # self.main_widget = self.create_central_widget()
+        self.new_device.show()
+        self.new_device.exec_()
 
 
     def add_widgets_to_horizontal_layout(self):
