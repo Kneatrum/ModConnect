@@ -285,7 +285,6 @@ class AddNewDevice(QDialog):
 
         # Execute the dialog box
         self.setLayout(self.device_setup_main_layout)
-        self.exec_()
 
 
     def toggle_tcp_groupbox(self,state):
@@ -481,11 +480,12 @@ class AddNewDevice(QDialog):
 
 
 
-    def get_user_input(self) -> dict:
+    def submit_user_input(self) -> dict:
         # Check which radio button is selected (Modbus TCP or Modbus RTU)
-        temp_dict = {}
         if self.modbus_tcp_check_box.isChecked(): 
+            temp_dict = {}
             tcp_client_dict = {}
+
             # Modbus TCP is selected
             slave_address_value = self.tcp_slave_id.text()
             device_name_value = self.tcp_custom_name.text()
@@ -494,11 +494,15 @@ class AddNewDevice(QDialog):
 
             temp_dict = {SLAVE_ADDRESS: slave_address_value, DEVICE_NAME: device_name_value, DEFAULT_METHOD: {}, CONNECTION_PARAMETERS: {RTU_PARAMETERS: {}, TCP_PARAMETERS:tcp_client_dict}, REGISTERS:{}}
             temp_dict = {f'{DEVICE_PREFIX}{self.device_number}': temp_dict}
-            self.register_setup_dialog.accept()
-        elif self.modbus_rtu_check_box.isChecked():
+
+            # self.file_handler.add_device(temp_dict)
+
+        if self.modbus_rtu_check_box.isChecked():
+            temp_dict = {}
             rtu_client_dict = {}
             slave_address_dict = {}
             device_name_dict = {}
+            
             # Modbus RTU is selected
             device_name_dict[DEVICE_NAME] = self.rtu_custom_name.text()
             slave_address_dict[SLAVE_ADDRESS] = self.rtu_slave_id.text()
@@ -511,27 +515,11 @@ class AddNewDevice(QDialog):
 
             temp_dict = {SLAVE_ADDRESS: slave_address_dict, DEVICE_NAME: device_name_dict, DEFAULT_METHOD: {}, CONNECTION_PARAMETERS: {RTU_PARAMETERS: rtu_client_dict, TCP_PARAMETERS:{}}, REGISTERS:{}}
             temp_dict = {f'{DEVICE_PREFIX}{self.device_number}': temp_dict}
-            self.register_setup_dialog.accept()
-        return temp_dict
-        
-    
-        
 
+            # self.file_handler.add_device(temp_dict)
 
-        
-        
-
-
-
-
-
-
-
-
-
-
-
-
+        # self.main_widget = MainWindow.create_central_widget()
+        # self.register_setup_dialog.accept()
 
 
 if __name__ == '__main__':
