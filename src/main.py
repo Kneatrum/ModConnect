@@ -22,7 +22,7 @@ from constants import SLAVE_ADDRESS, \
         TIMEOUT, PARITY, STOP_BITS, BYTESIZE, \
         PARITY_ITEMS, STOP_BIT_ITEMS, BAUD_RATE_ITEMS, \
         BYTESIZE_ITEMS, TIMEOUT_ITEMS, REGISTERS, \
-        DEFAULT_METHOD
+        DEFAULT_METHOD, SERIAL_PORT
 
 # Constant that stores the index of the column that displays the value of the read registers.
 VALUE_COLUMN = 2
