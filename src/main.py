@@ -506,7 +506,7 @@ class AddNewDevice(QDialog):
             # Modbus RTU is selected
             device_name_dict[DEVICE_NAME] = self.rtu_custom_name.text()
             slave_address_dict[SLAVE_ADDRESS] = self.rtu_slave_id.text()
-            rtu_client_dict[PORT] = self.com_ports.currentText()  # Get the selected COM Port
+            rtu_client_dict[SERIAL_PORT] = self.com_ports.currentText()  # Get the selected COM Port
             rtu_client_dict[BAUD_RATE] = self.baud_rates.currentText()
             rtu_client_dict[PARITY] = self.parity_options.currentText()
             rtu_client_dict[STOP_BITS] = self.stop_bits_options.currentText()
