@@ -272,7 +272,7 @@ class AddNewDevice(QDialog):
         self.modbus_rtu_group_box.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
 
         # Create a QPushButton for the submit button
-        self.submit_button = QPushButton("Submit")
+        self.submit_button = QPushButton("Submit", self)
         self.submit_button.setVisible(False)
         self.submit_button.clicked.connect(self.submit_user_input)
 
@@ -495,7 +495,7 @@ class AddNewDevice(QDialog):
             temp_dict = {SLAVE_ADDRESS: slave_address_value, DEVICE_NAME: device_name_value, DEFAULT_METHOD: {}, CONNECTION_PARAMETERS: {RTU_PARAMETERS: {}, TCP_PARAMETERS:tcp_client_dict}, REGISTERS:{}}
             temp_dict = {f'{DEVICE_PREFIX}{self.device_number}': temp_dict}
 
-            # self.file_handler.add_device(temp_dict)
+            self.file_handler.add_device(temp_dict)
 
         if self.modbus_rtu_check_box.isChecked():
             temp_dict = {}
@@ -516,10 +516,8 @@ class AddNewDevice(QDialog):
             temp_dict = {SLAVE_ADDRESS: slave_address_dict, DEVICE_NAME: device_name_dict, DEFAULT_METHOD: {}, CONNECTION_PARAMETERS: {RTU_PARAMETERS: rtu_client_dict, TCP_PARAMETERS:{}}, REGISTERS:{}}
             temp_dict = {f'{DEVICE_PREFIX}{self.device_number}': temp_dict}
 
-            # self.file_handler.add_device(temp_dict)
-
-        # self.main_widget = MainWindow.create_central_widget()
-        # self.register_setup_dialog.accept()
+            self.file_handler.add_device(temp_dict)
+        self.accept()
 
 
 if __name__ == '__main__':
