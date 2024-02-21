@@ -152,8 +152,9 @@ class MainWindow(QtWidgets.QMainWindow):
             
 
     def on_new_button_clicked(self):
-        self.new_device.show()
-        self.new_device.exec_()
+        dialog = AddNewDevice()
+        if dialog.exec_() == QDialog.Accepted:
+            self.main_widget = self.create_central_widget()
 
 
     def add_widgets_to_horizontal_layout(self):
