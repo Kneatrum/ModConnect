@@ -501,10 +501,10 @@ class AddNewDevice(QDialog):
             temp_dict = {}
             rtu_client_dict = {}
             slave_address_dict = {}
-            device_name_dict = {}
+
             
             # Modbus RTU is selected
-            device_name_dict[DEVICE_NAME] = self.rtu_custom_name.text()
+            device_name = self.rtu_custom_name.text()
             slave_address_dict[SLAVE_ADDRESS] = self.rtu_slave_id.text()
             rtu_client_dict[SERIAL_PORT] = self.com_ports.currentText()  # Get the selected COM Port
             rtu_client_dict[BAUD_RATE] = self.baud_rates.currentText()
@@ -513,7 +513,7 @@ class AddNewDevice(QDialog):
             rtu_client_dict[BYTESIZE] = self.byte_size_options.currentText()
             rtu_client_dict[TIMEOUT] = self.timeout_options.currentText()
 
-            temp_dict = {SLAVE_ADDRESS: slave_address_dict, DEVICE_NAME: device_name_dict, DEFAULT_METHOD: {}, CONNECTION_PARAMETERS: {RTU_PARAMETERS: rtu_client_dict, TCP_PARAMETERS:{}}, REGISTERS:{}}
+            temp_dict = {SLAVE_ADDRESS: slave_address_dict, DEVICE_NAME: device_name, DEFAULT_METHOD: {}, CONNECTION_PARAMETERS: {RTU_PARAMETERS: rtu_client_dict, TCP_PARAMETERS:{}}, REGISTERS:{}}
             temp_dict = {f'{DEVICE_PREFIX}{self.device_number}': temp_dict}
 
             self.file_handler.add_device(temp_dict)
