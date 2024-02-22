@@ -256,8 +256,13 @@ class AddNewDevice(QDialog):
         self.device_setup_main_layout.addLayout(modbus_options_layout)
 
         # Generate Modbus RTU and Modbus TCP group boxes and set them as invisible.
-        self.modbus_rtu_group_box = self.create_modbus_rtu_group_box()
-        self.modbus_tcp_group_box = self.create_modbus_tcp_group_box()
+        rtu_groupbox = RtuGroupBox("Modbus RTU")
+        tcp_groupbox = TcpGroupBox("Modbus TCP")
+        status = self.modbus_tcp_check_box.isChecked() and self.modbus_rtu_check_box.isChecked()
+        rtu_groupbox.set_custom_name_invisible(status)
+        tcp_groupbox.set_custom_name_invisible(status)
+        self.modbus_rtu_group_box = rtu_groupbox
+        self.modbus_tcp_group_box = tcp_groupbox
         self.modbus_tcp_group_box.setVisible(False)
         self.modbus_rtu_group_box.setVisible(False)
 
@@ -299,10 +304,49 @@ class AddNewDevice(QDialog):
     def update_button_visibility(self):
         self.submit_button.setVisible(self.modbus_tcp_group_box.isVisible() or self.modbus_rtu_group_box.isVisible())
         
+    def submit_user_input(self) -> dict:
+        # Check which radio button is selected (Modbus TCP or Modbus RTU)
+        if self.modbus_tcp_check_box.isChecked(): 
+            temp_dict = {}
+            tcp_client_dict = {}
 
+            # Modbus TCP is selected
+            slave_address_value = self.modbus_tcp_group_box.tcp_slave_id.text()
+            device_name_value = self.modbus_tcp_group_box.tcp_custom_name.text()
+            tcp_client_dict[HOST] = self.modbus_tcp_group_box.ip_address.text()
+            tcp_client_dict[PORT] = self.modbus_tcp_group_box.port.text()
 
-    def create_modbus_tcp_group_box(self):
+            temp_dict = {SLAVE_ADDRESS: slave_address_value, DEVICE_NAME: device_name_value, DEFAULT_METHOD: {}, CONNECTION_PARAMETERS: {RTU_PARAMETERS: {}, TCP_PARAMETERS:tcp_client_dict}, REGISTERS:{}}
+            temp_dict = {f'{DEVICE_PREFIX}{self.device_number}': temp_dict}
+
+            self.file_handler.add_device(temp_dict)
+
+        if self.modbus_rtu_check_box.isChecked():
+            temp_dict = {}
+            rtu_client_dict = {}
+            slave_address_dict = {}
+
+            
+            # Modbus RTU is selected
+            device_name = self.modbus_rtu_group_box.rtu_custom_name.text()
+            slave_address_dict[SLAVE_ADDRESS] = self.modbus_rtu_group_box.rtu_slave_id.text()
+            rtu_client_dict[SERIAL_PORT] = self.modbus_rtu_group_box.com_ports.currentText()  # Get the selected COM Port
+            rtu_client_dict[BAUD_RATE] = self.modbus_rtu_group_box.baud_rates.currentText()
+            rtu_client_dict[PARITY] = self.modbus_rtu_group_box.parity_options.currentText()
+            rtu_client_dict[STOP_BITS] = self.modbus_rtu_group_box.stop_bits_options.currentText()
+            rtu_client_dict[BYTESIZE] = self.modbus_rtu_group_box.byte_size_options.currentText()
+            rtu_client_dict[TIMEOUT] = self.modbus_rtu_group_box.timeout_options.currentText()
+
+            temp_dict = {SLAVE_ADDRESS: slave_address_dict, DEVICE_NAME: device_name, DEFAULT_METHOD: {}, CONNECTION_PARAMETERS: {RTU_PARAMETERS: rtu_client_dict, TCP_PARAMETERS:{}}, REGISTERS:{}}
+            temp_dict = {f'{DEVICE_PREFIX}{self.device_number}': temp_dict}
+
+            self.file_handler.add_device(temp_dict)
+        self.accept()
+
+class TcpGroupBox(QGroupBox):
         # Create a QGroupBox for the "Set" elements
+    def __init__(self, title, parent=None):
+        super(TcpGroupBox, self).__init__(title, parent)
         modbus_tcp_group_box = QGroupBox("Modbus TCP", self)
         modbus_tcp_group_box.setFixedWidth(450)  # Set a fixed width to prevent resizing
 
@@ -363,26 +407,31 @@ class AddNewDevice(QDialog):
         modbust_tcp_group_box_layout.addLayout(r_set_v_layout_3)
 
         # Set the layout of the "Modbus TCP" group box
-        modbus_tcp_group_box.setLayout(modbust_tcp_group_box_layout)
-        modbus_tcp_group_box.setFixedSize(300, 200)
-        return modbus_tcp_group_box
+        self.setLayout(modbust_tcp_group_box_layout)
+        self.resize(300, 200)
+
+    def set_custom_name_invisible(self, status):
+        self.tcp_custom_name_label.setVisible(status)
+        self.tcp_custom_name.setVisible(status)
 
 
 
-    def create_modbus_rtu_group_box(self):
-        """
-        Create a QGroupBox for the "Modbus RTU" elements
-        
-        """
-        modbus_rtu_group_box = QGroupBox("Modbus RTU", self)
+class RtuGroupBox(QGroupBox):
+    """
+    Create a QGroupBox for the "Modbus RTU" elements
+    
+    """
+    def __init__(self, title, parent=None):
+        super(RtuGroupBox, self).__init__(title, parent)
+        self.modbus_rtu_group_box = QGroupBox("Modbus RTU", self)
         # Create the first horizontal layout and a provison for assigning a custom name to the "Modbus TCP" device
-        rtu_custom_name_layout = QHBoxLayout()
+        self.rtu_custom_name_layout = QHBoxLayout()
         self.rtu_custom_name_label = QLabel("Custom Name")
         self.rtu_custom_name = QLineEdit()
 
         # Add label and slave widgets to the first horizontal layout for "Modbus RTU"
-        rtu_custom_name_layout.addWidget(self.rtu_custom_name_label)
-        rtu_custom_name_layout.addWidget(self.rtu_custom_name)
+        self.rtu_custom_name_layout.addWidget(self.rtu_custom_name_label)
+        self.rtu_custom_name_layout.addWidget(self.rtu_custom_name)
 
         # Create the first horizontal layout and add Slave ID label and its edit box for "Modbus RTU"
         rtu_slave_id_layout = QHBoxLayout()
@@ -462,7 +511,7 @@ class AddNewDevice(QDialog):
 
         # Create a vertical layout for the elements inside the "Modbus RTU" group box
         modbus_rtu_group_box_layout = QVBoxLayout()
-        modbus_rtu_group_box_layout.addLayout(rtu_custom_name_layout)
+        modbus_rtu_group_box_layout.addLayout(self.rtu_custom_name_layout)
         modbus_rtu_group_box_layout.addLayout(rtu_slave_id_layout)
         modbus_rtu_group_box_layout.addLayout(com_ports_layout)
         modbus_rtu_group_box_layout.addLayout(baud_rate_layout)
@@ -472,52 +521,18 @@ class AddNewDevice(QDialog):
         modbus_rtu_group_box_layout.addLayout(timeout_layout)
 
         # Set the layout of the "Modbus RTU" group box
-        modbus_rtu_group_box.setLayout(modbus_rtu_group_box_layout)
-        modbus_rtu_group_box.setFixedSize(300,300)
+        self.setLayout(modbus_rtu_group_box_layout)
+        self.resize(300,300)
+
+    def set_custom_name_invisible(self, status):
+        self.rtu_custom_name_label.setVisible(status)
+        self.rtu_custom_name.setVisible(status)
 
         # Initially hide "Modbus TCP" and "Modbus RTU" group boxes
-        return modbus_rtu_group_box
 
 
 
-    def submit_user_input(self) -> dict:
-        # Check which radio button is selected (Modbus TCP or Modbus RTU)
-        if self.modbus_tcp_check_box.isChecked(): 
-            temp_dict = {}
-            tcp_client_dict = {}
-
-            # Modbus TCP is selected
-            slave_address_value = self.tcp_slave_id.text()
-            device_name_value = self.tcp_custom_name.text()
-            tcp_client_dict[HOST] = self.ip_address.text()
-            tcp_client_dict[PORT] = self.port.text()
-
-            temp_dict = {SLAVE_ADDRESS: slave_address_value, DEVICE_NAME: device_name_value, DEFAULT_METHOD: {}, CONNECTION_PARAMETERS: {RTU_PARAMETERS: {}, TCP_PARAMETERS:tcp_client_dict}, REGISTERS:{}}
-            temp_dict = {f'{DEVICE_PREFIX}{self.device_number}': temp_dict}
-
-            self.file_handler.add_device(temp_dict)
-
-        if self.modbus_rtu_check_box.isChecked():
-            temp_dict = {}
-            rtu_client_dict = {}
-            slave_address_dict = {}
-
-            
-            # Modbus RTU is selected
-            device_name = self.rtu_custom_name.text()
-            slave_address_dict[SLAVE_ADDRESS] = self.rtu_slave_id.text()
-            rtu_client_dict[SERIAL_PORT] = self.com_ports.currentText()  # Get the selected COM Port
-            rtu_client_dict[BAUD_RATE] = self.baud_rates.currentText()
-            rtu_client_dict[PARITY] = self.parity_options.currentText()
-            rtu_client_dict[STOP_BITS] = self.stop_bits_options.currentText()
-            rtu_client_dict[BYTESIZE] = self.byte_size_options.currentText()
-            rtu_client_dict[TIMEOUT] = self.timeout_options.currentText()
-
-            temp_dict = {SLAVE_ADDRESS: slave_address_dict, DEVICE_NAME: device_name, DEFAULT_METHOD: {}, CONNECTION_PARAMETERS: {RTU_PARAMETERS: rtu_client_dict, TCP_PARAMETERS:{}}, REGISTERS:{}}
-            temp_dict = {f'{DEVICE_PREFIX}{self.device_number}': temp_dict}
-
-            self.file_handler.add_device(temp_dict)
-        self.accept()
+    
 
 
 if __name__ == '__main__':
