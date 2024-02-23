@@ -295,6 +295,9 @@ class AddNewDevice(QDialog):
     def toggle_tcp_groupbox(self,state):
         self.modbus_tcp_group_box.setVisible(state)
         self.update_button_visibility()
+        status = self.modbus_tcp_check_box.isChecked() and self.modbus_rtu_check_box.isChecked()
+        self.modbus_rtu_group_box.set_custom_name_invisible(status)
+        self.modbus_tcp_group_box.set_custom_name_invisible(status)
 
 
     def toggle_rtu_groupbox(self,state):
