@@ -411,6 +411,7 @@ class TcpGroupBox(QGroupBox):
         self.resize(300, 200)
 
     def set_custom_name_invisible(self, status):
+        status = not status
         self.tcp_custom_name_label.setVisible(status)
         self.tcp_custom_name.setVisible(status)
 
