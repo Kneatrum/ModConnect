@@ -526,6 +526,7 @@ class RtuGroupBox(QGroupBox):
         self.resize(300,300)
 
     def set_custom_name_invisible(self, status):
+        status = not status
         self.rtu_custom_name_label.setVisible(status)
         self.rtu_custom_name.setVisible(status)
 
