@@ -303,6 +303,9 @@ class AddNewDevice(QDialog):
     def toggle_rtu_groupbox(self,state):
         self.modbus_rtu_group_box.setVisible(state)
         self.update_button_visibility()
+        status = self.modbus_tcp_check_box.isChecked() and self.modbus_rtu_check_box.isChecked()
+        self.modbus_rtu_group_box.set_custom_name_invisible(status)
+        self.modbus_tcp_group_box.set_custom_name_invisible(status)
 
     def update_button_visibility(self):
         self.submit_button.setVisible(self.modbus_tcp_group_box.isVisible() or self.modbus_rtu_group_box.isVisible())
