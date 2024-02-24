@@ -254,6 +254,11 @@ class AddNewDevice(QDialog):
         modbus_options_layout.addWidget(self.modbus_rtu_check_box)
         # Add the Modbus options layout to the main layout
         self.device_setup_main_layout.addLayout(modbus_options_layout)
+ 
+        self.optional_tcp_custom_name_label = QLabel("Custom Name")
+        self.optional_tcp_custom_name = QLineEdit()
+        self.optional_tcp_custom_name_label.setVisible(False)
+        self.optional_tcp_custom_name.setVisible(False)
 
         # Generate Modbus RTU and Modbus TCP group boxes and set them as invisible.
         rtu_groupbox = RtuGroupBox("Modbus RTU")
@@ -273,6 +278,9 @@ class AddNewDevice(QDialog):
         self.modbus_tcp_check_box.toggled.connect(self.update_button_visibility)
         self.modbus_rtu_check_box.toggled.connect(self.update_button_visibility)
 
+        self.modbus_tcp_check_box.toggled.connect(self.update_custom_name_visibility)
+        self.modbus_rtu_check_box.toggled.connect(self.update_custom_name_visibility)
+
         self.modbus_tcp_group_box.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
         self.modbus_rtu_group_box.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
 
@@ -282,6 +290,8 @@ class AddNewDevice(QDialog):
         self.submit_button.clicked.connect(self.submit_user_input)
 
         # Add the "Modbus RTU", "Modbus TCP" and submit button to the main layout.
+        self.device_setup_main_layout.addWidget(self.optional_tcp_custom_name_label)
+        self.device_setup_main_layout.addWidget(self.optional_tcp_custom_name)
         self.device_setup_main_layout.addWidget(self.modbus_rtu_group_box)
         self.device_setup_main_layout.addWidget(self.modbus_tcp_group_box)
         self.device_setup_main_layout.addWidget(self.submit_button)
@@ -295,18 +305,25 @@ class AddNewDevice(QDialog):
     def toggle_tcp_groupbox(self,state):
         self.modbus_tcp_group_box.setVisible(state)
         self.update_button_visibility()
+        self.update_custom_name_visibility()
 
 
 
     def toggle_rtu_groupbox(self,state):
         self.modbus_rtu_group_box.setVisible(state)
         self.update_button_visibility()
+        self.update_custom_name_visibility()
 
     def update_button_visibility(self):
         self.submit_button.setVisible(self.modbus_tcp_group_box.isVisible() or self.modbus_rtu_group_box.isVisible())
         status = self.modbus_tcp_check_box.isChecked() and self.modbus_rtu_check_box.isChecked()
         self.modbus_rtu_group_box.set_custom_name_invisible(status)
         self.modbus_tcp_group_box.set_custom_name_invisible(status)
+
+    def update_custom_name_visibility(self):
+        status = self.modbus_tcp_group_box.isVisible() and self.modbus_rtu_group_box.isVisible()
+        self.optional_tcp_custom_name_label.setVisible(status)
+        self.optional_tcp_custom_name.setVisible(status)
         
     def submit_user_input(self) -> dict:
         # Check which radio button is selected (Modbus TCP or Modbus RTU)
