@@ -288,6 +288,9 @@ class AddNewDevice(QDialog):
         self.modbus_tcp_check_box.toggled.connect(self.update_custom_name_visibility)
         self.modbus_rtu_check_box.toggled.connect(self.update_custom_name_visibility)
 
+        self.modbus_tcp_check_box.toggled.connect(self.update_slave_address_visibility)
+        self.modbus_rtu_check_box.toggled.connect(self.update_slave_address_visibility)
+
         self.modbus_tcp_group_box.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
         self.modbus_rtu_group_box.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
 
