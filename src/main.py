@@ -260,6 +260,11 @@ class AddNewDevice(QDialog):
         self.optional_tcp_custom_name_label.setVisible(False)
         self.optional_tcp_custom_name.setVisible(False)
 
+        self.global_slave_address_label = QLabel("Slave Address")
+        self.global_slave_address = QLineEdit()
+        self.global_slave_address_label.setVisible(False)
+        self.global_slave_address.setVisible(False)
+
         # Generate Modbus RTU and Modbus TCP group boxes and set them as invisible.
         rtu_groupbox = RtuGroupBox("Modbus RTU")
         tcp_groupbox = TcpGroupBox("Modbus TCP")
