@@ -443,6 +443,10 @@ class TcpGroupBox(QGroupBox):
         self.tcp_custom_name_label.setVisible(status)
         self.tcp_custom_name.setVisible(status)
 
+    def set_slave_address_invisible(self, status):
+        status = not status
+        self.tcp_slave_id_label.setVisible(status)
+        self.tcp_slave_id.setVisible(status)
 
 
 class RtuGroupBox(QGroupBox):
