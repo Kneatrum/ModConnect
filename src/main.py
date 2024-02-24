@@ -271,6 +271,8 @@ class AddNewDevice(QDialog):
         status = self.modbus_tcp_check_box.isChecked() and self.modbus_rtu_check_box.isChecked()
         rtu_groupbox.set_custom_name_invisible(status)
         tcp_groupbox.set_custom_name_invisible(status)
+        rtu_groupbox.set_slave_address_invisible(status)
+        tcp_groupbox.set_slave_address_invisible(status)
         self.modbus_rtu_group_box = rtu_groupbox
         self.modbus_tcp_group_box = tcp_groupbox
         self.modbus_tcp_group_box.setVisible(False)
