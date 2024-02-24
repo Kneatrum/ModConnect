@@ -318,6 +318,7 @@ class AddNewDevice(QDialog):
         self.modbus_tcp_group_box.setVisible(state)
         self.update_button_visibility()
         self.update_custom_name_visibility()
+        self.update_slave_address_visibility()
 
 
 
@@ -325,18 +326,21 @@ class AddNewDevice(QDialog):
         self.modbus_rtu_group_box.setVisible(state)
         self.update_button_visibility()
         self.update_custom_name_visibility()
+        self.update_slave_address_visibility()
 
     def update_button_visibility(self):
         self.submit_button.setVisible(self.modbus_tcp_group_box.isVisible() or self.modbus_rtu_group_box.isVisible())
         status = self.modbus_tcp_check_box.isChecked() and self.modbus_rtu_check_box.isChecked()
         self.modbus_rtu_group_box.set_custom_name_invisible(status)
         self.modbus_tcp_group_box.set_custom_name_invisible(status)
+        self.modbus_rtu_group_box.set_slave_address_invisible(status)
+        self.modbus_tcp_group_box.set_slave_address_invisible(status)
 
     def update_custom_name_visibility(self):
         status = self.modbus_tcp_group_box.isVisible() and self.modbus_rtu_group_box.isVisible()
         self.optional_tcp_custom_name_label.setVisible(status)
         self.optional_tcp_custom_name.setVisible(status)
-        
+
     def update_slave_address_visibility(self):
         status = self.modbus_tcp_group_box.isVisible() and self.modbus_rtu_group_box.isVisible()
         self.global_slave_address_label.setVisible(status)
@@ -344,7 +348,7 @@ class AddNewDevice(QDialog):
         
     def submit_user_input(self) -> dict:
         # Check which radio button is selected (Modbus TCP or Modbus RTU)
-        if self.modbus_tcp_check_box.isChecked(): 
+        if self.modbus_tcp_check_box.isChecked() and not self.modbus_rtu_check_box.isChecked(): 
             temp_dict = {}
             tcp_client_dict = {}
 
@@ -359,7 +363,7 @@ class AddNewDevice(QDialog):
 
             self.file_handler.add_device(temp_dict)
 
-        if self.modbus_rtu_check_box.isChecked():
+        elif self.modbus_rtu_check_box.isChecked() and not self.modbus_tcp_check_box.isChecked():
             temp_dict = {}
             rtu_client_dict = {}
             slave_address_dict = {}
