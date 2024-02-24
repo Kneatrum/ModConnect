@@ -297,6 +297,8 @@ class AddNewDevice(QDialog):
         # Add the "Modbus RTU", "Modbus TCP" and submit button to the main layout.
         self.device_setup_main_layout.addWidget(self.optional_tcp_custom_name_label)
         self.device_setup_main_layout.addWidget(self.optional_tcp_custom_name)
+        self.device_setup_main_layout.addWidget(self.global_slave_address_label)
+        self.device_setup_main_layout.addWidget(self.global_slave_address)
         self.device_setup_main_layout.addWidget(self.modbus_rtu_group_box)
         self.device_setup_main_layout.addWidget(self.modbus_tcp_group_box)
         self.device_setup_main_layout.addWidget(self.submit_button)
