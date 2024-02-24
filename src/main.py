@@ -562,7 +562,10 @@ class RtuGroupBox(QGroupBox):
         self.rtu_custom_name_label.setVisible(status)
         self.rtu_custom_name.setVisible(status)
 
-        # Initially hide "Modbus TCP" and "Modbus RTU" group boxes
+    def set_slave_address_invisible(self, status):
+        status = not status
+        self.rtu_slave_id_label.setVisible(status)
+        self.rtu_slave_id.setVisible(status)
 
 
 
