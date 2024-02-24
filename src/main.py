@@ -337,6 +337,11 @@ class AddNewDevice(QDialog):
         self.optional_tcp_custom_name_label.setVisible(status)
         self.optional_tcp_custom_name.setVisible(status)
         
+    def update_slave_address_visibility(self):
+        status = self.modbus_tcp_group_box.isVisible() and self.modbus_rtu_group_box.isVisible()
+        self.global_slave_address_label.setVisible(status)
+        self.global_slave_address.setVisible(status)
+        
     def submit_user_input(self) -> dict:
         # Check which radio button is selected (Modbus TCP or Modbus RTU)
         if self.modbus_tcp_check_box.isChecked(): 
