@@ -374,6 +374,30 @@ class AddNewDevice(QDialog):
             temp_dict = {f'{DEVICE_PREFIX}{self.device_number}': temp_dict}
 
             self.file_handler.add_device(temp_dict)
+
+        elif self.modbus_rtu_check_box.isChecked() and self.modbus_tcp_check_box.isChecked():
+            temp_dict = {}
+            tcp_client_dict = {}
+            rtu_client_dict = {}
+
+            device_name = self.optional_tcp_custom_name.text()
+            slave_address = self.global_slave_address.text()
+
+            rtu_client_dict[SERIAL_PORT] = self.modbus_rtu_group_box.com_ports.currentText()  # Get the selected COM Port
+            rtu_client_dict[BAUD_RATE] = self.modbus_rtu_group_box.baud_rates.currentText()
+            rtu_client_dict[PARITY] = self.modbus_rtu_group_box.parity_options.currentText()
+            rtu_client_dict[STOP_BITS] = self.modbus_rtu_group_box.stop_bits_options.currentText()
+            rtu_client_dict[BYTESIZE] = self.modbus_rtu_group_box.byte_size_options.currentText()
+            rtu_client_dict[TIMEOUT] = self.modbus_rtu_group_box.timeout_options.currentText()
+
+            tcp_client_dict[HOST] = self.modbus_tcp_group_box.ip_address.text()
+            tcp_client_dict[PORT] = self.modbus_tcp_group_box.port.text()
+
+            temp_dict = {SLAVE_ADDRESS: slave_address, DEVICE_NAME: device_name, DEFAULT_METHOD: {}, CONNECTION_PARAMETERS: {RTU_PARAMETERS: rtu_client_dict, TCP_PARAMETERS: tcp_client_dict}, REGISTERS:{}}
+            temp_dict = {f'{DEVICE_PREFIX}{self.device_number}': temp_dict}
+
+            self.file_handler.add_device(temp_dict)
+
         self.accept()
 
 class TcpGroupBox(QGroupBox):
