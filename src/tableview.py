@@ -1,3 +1,4 @@
+from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QWidget,  QGroupBox, QWidget,  QPushButton, QTableWidget, QVBoxLayout, QLabel, QLineEdit, QComboBox, QDialog,QHBoxLayout, QTableWidgetItem, QCheckBox
 from file_handler import FileHandler
 from modbus_clients import ModbusTCP, ModbusRTU
@@ -70,8 +71,8 @@ class TableWidget(QWidget):
 
         # Create a QGroupBox
         group_box = QGroupBox(self.device_name, self)
-        group_box.setMinimumWidth(450) # set minimum width
-        group_box.setMaximumWidth(450) # set maximum width
+        group_box.setMinimumWidth(505) # set minimum width
+        # group_box.setMaximumWidth(600) # set maximum width
 
 
         # Create the actions Qlabel
@@ -81,7 +82,7 @@ class TableWidget(QWidget):
         # Create the connection status Qlabel
         self.connection_status_label = QLabel("Disconnected",self)
         self.connection_status_label.setStyleSheet("background-color: rgb(212, 212, 212); padding: 25px;")
-        self.connection_status_label.setFixedHeight(30)
+        self.connection_status_label.setFixedSize(150, 30)
                 
         # Set the object name of the connection status label
         self.connection_status_label.setObjectName("connection_status_label_device_" + str(self.device_number))
@@ -117,6 +118,7 @@ class TableWidget(QWidget):
         self.modbus_connection_label.setText(self.modbus_method_label)
 
         self.edit_connection_button = QPushButton('Edit Connection')
+        self.edit_connection_button.setFixedSize(150, 30)
         self.edit_connection_button.clicked.connect(self.on_edit_connection_button_clicked)
 
 
@@ -125,7 +127,7 @@ class TableWidget(QWidget):
         self.action_menu = QComboBox() 
         self.action_menu.addItems(self.action_items) 
         self.action_menu.setCurrentIndex(0)
-        self.action_menu.setFixedWidth(150)
+        self.action_menu.setFixedSize(150, 30)
         view = self.action_menu.view() # Get the view of the combo box
         view.setRowHidden(0, True) # Hide the first row of the combo box view
         self.action_menu.currentIndexChanged.connect(self.__on_drop_down_menu_current_index_changed) # Trigger an action when the user selects an option
@@ -137,8 +139,8 @@ class TableWidget(QWidget):
         self.table_widget.setColumnCount(self.columns)
         self.table_widget.setHorizontalHeaderLabels(list(TABLE_HEADER.keys()))
         self.table_widget.setColumnWidth(NAME_COLUMN, 200) # Set the width of the "Register Name" column to 200
-        self.table_widget.setColumnWidth(ADDRESS_COLUMN, 100) # Set the width of the "Address" column to 100
-        self.table_widget.setColumnWidth(VALUE_COLUMN, 100) # Set the width of the "Value" column to 100
+        self.table_widget.setColumnWidth(ADDRESS_COLUMN, 120) # Set the width of the "Address" column to 100
+        self.table_widget.setColumnWidth(VALUE_COLUMN, 120) # Set the width of the "Value" column to 100
         self.table_widget.itemChanged.connect(self.onItemChanged)
         self.table_widget.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff) 
         
