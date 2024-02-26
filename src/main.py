@@ -413,8 +413,6 @@ class TcpGroupBox(QGroupBox):
         # Create a QGroupBox for the "Set" elements
     def __init__(self, title, parent=None):
         super(TcpGroupBox, self).__init__(title, parent)
-        modbus_tcp_group_box = QGroupBox("Modbus TCP", self)
-        modbus_tcp_group_box.setFixedWidth(450)  # Set a fixed width to prevent resizing
 
         # Create the first horizontal layout and a provison for assigning a custom name to the "Modbus TCP" device
         tcp_custom_name_layout = QHBoxLayout()
@@ -494,7 +492,6 @@ class RtuGroupBox(QGroupBox):
     """
     def __init__(self, title, parent=None):
         super(RtuGroupBox, self).__init__(title, parent)
-        self.modbus_rtu_group_box = QGroupBox("Modbus RTU", self)
         # Create the first horizontal layout and a provison for assigning a custom name to the "Modbus TCP" device
         self.rtu_custom_name_layout = QHBoxLayout()
         self.rtu_custom_name_label = QLabel("Custom Name")
