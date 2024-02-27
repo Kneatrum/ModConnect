@@ -12,7 +12,7 @@ from constants import SLAVE_ADDRESS, \
         DEVICE_PREFIX, REGISTERS, REGISTER_ADDRESS, \
         REGISTER_NAME, REGISTER_PREFIX, FILE_PATH, \
         FUNCTION_CODE, REGISTER_TEMPLATE, DEFAULT_METHOD, \
-        REGISTER_QUANTITY
+        REGISTER_QUANTITY, resource_path
 
 
 
@@ -31,7 +31,7 @@ class FileHandler:
 
 
     def __init__(self):
-        self.file_path = FILE_PATH
+        self.file_path = resource_path(FILE_PATH)
         self.directory = os.path.dirname(self.file_path)
 
 
