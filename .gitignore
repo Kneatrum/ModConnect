@@ -1,4 +1,4 @@
-database/
+resources/
 data/
 src/__pycache__
 settings.json
