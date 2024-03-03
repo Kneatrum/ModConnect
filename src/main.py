@@ -54,12 +54,6 @@ class MainWindow(QtWidgets.QMainWindow):
         # Set the title of the window
         self.setWindowTitle("ModConnect Pro")
 
-        # Defining the menu bar
-        menubar = QMenuBar(self)
-        fileMenu = QMenu('File', self)
-        editMenu = QMenu('Edit', self)
-        menubar.addMenu(fileMenu)
-        menubar.addMenu(editMenu)
 
         # Add actions to the "File" menu
         newAction = QAction('New', self)
