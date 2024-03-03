@@ -518,9 +518,12 @@ class RtuGroupBox(QGroupBox):
         self.com_port_items = SerialPorts.get_available_ports()
         # Create a list of the available com port
         self.com_ports = QComboBox()  # Create a drop-down list of com ports
-        self.com_ports.addItems(self.com_port_items)  # Add com ports to the dropdown list for "Modbus RTU"
-        com_ports_layout.addWidget(self.com_ports)  # Add com ports to the widget for "Modbus RTU"
-
+        if self.com_port_items:
+            self.com_ports.addItems(self.com_port_items)  # Add com ports to the dropdown list for "Modbus RTU"
+            com_ports_layout.addWidget(self.com_ports)  # Add com ports to the widget for "Modbus RTU"
+        else: 
+            self.com_ports.addItems(["No ports available"])  # Add com ports to the dropdown list for "Modbus RTU"
+            com_ports_layout.addWidget(self.com_ports)  # Add com ports to the widget for "Modbus RTU"
         # Create a Horizontal layout and add a dropdown list of the com ports for "Modbus RTU"
         baud_rate_layout = QHBoxLayout()
         self.baud_rate_label = QLabel("Baud Rate")
