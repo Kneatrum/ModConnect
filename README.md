@@ -20,12 +20,17 @@ Developing a user-friendly Modbus tool that helps users to interface with severa
 4.  **Device Configuration Persistence**: Capability to save configured devices for later use, allowing users to store and recall device configurations effortlessly, thereby promoting efficiency and convenience in repetitive tasks
 
 
-# Prerequisites
-* Python 3.12
-* Pyqt5
-* pymodbus
-* pyserial
-* sip
+# Windows Prerequisites.
+1. **Python:** Version 3.8 or later. Download it from [here.](https://www.python.org/)
+2. **pip:** Pip is included with Python starting from Python 3.4.
+3. **git:** Download git from [here.](https://git-scm.com/downloads)
+
+# Python module requirements.
+* PyQt5>=5.15.10
+* pymodbus>=3.6.2
+* pyserial>3.5
+
+The above python modules will be automatically installed in step 2 of the Installation Guide below.
 
 
 # Installation
