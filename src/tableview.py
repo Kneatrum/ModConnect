@@ -72,7 +72,7 @@ class TableWidget(QWidget):
         # Create a QGroupBox
         group_box = QGroupBox(self.device_name, self)
         group_box.setMinimumWidth(505) # set minimum width
-        # group_box.setMaximumWidth(600) # set maximum width
+        group_box.setMaximumWidth(505) # set maximum width
 
 
         # Create the actions Qlabel
