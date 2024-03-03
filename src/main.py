@@ -55,26 +55,19 @@ class MainWindow(QtWidgets.QMainWindow):
         self.setWindowTitle("ModConnect Pro")
 
 
-        # Add actions to the "File" menu
-        newAction = QAction('New', self)
-        # Connect the "triggered" signal of the "New" QAction to the "on_new_button_clicked" function
-        newAction.triggered.connect(self.on_new_button_clicked)
-
-        openAction = QAction('Open', self)
-        saveAction = QAction('Save', self)
-        saveAction.triggered.connect(self.start_ui_refresh)
-        fileMenu.addAction(newAction)
-        fileMenu.addAction(openAction)
-        fileMenu.addAction(saveAction)
-
-        # Add actions to the "Edit" menu
-        cutAction = QAction('Cut', self)
-        copyAction = QAction('Copy', self)
-        pasteAction = QAction('Paste', self)
-        editMenu.addAction(cutAction)
-        editMenu.addAction(copyAction)
-        editMenu.addAction(pasteAction)
-        self.setMenuBar(menubar)
+        customWidget = QWidget()
+        # customWidget.setFixedHeight(30)  # Set the desired height for the toolbar
+        # Create a toolbar and set the custom widget as its widget
+        toolbar = QToolBar()
+        toolbar.setStyleSheet("QToolBar { border: 0px; }")  # Remove border
+        toolbar.addWidget(customWidget)
+        toolbar.setToolButtonStyle(Qt.ToolButtonTextBesideIcon)  # Display icons and text labels side by side
+        self.addToolBar(toolbar)
+        # Create actions for the toolbar
+        action1 = QAction(QIcon(resource_path('resources/more.png')),'Add New Device', self)
+        toolbar.addAction(action1)
+        action2 = QAction(QIcon(resource_path('resources/play-button.png')), 'Start Polling', self)
+        toolbar.addAction(action2)
         
         # Display all the registered devices on the screen
         self.main_widget = self.create_central_widget()
