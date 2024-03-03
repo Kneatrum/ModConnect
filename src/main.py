@@ -52,7 +52,7 @@ class MainWindow(QtWidgets.QMainWindow):
         
 
         # Set the title of the window
-        self.setWindowTitle("Modpoll")
+        self.setWindowTitle("ModConnect Pro")
 
         # Defining the menu bar
         menubar = QMenuBar(self)
