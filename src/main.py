@@ -1,7 +1,7 @@
 import sys
 from PyQt5.QtCore import Qt, QThreadPool, QCoreApplication
 from PyQt5 import QtWidgets
-from PyQt5 import QtCore
+from PyQt5.QtGui import QIcon
 from file_handler import FileHandler 
 from tableview import TableWidget as tablewidget
 from serial_ports import SerialPorts
@@ -13,7 +13,7 @@ from PyQt5.QtWidgets import  QScrollArea, \
     QGroupBox, QWidget, QMenu, QAction, \
     QMenuBar, QPushButton,  QVBoxLayout, \
     QLabel, QLineEdit, QComboBox, \
-    QDialog, QHBoxLayout, QCheckBox, QTableWidget, QTableWidgetItem, QSizePolicy
+    QDialog, QHBoxLayout, QCheckBox, QTableWidget, QTableWidgetItem, QSizePolicy, QToolBar
 
 from constants import SLAVE_ADDRESS, \
         BAUD_RATE, PORT, DEVICE_NAME, HOST, \
@@ -22,7 +22,7 @@ from constants import SLAVE_ADDRESS, \
         TIMEOUT, PARITY, STOP_BITS, BYTESIZE, \
         PARITY_ITEMS, STOP_BIT_ITEMS, BAUD_RATE_ITEMS, \
         BYTESIZE_ITEMS, TIMEOUT_ITEMS, REGISTERS, \
-        DEFAULT_METHOD, SERIAL_PORT
+        DEFAULT_METHOD, SERIAL_PORT, resource_path
 
 # Constant that stores the index of the column that displays the value of the read registers.
 VALUE_COLUMN = 2
@@ -53,6 +53,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
         # Set the title of the window
         self.setWindowTitle("ModConnect Pro")
+        self.setGeometry(100, 100, 1100, 1100)
 
 
         customWidget = QWidget()
