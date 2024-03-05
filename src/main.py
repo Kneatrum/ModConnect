@@ -68,6 +68,9 @@ class MainWindow(QtWidgets.QMainWindow):
         add_new_device_action = QAction(QIcon(resource_path('resources/more.png')),'Add New Device', self)
         add_new_device_action.triggered.connect(self.on_new_button_clicked)
         toolbar.addAction(add_new_device_action)
+
+        toolbar.addSeparator()
+
         start_polling_action = QAction(QIcon(resource_path('resources/play-button.png')), 'Start Polling', self)
         start_polling_action.triggered.connect(self.start_ui_refresh)
         toolbar.addAction(start_polling_action)
