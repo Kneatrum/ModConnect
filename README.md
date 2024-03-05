@@ -1,4 +1,4 @@
-# Modbus Tool using Pyqt5.
+# ModConnect.
 Developing a user-friendly Modbus tool that helps users to interface with several Modbus slave devices at once, allowing effortless reading from and writing to their respective Modbus addresses.
 
 # General Features
