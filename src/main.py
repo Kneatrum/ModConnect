@@ -52,7 +52,7 @@ class MainWindow(QtWidgets.QMainWindow):
         
 
         # Set the title of the window
-        self.setWindowTitle("ModConnect Pro")
+        self.setWindowTitle("ModConnect")
         self.setGeometry(100, 100, 1100, 1100)
 
 
