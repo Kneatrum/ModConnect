@@ -71,6 +71,10 @@ class MainWindow(QtWidgets.QMainWindow):
         start_polling_action = QAction(QIcon(resource_path('resources/play-button.png')), 'Start Polling', self)
         start_polling_action.triggered.connect(self.start_ui_refresh)
         toolbar.addAction(start_polling_action)
+
+        stop_polling_action = QAction(QIcon(resource_path('resources/stop-button.png')), 'Stop Polling', self)
+        stop_polling_action.triggered.connect(self.worker.stop)
+        toolbar.addAction(stop_polling_action)
         
         # Display all the registered devices on the screen
         self.main_widget = self.create_central_widget()
