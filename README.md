@@ -71,3 +71,7 @@ python main.py
 
 # Screenshot
 ![alt text](resources/Capture.PNG)
+
+
+# Icon Attribution
+The icons used in this project are sourced from [flaticon.com](https://www.flaticon.com)
