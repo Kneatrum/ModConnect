@@ -46,7 +46,28 @@ The above python modules will be automatically installed in step 2 of the Instal
 
 # Usage
 
-1. Run the application:
+   ### Run the application:
 ```
 python main.py
 ```
+   ### Adding a device.
+   * Click on <kbd>Add New Device</kbd> button
+   * Select either of the methods TCP or RTU that show up on the popup window. If a device has both RTU and TCP methods, you can check both the TCP and RTU checkboxes and select your default method later.
+   * Fill out the form and click on submit.
+   ### Adding modbus registers.
+   * Click on the Actions dropdown menu and and select the <kbd>Add Registers</kbd> option.
+   * Select the appropriate function code.
+   * Enter the start register address on the <kbd>Register Address</kbd> text field.
+   * Enter the quantity of the registers on the <kbd>Quantity</kbd> text field.
+   * Click on the <kbd>Submit</kbd> button.
+   ### Connect to your device
+   * Click on the <kbd>Select Action</kbd> dropdown menu and select the <kbd>Connect</kbd> option. The Gray <kbd>Disconnected</kbd> label should turn to <kbd>Connected</kbd> with a green background if the connection is successful.
+   * Make sure that all your devices are connected if you have several.
+   ### Start reading register data.
+   * Click on the <kbd>Start Polling</kbd> button on the to left side of the screen.
+   ### Stop polling
+   * Click on the <kbd>Stop Polling</kbd> button.
+
+
+# Screenshot
+![alt text](resources/Capture.PNG)
