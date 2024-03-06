@@ -95,6 +95,10 @@ class MainWindow(QtWidgets.QMainWindow):
 
 
     def start_tasks(self):
+        if self.polling_stopped.is_set():
+            self.worker = Worker(self.observer.read_all_registers)
+            self.worker.signals.result.connect(self.refresh_gui)
+            self.polling_stopped.clear()
         self.threadpool.start(self.worker)
 
 
