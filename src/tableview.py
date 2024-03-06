@@ -141,7 +141,7 @@ class TableWidget(QWidget):
         self.table_widget.setColumnWidth(NAME_COLUMN, 200) # Set the width of the "Register Name" column to 200
         self.table_widget.setColumnWidth(ADDRESS_COLUMN, 120) # Set the width of the "Address" column to 100
         self.table_widget.setColumnWidth(VALUE_COLUMN, 120) # Set the width of the "Value" column to 100
-        self.table_widget.itemChanged.connect(self.onItemChanged)
+        self.table_widget.cellChanged.connect(self.on_cell_changed)
         self.table_widget.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff) 
         
         # Create a horizontal layout to hold action label and combo box vlayouy and connection status label
