@@ -63,15 +63,19 @@ python main.py
    ### Connect to your device
    * Click on the <kbd>Select Action</kbd> dropdown menu and select the <kbd>Connect</kbd> option. The Gray <kbd>Disconnected</kbd> label should turn to <kbd>Connected</kbd> with a green background if the connection is successful.
    * Make sure that all your devices are connected if you have several.
+   ### Custom name assignment
+   * To assign a custom name, double click on the <kbd>Register Name</kbd> column, enter your preferred name and press enter.
    ### Start reading register data.
    * Click on the <kbd>Start Polling</kbd> button on the to left side of the screen.
-   ### Stop polling
+   ### Stop reading register data
    * Click on the <kbd>Stop Polling</kbd> button.
 
 
 # Screenshot
+Note that the figures on the <kbd>Value</kbd> column are for demonstration purposes. 
+
 ![alt text](resources/Capture.PNG)
 
 
 # Icon Attribution
-The icons used in this project are sourced from [flaticon.com](https://www.flaticon.com)
+The icons used in this project are sourced from [www.flaticon.com](https://www.flaticon.com)
