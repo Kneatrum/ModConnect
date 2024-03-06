@@ -85,6 +85,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
         self.main_thread = threading.main_thread()
         self.ready_to_poll_event =  threading.Event()
+        self.polling_stopped =  threading.Event()
         t2 = threading.Thread(target=self.monitor_connected_devices)
         t2.start()
 
