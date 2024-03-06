@@ -197,14 +197,17 @@ class TableWidget(QWidget):
         self.update_register_table()
 
 
-    def onItemChanged(self, item):
-        row = item.row()
-        col = item.column()
-        text = item.text()
-        # print(f"Cell ({row}, {col}) changed to {text}")
-        if item.column() == 0:
-            # interface.update_register_name(self.device,row,text)
-            pass
+    def on_cell_changed(self, row, column):
+        """
+        This method allows the user to assign a custom name to a register.
+        """
+        new_register_name = self.table_widget.item(row, column)
+        register_address = self.table_widget.item(row, column + 1) # column + 1 is the address column
+        if new_register_name and register_address  and column == NAME_COLUMN:
+            if self.file_handler.update_register_name(self.device_number, register_address.text(), new_register_name.text()):
+                print(f"Updated register name to : {new_register_name.text()}")
+            else:
+                print(f"Failed to update register name")
 
 
     def on_rtu_box_status_changed(self):
