@@ -370,15 +370,33 @@ class FileHandler:
             json.dump(data, file, indent=4)
 
 
-    def update_register_name(self, device_number, register_address) -> bool:
-    # update_register_name(device_id:int, row:int, name:str):
-    # target_register = "register_" + str(row+1)
-    # # Read the register setup file
-    # data = read_register_setup_file()
-    # data["device_" + str(device_id)]['registers'][target_register].update({'Register_name':name})
-    # with open(path_to_register_setup, 'w') as f:
-    #     json.dump(data, f, indent=4)
-        pass
+    def update_register_name(self, device_number, register_address, register_name) -> bool:
+        """
+        This method updates simply assigns a name to a register address.
+        
+        arguments:
+            device_number (int): The device number (always unique)
+            register_address (str): The register address in its string representation
+            register_name (str): The name of the register in its string representation
+
+        returns:
+            bool: True if the the register was renamed successfully or false otherwise
+
+        """
+        data = self.get_raw_device_data()
+        if not data:
+            return None
+        device = DEVICE_PREFIX + f'{device_number}'
+        for register in data[device][REGISTERS]:
+            print("Register {0}".format(register))
+            if data[device][REGISTERS][register][REGISTER_ADDRESS] == int(register_address):
+                data[device][REGISTERS][register][REGISTER_NAME] = register_name
+                
+                # Save the new configuration
+                with open(self.file_path, 'w') as file:
+                    json.dump(data, file, indent=4)
+                return True
+        return False
 
 
 
