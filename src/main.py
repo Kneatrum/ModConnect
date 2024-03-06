@@ -89,6 +89,11 @@ class MainWindow(QtWidgets.QMainWindow):
         t2.start()
 
 
+    def stop_polling(self):
+        self.worker.stop()
+        self.polling_stopped.set()
+
+
     def start_tasks(self):
         self.threadpool.start(self.worker)
 
