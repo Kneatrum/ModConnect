@@ -5,6 +5,8 @@ from modbus_clients import ModbusTCP, ModbusRTU
 from pymodbus.payload import BinaryPayloadDecoder
 from pymodbus.constants import Endian
 from pymodbus.exceptions import ModbusIOException
+from modbus_group_boxes import RtuGroupBox, TcpGroupBox
+from custom_dialogs import EditConnection
 from constants import REGISTER_NAME, REGISTER_ADDRESS, REGISTER_PREFIX, TCP_METHOD, RTU_METHOD, \
                         HOST, PORT, SERIAL_PORT, BAUD_RATE, PARITY, STOP_BITS, BYTESIZE, \
                         FUNCTION_CODE, REGISTER_QUANTITY
@@ -236,17 +238,18 @@ class TableWidget(QWidget):
         
 
     def on_edit_connection_button_clicked(self):
-        pass
+        edit_connection = EditConnection()
+        if edit_connection.exec_() == QDialog.Accepted:
+            # self.main_widget = self.create_central_widget()
+            print("Show dialog")
    
 
     def __on_drop_down_menu_current_index_changed(self):
         
         if self.action_menu.currentIndex() == 1: # If the selectec option is Add registers (index 1)
-            self.table_widget.itemChanged.disconnect(self.onItemChanged) # Disconnect the ItemChanged signal to alow us to reload the GUI
             self.show_register_dialog() # Show the message box for adding registers
             self.action_menu.setCurrentIndex(0)
             self.list_of_registers = self.file_handler.get_registers_to_read(self.device_number) # Update the list of registers.
-            self.table_widget.itemChanged.connect(self.onItemChanged)    # Reconnect the ItemChanged signal to allow us to update the register names
         elif self.action_menu.currentIndex() == 2: # If the selectec option is Delete registers (index 2)
             self.action_menu.setCurrentIndex(0)
             if self.selected_connection:
