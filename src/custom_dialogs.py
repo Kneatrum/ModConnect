@@ -205,16 +205,16 @@ class EditConnection(QDialog):
         # Create the main Vertical layout
         self.device_setup_main_layout = QVBoxLayout()
 
-        rtu_groupbox = RtuGroupBox("Modbus RTU")
-        tcp_groupbox = TcpGroupBox("Modbus TCP")
+        self.rtu_groupbox = RtuGroupBox("Modbus RTU")
+        self.tcp_groupbox = TcpGroupBox("Modbus TCP")
 
         # Create a QPushButton for the submit button
         self.submit_button = QPushButton("Submit", self)
         # self.submit_button.setVisible(False)
         # self.submit_button.clicked.connect(self.submit_user_input)
 
-        self.device_setup_main_layout.addWidget(rtu_groupbox)
-        self.device_setup_main_layout.addWidget(tcp_groupbox)
+        self.device_setup_main_layout.addWidget(self.rtu_groupbox)
+        self.device_setup_main_layout.addWidget(self.tcp_groupbox)
         self.device_setup_main_layout.addWidget(self.submit_button)
 
         # self.device_setup_main_layout.setSizeConstraint(QVBoxLayout.SetFixedSize)  # Set size constraint
