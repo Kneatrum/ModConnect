@@ -221,3 +221,9 @@ class EditConnection(QDialog):
 
         # Execute the dialog box
         self.setLayout(self.device_setup_main_layout)
+
+    def populate_tcp_group_box(self):
+        self.tcp_groupbox.tcp_custom_name.setText("Custom Name")
+        self.tcp_groupbox.tcp_slave_id.setText("Slave ID")
+        self.tcp_groupbox.ip_address.setText("IP Address")
+        self.tcp_groupbox.port.setText("Port")
