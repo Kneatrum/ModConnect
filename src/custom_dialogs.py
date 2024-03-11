@@ -196,8 +196,9 @@ class AddNewDevice(QDialog):
 
 
 class EditConnection(QDialog):
-    def __init__(self):
+    def __init__(self, device_number):
         super().__init__()
+        self.device_number = device_number
         self.file_handler = FileHandler()
 
         self.setWindowTitle("Connection Setup")
