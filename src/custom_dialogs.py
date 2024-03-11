@@ -223,7 +223,32 @@ class EditConnection(QDialog):
         self.setLayout(self.device_setup_main_layout)
 
     def populate_tcp_group_box(self):
-        self.tcp_groupbox.tcp_custom_name.setText("Custom Name")
-        self.tcp_groupbox.tcp_slave_id.setText("Slave ID")
-        self.tcp_groupbox.ip_address.setText("IP Address")
-        self.tcp_groupbox.port.setText("Port")
+        results = self.file_handler.get_connection_params(self.device_number)
+        if TCP_METHOD in results:
+            slave_id = self.file_handler.get_slave_address(self.device_number)
+            device_name = self.file_handler.get_device_name(self.device_number)
+            self.tcp_groupbox.tcp_custom_name.setText(device_name)
+            self.tcp_groupbox.tcp_slave_id.setText(slave_id)
+            self.tcp_groupbox.ip_address.setText(results[TCP_METHOD].get(HOST))
+            self.tcp_groupbox.port.setText(results[TCP_METHOD].get(PORT))
+        if not RTU_METHOD in results:
+            self.rtu_groupbox.setVisible(False)
+
+
+    def populate_rtu_group_box(self):
+        results = self.file_handler.get_connection_params(self.device_number)
+        print(results)
+        if RTU_METHOD in results:
+            slave_address = self.file_handler.get_slave_address(self.device_number)
+            device_name = self.file_handler.get_device_name(self.device_number)
+            self.rtu_groupbox.rtu_custom_name.setText(device_name)
+            self.rtu_groupbox.rtu_slave_id.setText(slave_address)
+            self.rtu_groupbox.com_ports.setCurrentIndex(self.rtu_groupbox.com_port_items.index(results[RTU_METHOD].get(SERIAL_PORT)))
+            self.rtu_groupbox.baud_rates.setCurrentText(results[RTU_METHOD].get(BAUD_RATE))
+            self.rtu_groupbox.parity_options.setCurrentText(results[RTU_METHOD].get(PARITY))
+            self.rtu_groupbox.stop_bits_options.setCurrentText(results[RTU_METHOD].get(STOP_BITS))
+            self.rtu_groupbox.byte_size_options.setCurrentText(results[RTU_METHOD].get(BYTESIZE))
+            self.rtu_groupbox.timeout_options.setCurrentText(results[RTU_METHOD].get(TIMEOUT))
+
+        if not TCP_METHOD in results:
+            self.tcp_groupbox.setVisible(False)
