@@ -240,7 +240,6 @@ class EditConnection(QDialog):
 
     def populate_rtu_group_box(self):
         results = self.file_handler.get_connection_params(self.device_number)
-        print(results)
         if RTU_METHOD in results:
             slave_address = self.file_handler.get_slave_address(self.device_number)
             device_name = self.file_handler.get_device_name(self.device_number)
