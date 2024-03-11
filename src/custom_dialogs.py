@@ -218,7 +218,8 @@ class EditConnection(QDialog):
         self.device_setup_main_layout.addWidget(self.submit_button)
 
         # self.device_setup_main_layout.setSizeConstraint(QVBoxLayout.SetFixedSize)  # Set size constraint
-
+        self.populate_rtu_group_box()
+        self.populate_tcp_group_box()
         # Execute the dialog box
         self.setLayout(self.device_setup_main_layout)
 
