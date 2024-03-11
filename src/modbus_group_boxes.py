@@ -96,7 +96,7 @@ class RtuGroupBox(QGroupBox):
 
         # Create a Horizontal layout and add list of timeout in seconds
         timeout_layout = QHBoxLayout()
-        self.timeout_label = QLabel("Byte size")
+        self.timeout_label = QLabel("Timeout") # Add the label to the horizontal
         timeout_layout.addWidget(self.timeout_label)  # Add the label to the horizontal layout
 
 
