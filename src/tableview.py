@@ -238,7 +238,7 @@ class TableWidget(QWidget):
         
 
     def on_edit_connection_button_clicked(self):
-        edit_connection = EditConnection()
+        edit_connection = EditConnection(self.device_number)
         if edit_connection.exec_() == QDialog.Accepted:
             # self.main_widget = self.create_central_widget()
             print("Show dialog")
