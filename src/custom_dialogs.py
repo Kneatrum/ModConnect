@@ -200,6 +200,8 @@ class EditConnection(QDialog):
         super().__init__()
         self.device_number = device_number
         self.file_handler = FileHandler()
+        self.rtu_initial_parameters = {}
+        self.tcp_initial_parameters = {}
 
         self.setWindowTitle("Connection Setup")
         self.setGeometry(100, 100, 500, 300)  # Set the initial size and position of the dialog
