@@ -214,6 +214,7 @@ class EditConnection(QDialog):
 
         # Create a QPushButton for the submit button
         self.submit_button = QPushButton("Submit", self)
+        self.submit_button.clicked.connect(self.submit_user_input)
         # self.submit_button.setVisible(False)
         # self.submit_button.clicked.connect(self.submit_user_input)
 
