@@ -477,7 +477,7 @@ class TableWidget(QWidget):
                         else:
                             self.register_data += response.registers
                     except ModbusIOException as e:
-                        self.register_data.append("Comm Error")
+                        self.register_data.append(e)
                         return None
             elif self.list_of_registers[register][FUNCTION_CODE] == 2:
                 address = self.list_of_registers[register].get(REGISTER_ADDRESS)
