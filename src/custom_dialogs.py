@@ -256,3 +256,7 @@ class EditConnection(QDialog):
             self.rtu_groupbox.timeout_options.setCurrentText(self.rtu_initial_parameters[RTU_METHOD].get(TIMEOUT))
         if not TCP_METHOD in self.rtu_initial_parameters:
             self.tcp_groupbox.setVisible(False)
+
+
+    def submit_user_input(self):
+        self.accept()
