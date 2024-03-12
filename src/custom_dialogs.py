@@ -216,7 +216,6 @@ class EditConnection(QDialog):
         self.submit_button = QPushButton("Submit", self)
         self.submit_button.clicked.connect(self.submit_user_input)
         # self.submit_button.setVisible(False)
-        # self.submit_button.clicked.connect(self.submit_user_input)
 
         self.device_setup_main_layout.addWidget(self.rtu_groupbox)
         self.device_setup_main_layout.addWidget(self.tcp_groupbox)
