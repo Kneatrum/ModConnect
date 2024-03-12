@@ -239,18 +239,17 @@ class EditConnection(QDialog):
 
 
     def populate_rtu_group_box(self):
-        results = self.file_handler.get_connection_params(self.device_number)
-        if RTU_METHOD in results:
-            slave_address = self.file_handler.get_slave_address(self.device_number)
-            device_name = self.file_handler.get_device_name(self.device_number)
-            self.rtu_groupbox.rtu_custom_name.setText(device_name)
-            self.rtu_groupbox.rtu_slave_id.setText(slave_address)
-            self.rtu_groupbox.com_ports.setCurrentIndex(self.rtu_groupbox.com_port_items.index(results[RTU_METHOD].get(SERIAL_PORT)))
-            self.rtu_groupbox.baud_rates.setCurrentText(results[RTU_METHOD].get(BAUD_RATE))
-            self.rtu_groupbox.parity_options.setCurrentText(results[RTU_METHOD].get(PARITY))
-            self.rtu_groupbox.stop_bits_options.setCurrentText(results[RTU_METHOD].get(STOP_BITS))
-            self.rtu_groupbox.byte_size_options.setCurrentText(results[RTU_METHOD].get(BYTESIZE))
-            self.rtu_groupbox.timeout_options.setCurrentText(results[RTU_METHOD].get(TIMEOUT))
-
-        if not TCP_METHOD in results:
+        self.rtu_initial_parameters = self.file_handler.get_connection_params(self.device_number)
+        self.rtu_initial_parameters[SLAVE_ADDRESS] = self.file_handler.get_slave_address(self.device_number)
+        self.rtu_initial_parameters[DEVICE_NAME] = self.file_handler.get_device_name(self.device_number)
+        if RTU_METHOD in self.rtu_initial_parameters:
+            self.rtu_groupbox.rtu_custom_name.setText(self.rtu_initial_parameters[RTU_METHOD].get(DEVICE_NAME))
+            self.rtu_groupbox.rtu_slave_id.setText(self.rtu_initial_parameters[RTU_METHOD].get(SLAVE_ADDRESS))
+            self.rtu_groupbox.com_ports.setCurrentIndex(self.rtu_groupbox.com_port_items.index(self.rtu_initial_parameters[RTU_METHOD].get(SERIAL_PORT)))
+            self.rtu_groupbox.baud_rates.setCurrentText(self.rtu_initial_parameters[RTU_METHOD].get(BAUD_RATE))
+            self.rtu_groupbox.parity_options.setCurrentText(self.rtu_initial_parameters[RTU_METHOD].get(PARITY))
+            self.rtu_groupbox.stop_bits_options.setCurrentText(self.rtu_initial_parameters[RTU_METHOD].get(STOP_BITS))
+            self.rtu_groupbox.byte_size_options.setCurrentText(self.rtu_initial_parameters[RTU_METHOD].get(BYTESIZE))
+            self.rtu_groupbox.timeout_options.setCurrentText(self.rtu_initial_parameters[RTU_METHOD].get(TIMEOUT))
+        if not TCP_METHOD in self.rtu_initial_parameters:
             self.tcp_groupbox.setVisible(False)
