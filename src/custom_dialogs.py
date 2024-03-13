@@ -242,8 +242,8 @@ class EditConnection(QDialog):
 
     def populate_rtu_group_box(self):
         self.rtu_initial_parameters = self.file_handler.get_connection_params(self.device_number)
-        self.rtu_initial_parameters[SLAVE_ADDRESS] = self.file_handler.get_slave_address(self.device_number)
-        self.rtu_initial_parameters[DEVICE_NAME] = self.file_handler.get_device_name(self.device_number)
+        self.rtu_initial_parameters[RTU_METHOD][SLAVE_ADDRESS] = self.file_handler.get_slave_address(self.device_number)[SLAVE_ADDRESS]
+        self.rtu_initial_parameters[RTU_METHOD][DEVICE_NAME] = self.file_handler.get_device_name(self.device_number)
         if RTU_METHOD in self.rtu_initial_parameters:
             self.rtu_groupbox.rtu_custom_name.setText(self.rtu_initial_parameters[RTU_METHOD].get(DEVICE_NAME))
             self.rtu_groupbox.rtu_slave_id.setText(self.rtu_initial_parameters[RTU_METHOD].get(SLAVE_ADDRESS))
