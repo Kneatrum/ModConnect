@@ -151,12 +151,11 @@ class AddNewDevice(QDialog):
         elif self.modbus_rtu_check_box.isChecked() and not self.modbus_tcp_check_box.isChecked():
             temp_dict = {}
             rtu_client_dict = {}
-            slave_address_dict = {}
 
             
             # Modbus RTU is selected
             device_name = self.modbus_rtu_group_box.rtu_custom_name.text()
-            slave_address_dict[SLAVE_ADDRESS] = self.modbus_rtu_group_box.rtu_slave_id.text()
+            slave_address = self.modbus_rtu_group_box.rtu_slave_id.text()
             rtu_client_dict[SERIAL_PORT] = self.modbus_rtu_group_box.com_ports.currentText()  # Get the selected COM Port
             rtu_client_dict[BAUD_RATE] = self.modbus_rtu_group_box.baud_rates.currentText()
             rtu_client_dict[PARITY] = self.modbus_rtu_group_box.parity_options.currentText()
@@ -164,7 +163,7 @@ class AddNewDevice(QDialog):
             rtu_client_dict[BYTESIZE] = self.modbus_rtu_group_box.byte_size_options.currentText()
             rtu_client_dict[TIMEOUT] = self.modbus_rtu_group_box.timeout_options.currentText()
 
-            temp_dict = {SLAVE_ADDRESS: slave_address_dict, DEVICE_NAME: device_name, DEFAULT_METHOD: {}, CONNECTION_PARAMETERS: {RTU_PARAMETERS: rtu_client_dict, TCP_PARAMETERS:{}}, REGISTERS:{}}
+            temp_dict = {SLAVE_ADDRESS: slave_address, DEVICE_NAME: device_name, DEFAULT_METHOD: {}, CONNECTION_PARAMETERS: {RTU_PARAMETERS: rtu_client_dict, TCP_PARAMETERS:{}}, REGISTERS:{}}
             temp_dict = {f'{DEVICE_PREFIX}{self.device_number}': temp_dict}
 
             self.file_handler.add_device(temp_dict)
@@ -228,23 +227,23 @@ class EditConnection(QDialog):
         self.setLayout(self.device_setup_main_layout)
 
     def populate_tcp_group_box(self):
-        results = self.file_handler.get_connection_params(self.device_number)
-        if TCP_METHOD in results:
-            slave_id = self.file_handler.get_slave_address(self.device_number)
-            device_name = self.file_handler.get_device_name(self.device_number)
-            self.tcp_groupbox.tcp_custom_name.setText(device_name)
-            self.tcp_groupbox.tcp_slave_id.setText(slave_id)
-            self.tcp_groupbox.ip_address.setText(results[TCP_METHOD].get(HOST))
-            self.tcp_groupbox.port.setText(results[TCP_METHOD].get(PORT))
-        if not RTU_METHOD in results:
+        self.tcp_initial_parameters = self.file_handler.get_connection_params(self.device_number)
+        if TCP_METHOD in self.tcp_initial_parameters:
+            self.tcp_initial_parameters[TCP_METHOD][SLAVE_ADDRESS] = self.file_handler.get_slave_address(self.device_number)
+            self.tcp_initial_parameters[TCP_METHOD][DEVICE_NAME] = self.file_handler.get_device_name(self.device_number)
+            self.tcp_groupbox.tcp_custom_name.setText(self.tcp_initial_parameters[TCP_METHOD].get(DEVICE_NAME))
+            self.tcp_groupbox.tcp_slave_id.setText(self.tcp_initial_parameters[TCP_METHOD].get(SLAVE_ADDRESS))
+            self.tcp_groupbox.ip_address.setText(self.tcp_initial_parameters[TCP_METHOD].get(HOST))
+            self.tcp_groupbox.port.setText(self.tcp_initial_parameters[TCP_METHOD].get(PORT))
+        if not RTU_METHOD in self.tcp_initial_parameters:
             self.rtu_groupbox.setVisible(False)
 
 
     def populate_rtu_group_box(self):
         self.rtu_initial_parameters = self.file_handler.get_connection_params(self.device_number)
-        self.rtu_initial_parameters[RTU_METHOD][SLAVE_ADDRESS] = self.file_handler.get_slave_address(self.device_number)[SLAVE_ADDRESS]
-        self.rtu_initial_parameters[RTU_METHOD][DEVICE_NAME] = self.file_handler.get_device_name(self.device_number)
         if RTU_METHOD in self.rtu_initial_parameters:
+            self.rtu_initial_parameters[RTU_METHOD][SLAVE_ADDRESS] = self.file_handler.get_slave_address(self.device_number)
+            self.rtu_initial_parameters[RTU_METHOD][DEVICE_NAME] = self.file_handler.get_device_name(self.device_number)
             self.rtu_groupbox.rtu_custom_name.setText(self.rtu_initial_parameters[RTU_METHOD].get(DEVICE_NAME))
             self.rtu_groupbox.rtu_slave_id.setText(self.rtu_initial_parameters[RTU_METHOD].get(SLAVE_ADDRESS))
             self.rtu_groupbox.com_ports.setCurrentIndex(self.rtu_groupbox.com_port_items.index(self.rtu_initial_parameters[RTU_METHOD].get(SERIAL_PORT)))
