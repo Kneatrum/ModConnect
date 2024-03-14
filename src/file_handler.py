@@ -392,6 +392,7 @@ class FileHandler:
         # Finally, save the new configuration
         with open(self.file_path, 'w') as file:
             json.dump(data, file, indent=4)
+        self.save_device_data(data)
 
 
     def update_register_name(self, device_number, register_address, register_name) -> bool:
@@ -417,9 +418,8 @@ class FileHandler:
                 data[device][REGISTERS][register][REGISTER_NAME] = register_name
                 
                 # Save the new configuration
-                with open(self.file_path, 'w') as file:
-                    json.dump(data, file, indent=4)
-                return True
+                if self.save_device_data(data):
+                    return True
         return False
 
 
@@ -432,14 +432,16 @@ class FileHandler:
     def add_device(self, user_input) -> bool:
         # If there is no existing device, write the new device into the json file.
         if self.get_device_count() == 0:
-            with open(self.file_path, 'w') as file:
-                json.dump(user_input, file)
+            if self.save_device_data(user_input):
+                return True
+            return False
         # There are existing devices, so we need to read the whole configuration file and append the new one to it, then save it again.
         else:
             data = self.get_raw_device_data()
             data.update(user_input)
-            with open(self.file_path, 'w') as file:
-                json.dump(data, file)
+            if self.save_device_data(data):
+                return True
+            return False
 
 
 
@@ -500,9 +502,9 @@ class FileHandler:
         data[device][DEFAULT_METHOD] = default_method
 
         # Finally, save new modbus method
-        with open(self.file_path, 'w') as file:
-            json.dump(data, file, indent=4)
+        if self.save_device_data(data):
+            return True
         
-        return True
+        return False
 
 
