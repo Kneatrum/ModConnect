@@ -117,6 +117,30 @@ class FileHandler:
             return {}
         
 
+    def save_device_data(self, data):
+        """
+        This method takes in the register data and saves it into
+        the register data file.
+
+        arguments: 
+            data (dict): The register data
+
+        returns:
+            bool: True if successful in saving the register data or False otherwise
+
+        """
+        try:
+            with open(self.file_path, 'w') as file:
+                json.dump(data, file, indent=4)
+            return True
+        except TypeError as e:
+            print(f"Error serializing data to json: {e}")
+            return False
+        except IOError as e:
+            print(f"Error Writing to file: {e}")
+            return False
+        
+
     def get_slave_address(self, device_number) -> int:
         if not self.data_path_exists():
             print("Data path does not exist")
