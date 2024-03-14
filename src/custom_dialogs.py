@@ -257,4 +257,57 @@ class EditConnection(QDialog):
 
 
     def submit_user_input(self):
+        self.rtu_initial_parameters
+        self.tcp_initial_parameters
+        device_data = self.file_handler.get_raw_device_data()
+        device = DEVICE_PREFIX + str(self.device_number)
+        if device_data:
+            if TCP_METHOD in self.tcp_initial_parameters:
+
+                slave_address_value = self.tcp_groupbox.tcp_slave_id.text()
+                device_name_value = self.tcp_groupbox.tcp_custom_name.text()
+                ip_address = self.tcp_groupbox.ip_address.text()
+                port = self.tcp_groupbox.port.text()
+
+                if device_data[device][SLAVE_ADDRESS] is not  slave_address_value:
+                    device_data[device][SLAVE_ADDRESS] = slave_address_value
+                if device_data[device][DEVICE_NAME] is not device_name_value:
+                    device_data[device][DEVICE_NAME] = device_name_value
+                if device_data[device][CONNECTION_PARAMETERS][TCP_METHOD][HOST] is not ip_address:
+                    device_data[device][CONNECTION_PARAMETERS][TCP_METHOD][HOST] = ip_address
+                if device_data[device][CONNECTION_PARAMETERS][TCP_METHOD][PORT] is not port:
+                    device_data[device][CONNECTION_PARAMETERS][TCP_METHOD][PORT] = port
+
+
+            if RTU_METHOD in self.rtu_initial_parameters:
+                print("RTU DATA ", self.rtu_initial_parameters)
+                device_name = self.rtu_groupbox.rtu_custom_name.text()
+                slave_address = self.rtu_groupbox.rtu_slave_id.text()
+                serial_port = self.rtu_groupbox.com_ports.currentText()  # Get the selected COM Port
+                baud_rate = self.rtu_groupbox.baud_rates.currentText()
+                parity = self.rtu_groupbox.parity_options.currentText()
+                stop_bits = self.rtu_groupbox.stop_bits_options.currentText()
+                byte_size = self.rtu_groupbox.byte_size_options.currentText()
+                timeout = self.rtu_groupbox.timeout_options.currentText()
+
+                # Only save a parameter if it is different from the original value
+                if device_data[device][DEVICE_NAME] is not device_name:
+                    device_data[device][DEVICE_NAME] = device_name
+                if device_data[device][SLAVE_ADDRESS] is not slave_address:
+                    device_data[device][SLAVE_ADDRESS] = slave_address
+                if device_data[device][CONNECTION_PARAMETERS][RTU_METHOD][SERIAL_PORT] is not serial_port:
+                    device_data[device][CONNECTION_PARAMETERS][RTU_METHOD][SERIAL_PORT] = serial_port
+                if device_data[device][CONNECTION_PARAMETERS][RTU_METHOD][BAUD_RATE] is not baud_rate:
+                    device_data[device][CONNECTION_PARAMETERS][RTU_METHOD][BAUD_RATE] = baud_rate
+                if device_data[device][CONNECTION_PARAMETERS][RTU_METHOD][PARITY] is not parity:
+                    device_data[device][CONNECTION_PARAMETERS][RTU_METHOD][PARITY] = parity
+                if device_data[device][CONNECTION_PARAMETERS][RTU_METHOD][STOP_BITS] is not stop_bits:
+                    device_data[device][CONNECTION_PARAMETERS][RTU_METHOD][STOP_BITS] = stop_bits
+                if device_data[device][CONNECTION_PARAMETERS][RTU_METHOD][BYTESIZE] is not byte_size:
+                    device_data[device][CONNECTION_PARAMETERS][RTU_METHOD][BYTESIZE] = byte_size
+                if device_data[device][CONNECTION_PARAMETERS][RTU_METHOD][TIMEOUT] is not timeout:
+                    device_data[device][CONNECTION_PARAMETERS][RTU_METHOD][TIMEOUT] = timeout 
+
+
+            if self.file_handler.save_device_data(device_data):
         self.accept()
