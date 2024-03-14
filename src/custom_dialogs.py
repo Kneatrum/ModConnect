@@ -310,4 +310,6 @@ class EditConnection(QDialog):
 
 
             if self.file_handler.save_device_data(device_data):
-        self.accept()
+                self.accept()
+            else:
+                print("Error saving")
