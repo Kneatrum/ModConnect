@@ -5,6 +5,7 @@ from  modbus_group_boxes import RtuGroupBox, TcpGroupBox
 from PyQt5.QtWidgets import  QPushButton,  QVBoxLayout, QLabel, QLineEdit, \
     QDialog, QHBoxLayout, QCheckBox, QSizePolicy
 
+from notifications import Notification
 
 
 from constants import SLAVE_ADDRESS, \
@@ -21,6 +22,7 @@ class AddNewDevice(QDialog):
     def __init__(self):
         super().__init__()
         self.file_handler = FileHandler()
+        self.notification = Notification()
 
         self.setWindowTitle("Connection Setup")
         self.setGeometry(100, 100, 300, 300)  # Set the initial size and position of the dialog
