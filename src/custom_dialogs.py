@@ -141,7 +141,15 @@ class AddNewDevice(QDialog):
             slave_address_value = self.modbus_tcp_group_box.tcp_slave_id.text()
             device_name_value = self.modbus_tcp_group_box.tcp_custom_name.text()
             tcp_client_dict[HOST] = self.modbus_tcp_group_box.ip_address.text()
-            tcp_client_dict[PORT] = self.modbus_tcp_group_box.port.text()
+            string_rep_port = self.modbus_tcp_group_box.port.text()
+            if not string_rep_port:
+                self.notification.set_warning_message("Entry can not be empty", "Please enter a port number")
+                return
+            if not string_rep_port.isdigit():
+                self.notification.set_warning_message("Invalid port number", "Please enter a positive integer")
+                return
+            temp_port_value = int(string_rep_port)
+            tcp_client_dict[PORT] = temp_port_value
 
             temp_dict = {SLAVE_ADDRESS: slave_address_value, DEVICE_NAME: device_name_value, DEFAULT_METHOD: {}, CONNECTION_PARAMETERS: {RTU_PARAMETERS: {}, TCP_PARAMETERS:tcp_client_dict}, REGISTERS:{}}
             temp_dict = {f'{DEVICE_PREFIX}{self.device_number}': temp_dict}
