@@ -6,7 +6,6 @@ from pymodbus.payload import BinaryPayloadDecoder
 from pymodbus.constants import Endian
 from pymodbus.exceptions import ModbusIOException
 from modbus_group_boxes import RtuGroupBox, TcpGroupBox
-from custom_dialogs import EditConnection
 from constants import REGISTER_NAME, REGISTER_ADDRESS, REGISTER_PREFIX, TCP_METHOD, RTU_METHOD, \
                         HOST, PORT, SERIAL_PORT, BAUD_RATE, PARITY, STOP_BITS, BYTESIZE, \
                         FUNCTION_CODE, REGISTER_QUANTITY
