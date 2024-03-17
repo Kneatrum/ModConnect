@@ -383,11 +383,11 @@ class TableWidget(QWidget):
         """
         results = self.file_handler.get_register_attributes(self.device_number, self.table_widget_default_attrs)
         if results:
-        self.table_widget.setRowCount(0)
-        for index in range(len(results)):
-            self.table_widget.insertRow(index)
-            self.table_widget.setItem(index, NAME_COLUMN, QTableWidgetItem(results[REGISTER_PREFIX + str(index + 1)][REGISTER_NAME]))
-            self.table_widget.setItem(index, ADDRESS_COLUMN, QTableWidgetItem(str(results[REGISTER_PREFIX + str(index + 1)][REGISTER_ADDRESS]))) # Convert address to a string for it to be displayed.
+            self.table_widget.setRowCount(0)
+            for index in range(len(results)):
+                self.table_widget.insertRow(index)
+                self.table_widget.setItem(index, NAME_COLUMN, QTableWidgetItem(results[REGISTER_PREFIX + str(index + 1)][REGISTER_NAME]))
+                self.table_widget.setItem(index, ADDRESS_COLUMN, QTableWidgetItem(str(results[REGISTER_PREFIX + str(index + 1)][REGISTER_ADDRESS]))) # Convert address to a string for it to be displayed.
 
 
     def update_register_data(self):
