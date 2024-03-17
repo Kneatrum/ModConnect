@@ -290,7 +290,6 @@ class EditConnection(QDialog):
 
 
             if RTU_METHOD in self.rtu_initial_parameters:
-                print("RTU DATA ", self.rtu_initial_parameters)
                 device_name = self.rtu_groupbox.rtu_custom_name.text()
                 slave_address = self.rtu_groupbox.rtu_slave_id.text()
                 serial_port = self.rtu_groupbox.com_ports.currentText()  # Get the selected COM Port
