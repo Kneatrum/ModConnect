@@ -43,6 +43,7 @@ class TableWidget(QWidget):
         "WRITE_MULTIPLE_REGISTERS (16)": 16
     }
 
+    button_clicked = pyqtSignal(int)
 
     def __init__(self, device_number:int, columns = 3):
         super().__init__()
