@@ -382,6 +382,7 @@ class TableWidget(QWidget):
         The attributes are passed in form of a list.
         """
         results = self.file_handler.get_register_attributes(self.device_number, self.table_widget_default_attrs)
+        if results:
         self.table_widget.setRowCount(0)
         for index in range(len(results)):
             self.table_widget.insertRow(index)
