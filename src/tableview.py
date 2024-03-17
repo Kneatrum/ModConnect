@@ -238,11 +238,8 @@ class TableWidget(QWidget):
 
         
 
-    def on_edit_connection_button_clicked(self):
-        edit_connection = EditConnection(self.device_number)
-        if edit_connection.exec_() == QDialog.Accepted:
-            # self.main_widget = self.create_central_widget()
-            print("Show dialog")
+    def on_edit_connection_button_clicked(self, index):
+        self.button_clicked.emit(index)
    
 
     def __on_drop_down_menu_current_index_changed(self):
