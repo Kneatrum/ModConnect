@@ -4,6 +4,7 @@ from PyQt5 import QtWidgets
 from PyQt5.QtGui import QIcon
 from file_handler import FileHandler 
 from tableview import TableWidget as tablewidget
+from custom_dialogs import EditConnection
 from custom_dialogs import AddNewDevice
 from register_reader import Observer, Worker
 import threading
