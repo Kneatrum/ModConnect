@@ -155,6 +155,12 @@ class MainWindow(QtWidgets.QMainWindow):
             self.main_widget = self.create_central_widget()
 
 
+    def on_edit_button_clicked(self, index):
+        edit_connection = EditConnection(index)
+        if edit_connection.exec_() == QDialog.Accepted:
+            self.update()
+
+
     def add_widgets_to_horizontal_layout(self):
         """
         This function adds all QTableWidgets to an horizontal layout
