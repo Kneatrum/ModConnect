@@ -178,6 +178,8 @@ class MainWindow(QtWidgets.QMainWindow):
             layout = QHBoxLayout()
             for index in range(saved_devices):
                 widget = tablewidget(index + 1) # Create and instance of our table widget. Adding 1 to prevent having device_0
+                widget.button_clicked.connect(self.on_edit_button_clicked)
+                widget.modbus_method_label
                 self.observer.add_table_widget(widget)
                 layout.addWidget(widget) # Create the table widgets and add them in the horizontal layout
                 layout.addStretch()
