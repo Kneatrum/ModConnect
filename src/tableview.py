@@ -122,7 +122,7 @@ class TableWidget(QWidget):
 
         self.edit_connection_button = QPushButton('Edit Connection')
         self.edit_connection_button.setFixedSize(150, 30)
-        self.edit_connection_button.clicked.connect(self.on_edit_connection_button_clicked)
+        self.edit_connection_button.clicked.connect(lambda checked, idx=self.device_number: self.on_edit_connection_button_clicked(idx))
 
 
         # Add a dropdown menu and add actions to it
