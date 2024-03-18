@@ -82,6 +82,19 @@ class MainWindow(QtWidgets.QMainWindow):
         t2.start()
 
 
+    def initialize_ui(self):
+        self.add_widgets_to_horizontal_layout()
+        self.main_central_widget.setLayout(self.horizontal_box)
+
+        self.scroll_area.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
+        self.scroll_area.setWidgetResizable(True)
+        self.scroll_area.setWidget(self.main_central_widget)
+
+        self.setCentralWidget(self.scroll_area)
+        # self.centralWidget().layout().setContentsMargins(0, 20, 0, 50) 
+        self.show()
+
+
     def stop_polling(self):
         self.worker.stop()
         self.polling_stopped.set()
