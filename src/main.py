@@ -197,9 +197,8 @@ class MainWindow(QtWidgets.QMainWindow):
                 widget.button_clicked.connect(self.on_edit_button_clicked)
                 widget.modbus_method_label
                 self.observer.add_table_widget(widget)
-                layout.addWidget(widget) # Create the table widgets and add them in the horizontal layout
-                layout.addStretch()
-            return layout
+                self.horizontal_box.addWidget(widget) # Create the table widgets and add them in the horizontal layout
+            return True
         return None
     
 
