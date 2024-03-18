@@ -169,7 +169,7 @@ class MainWindow(QtWidgets.QMainWindow):
     def on_new_button_clicked(self):
         dialog = AddNewDevice()
         if dialog.exec_() == QDialog.Accepted:
-            self.main_widget = self.create_central_widget()
+            self.add_single_widget()
 
 
     def on_edit_button_clicked(self, index):
