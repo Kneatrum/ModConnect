@@ -72,7 +72,7 @@ class MainWindow(QtWidgets.QMainWindow):
         toolbar.addAction(stop_polling_action)
         
         # Display all the registered devices on the screen
-        self.main_widget = self.create_central_widget()
+        self.initialize_ui()
 
 
         self.main_thread = threading.main_thread()
