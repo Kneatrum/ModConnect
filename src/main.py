@@ -23,6 +23,9 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def __init__(self):
         super().__init__()
+        self.scroll_area = QScrollArea()
+        self.main_central_widget = QWidget()
+        self.horizontal_box = QHBoxLayout()
 
         self.file_handler = FileHandler()
 
