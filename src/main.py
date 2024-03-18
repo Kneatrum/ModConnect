@@ -192,7 +192,6 @@ class MainWindow(QtWidgets.QMainWindow):
         if saved_devices:
             # Create a central widget
             # Create a horizontal layout to add the table widgets
-            layout = QHBoxLayout()
             for index in range(saved_devices):
                 widget = tablewidget(index + 1) # Create and instance of our table widget. Adding 1 to prevent having device_0
                 widget.button_clicked.connect(self.on_edit_button_clicked)
