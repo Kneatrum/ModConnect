@@ -204,52 +204,14 @@ class MainWindow(QtWidgets.QMainWindow):
         return None
     
 
-    def create_scroll_area_layout(self, layout):
-        """
-        This function creates a scroll area using a layout that is passed in as a parameter
-
-        arguments: 
-            layout: A horizontal layout containing a number of QTableWidgets to be displayed.
-
-        returns:
-            layout: A vertical layout in a scroll area
-        """
-        # Create a scroll area widget and add the horizontal layout to it
-        scroll_area = QScrollArea()
-        scroll_area.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
-        scroll_area.setWidgetResizable(True)
-        scroll_area.setWidget(QWidget())
-        scroll_area.widget().setLayout(layout)
-        # Add the scroll area widget to the main layout
-        layout = QVBoxLayout()
-        layout.addWidget(scroll_area)
-        return layout
-
-        #self.setLayout(self.main_layout)  # Set the main layout
-        
-
-    def create_central_widget(self):
-        """
-        This function gets a scroll area layout and creates a central widget.
-
-        arguments:
-            scroll_area_layout: The scroll area layout
-
-        returns:
-            central_widget: The central widget which is used to display all the QtableWidgets.
-        """
-        layout = self.add_widgets_to_horizontal_layout()
-        if not layout:
-            print("Could not create a layout")
-            return None
-        scroll_area = self.create_scroll_area_layout(layout)
-        central_widget = QWidget()
-        central_widget.setLayout(scroll_area) # Assign the main layout to the central widget
-        self.setCentralWidget(central_widget)
-        # Add a small space between the menu bar and the central widget
-        self.centralWidget().layout().setContentsMargins(0, 20, 0, 50)  
-        return central_widget
-        
+    def add_single_widget(self):
+        self.observer.table_widgets.clear()
+        saved_devices = self.file_handler.get_device_count()
+        widget = tablewidget(saved_devices + 1) # Create and instance of our table widget. Adding 1 to prevent having device_0
+        widget.button_clicked.connect(self.on_edit_button_clicked)
+        widget.modbus_method_label
+        self.observer.add_table_widget(widget)
+        self.horizontal_box.addWidget(widget) # Create the table widgets and add them in the horizontal layout
 
 
 
