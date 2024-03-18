@@ -253,7 +253,8 @@ class FileHandler:
                     for register_attribute in list_of_attributes:
                         temp_dict[register_attribute] = data[device][REGISTERS][register][register_attribute]
                     result[register] = temp_dict
-        return result
+                    return result
+        return None
 
 
     def get_registers_to_read(self, device_number: int) -> dict:
@@ -294,7 +295,8 @@ class FileHandler:
                         temp_dict[REGISTER_QUANTITY] = data[device][REGISTERS][register].get(REGISTER_QUANTITY)
                         temp_dict[FUNCTION_CODE] = data[device][REGISTERS][register].get(FUNCTION_CODE)
                         result[register] = temp_dict
-        return result
+                        return result
+        return None
 
 
     def get_connection_params(self, device_number: int) -> dict: 
