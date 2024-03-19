@@ -133,6 +133,11 @@ class AddNewDevice(QDialog):
         self.global_slave_address_label.setVisible(status)
         self.global_slave_address.setVisible(status)
         
+
+    def is_valid_ip(self,ip):
+        pattern = r'^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$'
+        return bool(re.match(pattern, ip))
+
     def submit_user_input(self) -> dict:
         # Check which radio button is selected (Modbus TCP or Modbus RTU)
         if self.modbus_tcp_check_box.isChecked() and not self.modbus_rtu_check_box.isChecked(): 
