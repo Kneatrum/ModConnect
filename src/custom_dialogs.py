@@ -147,7 +147,11 @@ class AddNewDevice(QDialog):
             # Modbus TCP is selected
             slave_address_value = self.modbus_tcp_group_box.tcp_slave_id.text()
             device_name_value = self.modbus_tcp_group_box.tcp_custom_name.text()
-            tcp_client_dict[HOST] = self.modbus_tcp_group_box.ip_address.text()
+            ipv4_address_value = self.modbus_tcp_group_box.ip_address.text()
+            if not self.is_valid_ip(ipv4_address_value):
+                self.notification.set_warning_message("Wrong IP address", "Please enter a valid IP address")
+                return
+            tcp_client_dict[HOST] = ipv4_address_value
             string_rep_port = self.modbus_tcp_group_box.port.text()
             if not string_rep_port:
                 self.notification.set_warning_message("Entry can not be empty", "Please enter a port number")
