@@ -281,6 +281,10 @@ class TableWidget(QWidget):
                 None
         """
         modbus_protocols = self.file_handler.get_modbus_protocol(self.device_number)
+        if not modbus_protocols:
+            print("No Modbus protocols found")
+            return None
+        
         if len(modbus_protocols) > 1:
             default_method = self.file_handler.get_default_modbus_method(self.device_number)
             if not default_method:
