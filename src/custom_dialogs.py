@@ -6,6 +6,7 @@ from PyQt5.QtWidgets import  QPushButton,  QVBoxLayout, QLabel, QLineEdit, \
     QDialog, QHBoxLayout, QCheckBox, QSizePolicy
 
 from notifications import Notification
+import re
 
 
 from constants import SLAVE_ADDRESS, \
