@@ -295,7 +295,6 @@ class TableWidget(QWidget):
                 self.file_handler.set_default_modbus_method(self.device_number, TCP_METHOD)
             elif RTU_METHOD in modbus_protocols:
                 self.file_handler.set_default_modbus_method(self.device_number, RTU_METHOD)
-        return
     
 
 
