@@ -30,16 +30,16 @@ class Worker(QRunnable):
 
 class Observer:
     def __init__(self):
-        self.table_widgets =[]
+        self.table_widgets ={}
         self.connected_devices = []
 
     
-    def add_table_widget(self, table_view):
+    def add_table_widget(self, index, table_view):
         if table_view not in self.table_widgets:
-            self.table_widgets.append(table_view)
+            self.table_widgets[index] = table_view
 
-    def remove_table_widget(self, table_view):
-        self.table_widgets.remove(table_view)
+    def remove_table_widget(self, index):
+        del self.table_widgets[index]
 
     def read_all_registers(self):
         # Reading register data.
