@@ -145,7 +145,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 elif len(self.observer.connected_devices) == 0:
                     self.ready_to_poll_event.clear()
 
-            for device in self.observer.table_widgets:
+            for device in self.observer.table_widgets.values():
                 if device not in self.observer.connected_devices:
                     if device.selected_connection and device.selected_connection.is_connected():
                         self.observer.connected_devices.append(device)
