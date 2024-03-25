@@ -175,7 +175,7 @@ class MainWindow(QtWidgets.QMainWindow):
     def on_edit_button_clicked(self, index):
         edit_connection = EditConnection(index)
         if edit_connection.exec_() == QDialog.Accepted:
-            self.update()
+            self.observer.table_widgets[index].update_method_label()
 
 
     def add_widgets_to_horizontal_layout(self):
