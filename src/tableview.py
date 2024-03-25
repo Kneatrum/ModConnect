@@ -42,7 +42,7 @@ class TableWidget(QWidget):
         "WRITE_MULTIPLE_REGISTERS (16)": 16
     }
     
-    button_clicked = pyqtSignal(int)
+    edit_connection_button_clicked = pyqtSignal(int)
 
     def __init__(self, device_number:int, columns = 3):
         super().__init__()
@@ -234,7 +234,7 @@ class TableWidget(QWidget):
 
 
     def on_edit_connection_button_clicked(self, index):
-        self.button_clicked.emit(index)
+        self.edit_connection_button_clicked.emit(index)
    
 
     def __on_drop_down_menu_current_index_changed(self):
