@@ -193,7 +193,8 @@ class MainWindow(QtWidgets.QMainWindow):
             # Create a central widget
             # Create a horizontal layout to add the table widgets
             for index in range(saved_devices):
-                widget = tablewidget(index + 1) # Create and instance of our table widget. Adding 1 to prevent having device_0
+                temp_index = index + 1
+                widget = tablewidget(temp_index) # Create and instance of our table widget. Adding 1 to prevent having device_0
                 widget.edit_connection_button_clicked.connect(self.on_edit_button_clicked)
                 widget.modbus_method_label
                 self.observer.add_table_widget(widget)
