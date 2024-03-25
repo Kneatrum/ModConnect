@@ -204,12 +204,12 @@ class MainWindow(QtWidgets.QMainWindow):
     
 
     def add_single_widget(self):
-        self.observer.table_widgets.clear()
         saved_devices = self.file_handler.get_device_count()
-        widget = tablewidget(saved_devices + 1) # Create and instance of our table widget. Adding 1 to prevent having device_0
+        temp_index = saved_devices + 1
+        widget = tablewidget(temp_index) # Create and instance of our table widget. Adding 1 to prevent having device_0
         widget.edit_connection_button_clicked.connect(self.on_edit_button_clicked)
         widget.modbus_method_label
-        self.observer.add_table_widget(widget)
+        self.observer.add_table_widget(temp_index, widget)
         self.horizontal_box.addWidget(widget) # Create the table widgets and add them in the horizontal layout
 
 
