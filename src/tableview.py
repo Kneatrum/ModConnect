@@ -93,8 +93,8 @@ class TableWidget(QWidget):
         check_box_h_layout = QHBoxLayout()
         self.tcp_checkbox = QCheckBox('TCP')
         self.rtu_checkbox = QCheckBox('RTU')
-        self.tcp_checkbox.stateChanged.connect(self.on_tcp_box_status_changed)
-        self.rtu_checkbox.stateChanged.connect(self.on_rtu_box_status_changed)
+        self.tcp_checkbox.stateChanged.connect(self.on_connection_status_changed)
+        self.rtu_checkbox.stateChanged.connect(self.on_connection_status_changed)
         check_box_h_layout.addWidget(self.tcp_checkbox)
         check_box_h_layout.addWidget(self.rtu_checkbox)
         
