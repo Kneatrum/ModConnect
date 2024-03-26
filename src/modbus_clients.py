@@ -47,6 +47,9 @@ class ModbusClient:
 class ModbusRTU(ModbusClient):
     def _generate_client(self):
         device_protocols = self.file_handler.get_modbus_protocol(self.device_number)
+        if not device_protocols:
+            print("No RTU protocol found")
+            return None
         if RTU_METHOD in device_protocols:
             connection_attributes = self.file_handler.get_connection_params(self.device_number)[RTU_METHOD]
             client = ModbusSerialClient(
@@ -70,6 +73,9 @@ class ModbusRTU(ModbusClient):
 class ModbusTCP(ModbusClient):
     def _generate_client(self):
         device_protocols = self.file_handler.get_modbus_protocol(self.device_number)
+        if not device_protocols:
+            print("No TCP protocol found")
+            return None
         if TCP_METHOD in device_protocols:
             connection_attributes = self.file_handler.get_connection_params(self.device_number)[TCP_METHOD]
             host = connection_attributes[HOST]
