@@ -293,12 +293,21 @@ class EditConnection(QDialog):
         device = DEVICE_PREFIX + str(self.device_number)
         if device_data:
             if TCP_METHOD in self.tcp_initial_parameters:
+                temp_device = AddNewDevice()
+                self.notification = Notification()
 
                 slave_address_value = self.tcp_groupbox.tcp_slave_id.text()
                 device_name_value = self.tcp_groupbox.tcp_custom_name.text()
                 ip_address = self.tcp_groupbox.ip_address.text()
                 port = self.tcp_groupbox.port.text()
 
+                if not temp_device.is_valid_ip(ip_address):
+                    self.notification.set_warning_message("Wrong IP address", "Please enter a valid IP address")
+                    return 
+                if not temp_device.is_valid_port(port):
+                    self.notification.set_warning_message("Invalid port number", "Please enter a positive integer as a port number")
+                    return 
+                
                 if device_data[device][SLAVE_ADDRESS] is not  slave_address_value:
                     device_data[device][SLAVE_ADDRESS] = slave_address_value
                 if device_data[device][DEVICE_NAME] is not device_name_value:
