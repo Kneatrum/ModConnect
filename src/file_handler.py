@@ -345,6 +345,8 @@ class FileHandler:
             list: A list of all modbus protocol methods registered.
         """
         result = self.get_connection_params(device_number)
+        if not result:
+            return None
         return list(result.keys())
 
 
