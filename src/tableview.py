@@ -408,20 +408,12 @@ class TableWidget(QWidget):
         """
         temp_dict = {}
         rtu_connection = ModbusRTU(device_number)
-        print(f"Modbus RTU returned {rtu_connection}")
         if rtu_connection.client:
             temp_dict[RTU_METHOD] = rtu_connection
-            print(f"RTU####{temp_dict}")
-        else:
-            print(f"___RTU___{rtu_connection.client}")
 
         tcp_connection = ModbusTCP(device_number)
-        print(f"Modbus TCP returned {tcp_connection}")
         if tcp_connection.client:
             temp_dict[TCP_METHOD] = tcp_connection
-            print(f"TCP####{temp_dict}")
-        else:
-            print(f"___TCP___{tcp_connection.client}")
 
         return temp_dict
 
