@@ -286,8 +286,6 @@ class EditConnection(QDialog):
         device_data = self.file_handler.get_raw_device_data()
         device = DEVICE_PREFIX + str(self.device_number)
         if device_data:
-            if not self.tcp_initial_parameters:
-                return None
             if TCP_METHOD in self.tcp_initial_parameters:
 
                 slave_address_value = self.tcp_groupbox.tcp_slave_id.text()
@@ -304,8 +302,6 @@ class EditConnection(QDialog):
                 if device_data[device][CONNECTION_PARAMETERS][TCP_METHOD][PORT] is not port:
                     device_data[device][CONNECTION_PARAMETERS][TCP_METHOD][PORT] = port
 
-            if self.rtu_initial_parameters:
-                return None
             if RTU_METHOD in self.rtu_initial_parameters:
                 device_name = self.rtu_groupbox.rtu_custom_name.text()
                 slave_address = self.rtu_groupbox.rtu_slave_id.text()
