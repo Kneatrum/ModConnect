@@ -139,6 +139,13 @@ class AddNewDevice(QDialog):
         pattern = r'^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$'
         return bool(re.match(pattern, ip))
 
+  
+    def is_valid_port(self, port):
+        if not port or not port.isdigit():
+            return False
+        return True
+
+
     def submit_user_input(self) -> dict:
         # Check which radio button is selected (Modbus TCP or Modbus RTU)
         if self.modbus_tcp_check_box.isChecked() and not self.modbus_rtu_check_box.isChecked(): 
