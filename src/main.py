@@ -163,6 +163,8 @@ class MainWindow(QtWidgets.QMainWindow):
     def start_ui_refresh(self):
         self.connected_devices = self.main_widget.findChildren(QTableWidget)
         self.start_tasks()
+        else:
+            self.notification.set_warning_message("No connected devices", "Please connect to a device first")
 
             
 
