@@ -9,6 +9,7 @@ from custom_dialogs import AddNewDevice
 from register_reader import Observer, Worker
 import threading
 import time
+from notifications import Notification
 
 from PyQt5.QtWidgets import  QScrollArea, QWidget,  QAction, \
     QVBoxLayout, QDialog, QHBoxLayout,  QTableWidget, \
@@ -28,6 +29,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.horizontal_box = QHBoxLayout()
 
         self.file_handler = FileHandler()
+        self.notification = Notification()
 
         self.file_handler.create_path_if_not_exists()
         
