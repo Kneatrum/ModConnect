@@ -10,6 +10,8 @@ from constants import REGISTER_NAME, REGISTER_ADDRESS, REGISTER_PREFIX, TCP_METH
                         HOST, PORT, SERIAL_PORT, BAUD_RATE, PARITY, STOP_BITS, BYTESIZE, \
                         FUNCTION_CODE, REGISTER_QUANTITY
 
+from notifications import Notification
+
 NAME_COLUMN = 0
 ADDRESS_COLUMN = 1
 VALUE_COLUMN = 2
@@ -49,6 +51,7 @@ class TableWidget(QWidget):
 
          
         self.file_handler = FileHandler()
+        self.notification = Notification()
 
         self.device_number = device_number
         self.columns = columns
@@ -93,8 +96,8 @@ class TableWidget(QWidget):
         check_box_h_layout = QHBoxLayout()
         self.tcp_checkbox = QCheckBox('TCP')
         self.rtu_checkbox = QCheckBox('RTU')
-        self.tcp_checkbox.stateChanged.connect(self.on_connection_status_changed)
-        self.rtu_checkbox.stateChanged.connect(self.on_connection_status_changed)
+        self.tcp_checkbox.stateChanged.connect(self.on_tcp_connection_status_changed)
+        self.rtu_checkbox.stateChanged.connect(self.on_rtu_connection_status_changed)
         check_box_h_layout.addWidget(self.tcp_checkbox)
         check_box_h_layout.addWidget(self.rtu_checkbox)
         
@@ -212,23 +215,30 @@ class TableWidget(QWidget):
                 print(f"Failed to update register name")
         
 
-    def on_connection_status_changed(self):
+    def on_tcp_connection_status_changed(self):
         if self.tcp_checkbox.isChecked():
-            self.rtu_checkbox.setChecked(False)
-            self.file_handler.set_default_modbus_method(self.device_number, TCP_METHOD)
+            if self.rtu_checkbox.isChecked():
+                self.rtu_checkbox.setChecked(False)
+                self.file_handler.set_default_modbus_method(self.device_number, TCP_METHOD)
+                print(f"Connection status changed")
+                self.update_method_label()
+
+
+    def on_rtu_connection_status_changed(self):
         if self.rtu_checkbox.isChecked():
-            self.tcp_checkbox.setChecked(False)
-            self.file_handler.set_default_modbus_method(self.device_number, RTU_METHOD)
-        self.update_method_label()
+            if self.tcp_checkbox.isChecked():
+                self.tcp_checkbox.setChecked(False)
+                self.file_handler.set_default_modbus_method(self.device_number, RTU_METHOD)
+                self.update_method_label()
                     
 
     def update_method_label(self):
         connection_params = self.file_handler.get_connection_params(self.device_number)
-        modbus_protocols = self.file_handler.get_modbus_protocol(self.device_number)
-        if TCP_METHOD in modbus_protocols:
+        default_method = self.file_handler.get_default_modbus_method(self.device_number)
+        if TCP_METHOD in default_method:
             message = f'{HOST.upper()}: {connection_params[TCP_METHOD].get(HOST)}\n{PORT.upper()}: {connection_params[TCP_METHOD].get(PORT)}'
             self.modbus_connection_label.setText(message)
-        if RTU_METHOD in modbus_protocols:
+        if RTU_METHOD in default_method:
             self.modbus_method_label = f'{PORT.upper()}: {connection_params[RTU_METHOD].get(SERIAL_PORT)}\n{BAUD_RATE.upper()}: {connection_params[RTU_METHOD].get(BAUD_RATE)}\n{connection_params[RTU_METHOD].get(BYTESIZE)}, {connection_params[RTU_METHOD].get(PARITY)}, {connection_params[RTU_METHOD].get(STOP_BITS)}'
             self.modbus_connection_label.setText(self.modbus_method_label)
 
@@ -251,9 +261,12 @@ class TableWidget(QWidget):
                 print("No device connected")
         elif self.action_menu.currentIndex() == 3: # If the selected option is Connect (index 3)
             self.action_menu.setCurrentIndex(0)
-            if self.connect_to_device():
+            result = self.connect_to_device()
+            if result:
                 light_green = "rgb(144, 238, 144)"
                 self.set_conection_status("Connected",light_green)
+            else:
+                self.notification.set_warning_message("Connection Failure", result)
             
 
 
@@ -427,10 +440,11 @@ class TableWidget(QWidget):
         returns:
             bool: True if connected successfully or False otherwise
         """
-        if self.selected_connection.client.connect():
-            return True
-        else:
-            return False
+        try:
+            if self.selected_connection.client.connect():
+                return True
+        except Exception as e:
+            return e
 
      
 
