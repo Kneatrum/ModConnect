@@ -248,26 +248,19 @@ class TableWidget(QWidget):
         self.edit_connection_button_clicked.emit(index)
    
 
-    def __on_drop_down_menu_current_index_changed(self):
-        
-        if self.action_menu.currentIndex() == 1: # If the selectec option is Add registers (index 1)
-            self.show_register_dialog() # Show the message box for adding registers
+    def __on_drop_down_menu_current_index_changed(self, device_number, position):
+        current_index = self.action_menu.currentIndex()
+        if current_index == 1: # If the selectec option is Add registers (index 1)
+            position = current_index
+            self.drop_down_menu_clicked.emit(device_number, position)
+        elif current_index == 2: # If the selectec option is Delete registers (index 2)
+            position = current_index
             self.action_menu.setCurrentIndex(0)
-            self.list_of_registers = self.file_handler.get_registers_to_read(self.device_number) # Update the list of registers.
-        elif self.action_menu.currentIndex() == 2: # If the selectec option is Delete registers (index 2)
+            self.drop_down_menu_clicked.emit(device_number, position)
+        elif current_index == 3: # If the selected option is Connect (index 3)
+            position = current_index
             self.action_menu.setCurrentIndex(0)
-            if self.selected_connection:
-                print(f"Is device connected? :{self.selected_connection.is_connected()}")
-            else:
-                print("No device connected")
-        elif self.action_menu.currentIndex() == 3: # If the selected option is Connect (index 3)
-            self.action_menu.setCurrentIndex(0)
-            result = self.connect_to_device()
-            if result:
-                light_green = "rgb(144, 238, 144)"
-                self.set_conection_status("Connected",light_green)
-            else:
-                self.notification.set_warning_message("Connection Failure", result)
+            self.drop_down_menu_clicked.emit(device_number, position)
             
 
 
