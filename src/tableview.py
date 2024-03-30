@@ -45,6 +45,7 @@ class TableWidget(QWidget):
     }
     
     edit_connection_button_clicked = pyqtSignal(int)
+    drop_down_menu_clicked = pyqtSignal(int, int)
 
     def __init__(self, device_number:int, columns = 3):
         super().__init__()
