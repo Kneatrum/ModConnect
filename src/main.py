@@ -188,7 +188,6 @@ class MainWindow(QtWidgets.QMainWindow):
         if position == 1:
             current_table.action_menu.setCurrentIndex(0)
             current_table.show_register_dialog() # Show the message box for adding registers
-            current_table.action_menu.setCurrentIndex(0)
             current_table.list_of_registers = self.file_handler.get_registers_to_read(device_number) # Update the list of registers.
         elif position == 2:
             current_table.action_menu.setCurrentIndex(0)
