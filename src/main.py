@@ -183,6 +183,29 @@ class MainWindow(QtWidgets.QMainWindow):
             self.observer.table_widgets[index].update_method_label()
 
 
+    def on_drop_down_menu_selected(self, device_number, position):
+        current_table = self.observer.table_widgets[device_number]
+        if position == 1:
+            current_table.action_menu.setCurrentIndex(0)
+            current_table.show_register_dialog() # Show the message box for adding registers
+            current_table.action_menu.setCurrentIndex(0)
+            current_table.list_of_registers = self.file_handler.get_registers_to_read(device_number) # Update the list of registers.
+        elif position == 2:
+            current_table.action_menu.setCurrentIndex(0)
+            if current_table.selected_connection:
+                print(f"Is device connected? :{current_table.selected_connection.is_connected()}")
+            else:
+                print("No device connected")
+        elif position == 3:
+            current_table.action_menu.setCurrentIndex(0)
+            result = current_table.connect_to_device()
+            if result:
+                light_green = "rgb(144, 238, 144)"
+                current_table.set_conection_status("Connected",light_green)
+            else:
+                current_table.notification.set_warning_message("Connection Failure", result)
+
+
     def add_widgets_to_horizontal_layout(self):
         """
         This function adds all QTableWidgets to an horizontal layout
@@ -201,6 +224,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 temp_index = index + 1
                 widget = tablewidget(temp_index) # Create and instance of our table widget. Adding 1 to prevent having device_0
                 widget.edit_connection_button_clicked.connect(self.on_edit_button_clicked)
+                widget.drop_down_menu_clicked.connect(self.on_drop_down_menu_selected)
                 widget.modbus_method_label
                 self.observer.add_table_widget(temp_index, widget)
                 self.horizontal_box.addWidget(widget) # Create the table widgets and add them in the horizontal layout
