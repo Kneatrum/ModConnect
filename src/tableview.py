@@ -136,7 +136,7 @@ class TableWidget(QWidget):
         self.action_menu.setFixedSize(150, 30)
         view = self.action_menu.view() # Get the view of the combo box
         view.setRowHidden(0, True) # Hide the first row of the combo box view
-        self.action_menu.currentIndexChanged.connect(self.__on_drop_down_menu_current_index_changed) # Trigger an action when the user selects an option
+        self.action_menu.currentIndexChanged.connect(lambda position=self.selected_option, device_number=self.device_number:self.__on_drop_down_menu_current_index_changed(device_number, position)) # Trigger an action when the user selects an option
 
 
         # Create a table to display the registers
