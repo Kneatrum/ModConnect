@@ -244,6 +244,11 @@ class TableWidget(QWidget):
             self.modbus_connection_label.setText(self.modbus_method_label)
 
 
+    def update_device_name(self):
+        device_name = self.file_handler.get_device_name(self.device_number)
+        self.group_box.setTitle(device_name)
+
+
     def on_edit_connection_button_clicked(self, index):
         self.edit_connection_button_clicked.emit(index)
    
