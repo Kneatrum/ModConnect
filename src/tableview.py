@@ -76,9 +76,9 @@ class TableWidget(QWidget):
             
 
         # Create a QGroupBox
-        group_box = QGroupBox(self.device_name, self)
-        group_box.setMinimumWidth(505) # set minimum width
-        group_box.setMaximumWidth(505) # set maximum width
+        self.group_box = QGroupBox(self.device_name, self)
+        self.group_box.setMinimumWidth(505) # set minimum width
+        self.group_box.setMaximumWidth(505) # set maximum width
 
 
         # Create the actions Qlabel
@@ -194,11 +194,11 @@ class TableWidget(QWidget):
         main_layout.addWidget(self.table_widget)
 
         # Add the button and table widget to the group box
-        group_box.setLayout(main_layout)
+        self.group_box.setLayout(main_layout)
 
         # Set the layout for the main QWidget
         main_layout = QVBoxLayout()
-        main_layout.addWidget(group_box)
+        main_layout.addWidget(self.group_box)
         self.setLayout(main_layout)
         self.update_register_table()
 
