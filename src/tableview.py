@@ -532,6 +532,12 @@ class TableWidget(QWidget):
                         self.register_data.append("Comm Error")
                         return None
         return self.register_data
+    
+    def get_tcp_connection_string(self, connection_params):
+        return f'{connection_params[TCP_METHOD].get(HOST)}:{connection_params[TCP_METHOD].get(PORT)}'
+
+    def get_rtu_connection_string(self, connection_params):
+        return f'{connection_params[RTU_METHOD].get(BAUD_RATE)}, {connection_params[RTU_METHOD].get(SERIAL_PORT)}, {connection_params[RTU_METHOD].get(PARITY)}, {connection_params[RTU_METHOD].get(STOP_BITS)}, {connection_params[RTU_METHOD].get(BYTESIZE)}'
 
 
     def delete_register(self):
