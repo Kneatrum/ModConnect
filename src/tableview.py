@@ -237,11 +237,13 @@ class TableWidget(QWidget):
         connection_params = self.file_handler.get_connection_params(self.device_number)
         default_method = self.file_handler.get_default_modbus_method(self.device_number)
         if TCP_METHOD in default_method:
-            message = f'{HOST.upper()}: {connection_params[TCP_METHOD].get(HOST)}\n{PORT.upper()}: {connection_params[TCP_METHOD].get(PORT)}'
+            message = self.get_tcp_connection_string(connection_params)
             self.modbus_connection_label.setText(message)
+            self.modbus_connection_label.setStyleSheet("color: gray;")
         if RTU_METHOD in default_method:
-            self.modbus_method_label = f'{PORT.upper()}: {connection_params[RTU_METHOD].get(SERIAL_PORT)}\n{BAUD_RATE.upper()}: {connection_params[RTU_METHOD].get(BAUD_RATE)}\n{connection_params[RTU_METHOD].get(BYTESIZE)}, {connection_params[RTU_METHOD].get(PARITY)}, {connection_params[RTU_METHOD].get(STOP_BITS)}'
-            self.modbus_connection_label.setText(self.modbus_method_label)
+            message = self.get_rtu_connection_string(connection_params)
+            self.modbus_connection_label.setText(message)
+            self.modbus_connection_label.setStyleSheet("color: gray;")
 
 
     def update_device_name(self):
