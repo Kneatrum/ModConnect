@@ -110,10 +110,12 @@ class TableWidget(QWidget):
         modbus_protocols = self.file_handler.get_modbus_protocol(self.device_number)
         
         if default_method == TCP_METHOD:
-            self.modbus_method_label = f'{HOST.upper()}: {connection_params[TCP_METHOD].get(HOST)}\n{PORT.upper()}: {connection_params[TCP_METHOD].get(PORT)}'
+            # Constructing the following string. 127.0.0.1:502 
+            self.modbus_method_label = self.get_tcp_connection_string(connection_params)
             self.tcp_checkbox.setChecked(True)
         elif default_method == RTU_METHOD:
-            self.modbus_method_label  = f'{PORT.upper()}: {connection_params[RTU_METHOD].get(SERIAL_PORT)}\n{BAUD_RATE.upper()}: {connection_params[RTU_METHOD].get(BAUD_RATE)}\n{connection_params[RTU_METHOD].get(BYTESIZE)}, {connection_params[RTU_METHOD].get(PARITY)}, {connection_params[RTU_METHOD].get(STOP_BITS)}'
+            # Constructing the following string. 9600,COM1,N,1,8,1.0
+            self.modbus_method_label  = self.get_rtu_connection_string(connection_params)
             self.rtu_checkbox.setChecked(True)
 
         # If there is only one option, disable the checkboxes
@@ -122,6 +124,7 @@ class TableWidget(QWidget):
             self.tcp_checkbox.setDisabled(True)
          
         self.modbus_connection_label.setText(self.modbus_method_label)
+        self.modbus_connection_label.setStyleSheet("Color: gray;")
 
         self.edit_connection_button = QPushButton('Edit Connection')
         self.edit_connection_button.setFixedSize(150, 30)
@@ -151,13 +154,12 @@ class TableWidget(QWidget):
         self.table_widget.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff) 
         
         # Create a horizontal layout to hold action label and combo box vlayouy and connection status label
-        top_horizontal_layout = QHBoxLayout()
+        self.left_group_box = QGroupBox()
+        self.center_group_box = QGroupBox()
+        self.right_group_box = QGroupBox()
         first_column = QVBoxLayout()
         second_column = QVBoxLayout()
-        third_column = QVBoxLayout()
         
-
-
 
         # Create a horizontal layout to hold the connection status
         con_status_v_layout = QVBoxLayout()
@@ -175,30 +177,31 @@ class TableWidget(QWidget):
 
 
         first_column.addLayout(check_box_h_layout)
-        first_column.addLayout(con_status_v_layout)
-        second_column.addLayout(connection_v_layout)
-        third_column.addLayout(action_status_combo_box_v_layout)
+        first_column.addLayout(connection_v_layout)
+        second_column.addLayout(con_status_v_layout)
+        second_column.addLayout(action_status_combo_box_v_layout)
 
-
-
-        top_horizontal_layout.addLayout(first_column)
-        top_horizontal_layout.addLayout(second_column)
-        top_horizontal_layout.addLayout(third_column)
-        
-
-        
-        
+        self.left_group_box.setLayout(first_column)
+        self.right_group_box.setLayout(second_column)
+       
         # Create a vertical layout to hold the buttons and the table widget
-        main_layout = QVBoxLayout()
-        main_layout.addLayout(top_horizontal_layout)
-        main_layout.addWidget(self.table_widget)
+        group_box_internal_layout = QVBoxLayout()
+        top_horizontal_layout = QHBoxLayout()
+        bottom_vertical_layout = QVBoxLayout()
+
+        top_horizontal_layout.addWidget(self.left_group_box)
+        top_horizontal_layout.addWidget(self.right_group_box)
+        bottom_vertical_layout.addWidget(self.table_widget)
+
+        group_box_internal_layout.addLayout(top_horizontal_layout)
+        group_box_internal_layout.addLayout(bottom_vertical_layout)
 
         # Add the button and table widget to the group box
-        self.group_box.setLayout(main_layout)
-
-        # Set the layout for the main QWidget
-        main_layout = QVBoxLayout()
+        self.group_box.setLayout(group_box_internal_layout)
+        
+        main_layout = QHBoxLayout()
         main_layout.addWidget(self.group_box)
+
         self.setLayout(main_layout)
         self.update_register_table()
 
