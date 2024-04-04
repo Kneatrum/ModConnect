@@ -169,8 +169,10 @@ class TableWidget(QWidget):
         
 
         # Create a horizontal layout to hold the connection status
-        con_status_v_layout = QVBoxLayout()
-        con_status_v_layout.addWidget(self.connection_status_label)
+        con_status_h_layout = QHBoxLayout()
+        status_label = QLabel("Status")
+        con_status_h_layout.addWidget(status_label)
+        con_status_h_layout.addWidget(self.connection_status_label)
 
         
         connection_h_layout = QHBoxLayout()
@@ -181,8 +183,8 @@ class TableWidget(QWidget):
 
         first_column.addLayout(check_box_h_layout)
         first_column.addLayout(connection_h_layout)
-        second_column.addLayout(con_status_v_layout)
-        second_column.addLayout(action_status_combo_box_v_layout)
+        second_column.addLayout(con_status_h_layout)
+        second_column.addLayout(action_status_combo_box_h_layout)
 
         self.left_group_box.setLayout(first_column)
         self.right_group_box.setLayout(second_column)
