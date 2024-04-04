@@ -1,5 +1,5 @@
 from PyQt5.QtCore import Qt, pyqtSignal
-from PyQt5.QtWidgets import QWidget,  QGroupBox, QWidget,  QPushButton, QTableWidget, QVBoxLayout, QLabel, QLineEdit, QComboBox, QDialog,QHBoxLayout, QTableWidgetItem, QCheckBox
+from PyQt5.QtWidgets import QWidget,  QGroupBox, QWidget,  QPushButton, QTableWidget, QVBoxLayout, QLabel, QLineEdit, QComboBox, QDialog,QHBoxLayout, QTableWidgetItem, QCheckBox, QSpacerItem, QSizePolicy
 from file_handler import FileHandler
 from modbus_clients import ModbusTCP, ModbusRTU
 from pymodbus.payload import BinaryPayloadDecoder
@@ -95,9 +95,11 @@ class TableWidget(QWidget):
         check_box_h_layout = QHBoxLayout()
         self.tcp_checkbox = QCheckBox('TCP')
         self.rtu_checkbox = QCheckBox('RTU')
+        checkbox_spacer = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
         self.tcp_checkbox.stateChanged.connect(self.on_tcp_connection_status_changed)
         self.rtu_checkbox.stateChanged.connect(self.on_rtu_connection_status_changed)
         check_box_h_layout.addWidget(self.tcp_checkbox)
+        check_box_h_layout.addItem(checkbox_spacer)
         check_box_h_layout.addWidget(self.rtu_checkbox)
         
 
