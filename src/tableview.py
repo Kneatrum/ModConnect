@@ -545,7 +545,11 @@ class TableWidget(QWidget):
         return f'{connection_params[TCP_METHOD].get(HOST)}:{connection_params[TCP_METHOD].get(PORT)}'
 
     def get_rtu_connection_string(self, connection_params):
-        return f'{connection_params[RTU_METHOD].get(BAUD_RATE)}, {connection_params[RTU_METHOD].get(SERIAL_PORT)}, {connection_params[RTU_METHOD].get(PARITY)}, {connection_params[RTU_METHOD].get(STOP_BITS)}, {connection_params[RTU_METHOD].get(BYTESIZE)}'
+        return f'{connection_params[RTU_METHOD].get(BAUD_RATE)}, '\
+            f'{connection_params[RTU_METHOD].get(SERIAL_PORT)}, '\
+            f'{connection_params[RTU_METHOD].get(BYTESIZE)}, '\
+            f'{connection_params[RTU_METHOD].get(PARITY)[0]}, '\
+            f'{connection_params[RTU_METHOD].get(STOP_BITS)}'
 
 
     def delete_register(self):
