@@ -81,9 +81,7 @@ class TableWidget(QWidget):
         self.group_box.setMaximumWidth(505) # set maximum width
 
 
-        # Create the actions Qlabel
-        self.actions_label = QLabel("Actions",self)
-        self.selected_option = 0
+
 
         # Create the connection status Qlabel
         self.connection_status_label = QLabel("Disconnected",self)
