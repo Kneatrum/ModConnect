@@ -126,8 +126,8 @@ class TableWidget(QWidget):
         self.modbus_connection_label.setText(self.modbus_method_label)
         self.modbus_connection_label.setStyleSheet("Color: gray;")
 
-        self.edit_connection_button = QPushButton('Edit Connection')
-        self.edit_connection_button.setFixedSize(150, 30)
+        self.edit_connection_button = QPushButton('...')
+        self.edit_connection_button.setFixedSize(30, 30)
         self.edit_connection_button.clicked.connect(lambda checked, idx=self.device_number: self.on_edit_connection_button_clicked(idx))
 
 
