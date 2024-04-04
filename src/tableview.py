@@ -173,14 +173,14 @@ class TableWidget(QWidget):
         con_status_v_layout.addWidget(self.connection_status_label)
 
         
-        connection_v_layout = QVBoxLayout()
-        connection_v_layout.addWidget(self.modbus_connection_label)
-        connection_v_layout.addWidget(self.edit_connection_button)
+        connection_h_layout = QHBoxLayout()
+        connection_h_layout.addWidget(self.modbus_connection_label)
+        connection_h_layout.addWidget(self.edit_connection_button)
 
         
 
         first_column.addLayout(check_box_h_layout)
-        first_column.addLayout(connection_v_layout)
+        first_column.addLayout(connection_h_layout)
         second_column.addLayout(con_status_v_layout)
         second_column.addLayout(action_status_combo_box_v_layout)
 
