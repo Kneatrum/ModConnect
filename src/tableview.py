@@ -131,6 +131,11 @@ class TableWidget(QWidget):
         self.edit_connection_button.clicked.connect(lambda checked, idx=self.device_number: self.on_edit_connection_button_clicked(idx))
 
 
+        # Create a vertical box layout for the qlabel and combo box
+        action_status_combo_box_h_layout = QHBoxLayout() 
+        # Create the actions Qlabel
+        self.actions_label = QLabel("Actions",self)
+        self.selected_option = 0
         # Add a dropdown menu and add actions to it
         self.action_items = ["Select an action","Add Registers", "Remove register", "Connect", "Quit"] # Create a list of actions
         self.action_menu = QComboBox() 
@@ -140,6 +145,8 @@ class TableWidget(QWidget):
         view = self.action_menu.view() # Get the view of the combo box
         view.setRowHidden(0, True) # Hide the first row of the combo box view
         self.action_menu.currentIndexChanged.connect(lambda position=self.selected_option, device_number=self.device_number:self.__on_drop_down_menu_current_index_changed(device_number, position)) # Trigger an action when the user selects an option
+        action_status_combo_box_h_layout.addWidget(self.actions_label) # Add the action label to the layout
+        action_status_combo_box_h_layout.addWidget(self.action_menu) # Add the action dropdown menu to the layout
 
 
         # Create a table to display the registers
@@ -170,11 +177,7 @@ class TableWidget(QWidget):
         connection_v_layout.addWidget(self.modbus_connection_label)
         connection_v_layout.addWidget(self.edit_connection_button)
 
-        # Create a vertical box layout for the qlabel and combo box
-        action_status_combo_box_v_layout = QVBoxLayout() 
-        action_status_combo_box_v_layout.addWidget(self.actions_label) # Add the action label to the layout
-        action_status_combo_box_v_layout.addWidget(self.action_menu) # Add the action dropdown menu to the layout
-
+        
 
         first_column.addLayout(check_box_h_layout)
         first_column.addLayout(connection_v_layout)
