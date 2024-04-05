@@ -163,8 +163,8 @@ class MainWindow(QtWidgets.QMainWindow):
 
 
     def start_ui_refresh(self):
-        # self.connected_devices = self.main_widget.findChildren(QTableWidget)
-        if self.ready_to_poll_event.set():
+        self.connected_devices = self.main_central_widget.findChildren(QTableWidget)
+        if self.ready_to_poll_event.is_set():
             self.start_tasks()
         else:
             self.notification.set_warning_message("No connected devices", "Please connect to a device first")
