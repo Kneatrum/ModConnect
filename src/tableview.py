@@ -267,6 +267,7 @@ class TableWidget(QWidget):
         current_index = self.action_menu.currentIndex()
         if current_index == 1: # If the selectec option is Add registers (index 1)
             position = current_index
+            self.action_menu.setCurrentIndex(0)
             self.drop_down_menu_clicked.emit(device_number, position)
         elif current_index == 2: # If the selectec option is Delete registers (index 2)
             position = current_index
