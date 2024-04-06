@@ -295,7 +295,7 @@ class FileHandler:
                         temp_dict[REGISTER_QUANTITY] = data[device][REGISTERS][register].get(REGISTER_QUANTITY)
                         temp_dict[FUNCTION_CODE] = data[device][REGISTERS][register].get(FUNCTION_CODE)
                         result[register] = temp_dict
-                        return result
+                return result
         return None
 
 
