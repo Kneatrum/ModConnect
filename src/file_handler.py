@@ -253,7 +253,7 @@ class FileHandler:
                     for register_attribute in list_of_attributes:
                         temp_dict[register_attribute] = data[device][REGISTERS][register][register_attribute]
                     result[register] = temp_dict
-                    return result
+                return result
         return None
 
 
