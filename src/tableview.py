@@ -494,12 +494,12 @@ class TableWidget(QWidget):
                     try:
                         response = self.selected_connection.client.read_coils(address, quantity, unit=self.slave_address)
                         if response.isError():
-                            self.register_data.append("Error")
+                            self.register_data.extend(temp*quantity)
                             print(response)
                         else:
                             self.register_data += response.registers
                     except ModbusIOException as e:
-                        self.register_data.append(e)
+                        self.register_data.extend(e)
                         return None
             elif self.list_of_registers[register][FUNCTION_CODE] == 2:
                 address = self.list_of_registers[register].get(REGISTER_ADDRESS)
@@ -508,12 +508,12 @@ class TableWidget(QWidget):
                     try:
                         response = self.selected_connection.client.read_discrete_inputs(address, quantity, unit=self.slave_address)
                         if response.isError():
-                            self.register_data.append("Error")
+                            self.register_data.extend(temp*quantity)
                             print(response)
                         else:
                             self.register_data += response.registers
                     except ModbusIOException as exception:
-                        self.register_data.append("Comm Error")
+                        self.register_data.extend("Comm Error")
                         return None
             elif self.list_of_registers[register][FUNCTION_CODE] == 3:
                 address = self.list_of_registers[register].get(REGISTER_ADDRESS)
@@ -522,12 +522,12 @@ class TableWidget(QWidget):
                     try:
                         response = self.selected_connection.client.read_holding_registers(address, quantity, unit=self.slave_address)
                         if response.isError():
-                            self.register_data.append("Error")
+                            self.register_data.extend(temp*quantity)
                             print(response)
                         else:
                             self.register_data += response.registers
                     except ModbusIOException as exception:
-                        self.register_data.append("Comm Error")
+                        self.register_data.extend("Comm Error")
                         return None
             elif self.list_of_registers[register][FUNCTION_CODE] == 4:
                 address = self.list_of_registers[register].get(REGISTER_ADDRESS)
@@ -536,12 +536,12 @@ class TableWidget(QWidget):
                     try:
                         response = self.selected_connection.client.read_input_registers(address, quantity, unit=self.slave_address)
                         if response.isError():
-                            self.register_data.append("Error")
+                            self.register_data.extend(temp*quantity)
                             print(response)
                         else:   
                             self.register_data += response.registers
                     except ModbusIOException as exception:
-                        self.register_data.append("Comm Error")
+                        self.register_data.extend("Comm Error")
                         return None
         return self.register_data
     
