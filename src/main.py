@@ -38,7 +38,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.main_widget = None
         self.observer = Observer()
         self.threadpool = QThreadPool()
-        self.connected_devices = []
+        # self.connected_devices = []
 
         self.worker = Worker(self.observer.read_all_registers)
         self.worker.signals.result.connect(self.refresh_gui)
@@ -170,7 +170,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
 
     def start_ui_refresh(self):
-        self.connected_devices = self.main_central_widget.findChildren(QTableWidget)
+        # self.connected_devices = self.main_central_widget.findChildren(QTableWidget)
         if self.ready_to_poll_event.is_set():
             self.start_tasks()
         else:
