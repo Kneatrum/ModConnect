@@ -140,8 +140,8 @@ class MainWindow(QtWidgets.QMainWindow):
                 row_count = len(register_list)
 
             # Create a loop to iterate over the QtableWidget's rows and update the value column with the read registers.
-            for row in range(self.connected_devices[device_number - 1].rowCount()):
-                self.connected_devices[device_number - 1].setItem(row, VALUE_COLUMN, QTableWidgetItem(str(register_list[row])))
+            for row in range(row_count):
+                self.observer.connected_devices[device_number - 1].table_widget.setItem(row, VALUE_COLUMN, QTableWidgetItem(str(register_list[row])))
         stop_time = time.perf_counter()
         print("Time :", stop_time - start_time)
 
