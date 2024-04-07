@@ -132,6 +132,13 @@ class MainWindow(QtWidgets.QMainWindow):
         for device_number in result.keys():
             # The value of the dictionary is a list of the register results for this particular device number.
             register_list = result[device_number]
+            row_count = self.observer.connected_devices[device_number - 1].table_widget.rowCount()
+
+            # This happens as a precaution. Ideally, the number of registers should match the number of rows in the table widget.
+            if len(register_list) < row_count:
+                print("Registers are less than the number of rows in the table.")
+                row_count = len(register_list)
+
             # Create a loop to iterate over the QtableWidget's rows and update the value column with the read registers.
             for row in range(self.connected_devices[device_number - 1].rowCount()):
                 self.connected_devices[device_number - 1].setItem(row, VALUE_COLUMN, QTableWidgetItem(str(register_list[row])))
