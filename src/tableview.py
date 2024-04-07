@@ -485,6 +485,7 @@ class TableWidget(QWidget):
 
     def read_registers(self):
         self.register_data.clear()
+        temp = ["Error"]
         for register in self.list_of_registers:
             if self.list_of_registers[register][FUNCTION_CODE]  == 1:
                 address = self.list_of_registers[register].get(REGISTER_ADDRESS)
