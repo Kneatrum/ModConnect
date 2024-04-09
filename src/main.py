@@ -209,6 +209,7 @@ class MainWindow(QtWidgets.QMainWindow):
             if result:
                 light_green = "rgb(144, 238, 144)"
                 current_table.set_conection_status("Connected",light_green)
+                self.observer.table_widgets[device_number]["status"] = result
                 self.ready_to_poll_event.set()
             else:
                 current_table.notification.set_warning_message("Connection Failure", result)
