@@ -234,7 +234,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 widget.edit_connection_button_clicked.connect(self.on_edit_button_clicked)
                 widget.drop_down_menu_clicked.connect(self.on_drop_down_menu_selected)
                 widget.modbus_method_label
-                self.observer.add_table_widget(temp_index, widget)
+                self.observer.add_table_widget(temp_index, False, widget)
                 self.horizontal_box.addWidget(widget) # Create the table widgets and add them in the horizontal layout
             return True
         return None
@@ -248,7 +248,7 @@ class MainWindow(QtWidgets.QMainWindow):
         widget.edit_connection_button_clicked.connect(self.on_edit_button_clicked)
         widget.drop_down_menu_clicked.connect(self.on_drop_down_menu_selected)
         widget.modbus_method_label
-        self.observer.add_table_widget(saved_devices, widget)
+        self.observer.add_table_widget(saved_devices, False, widget)
         self.horizontal_box.addWidget(widget) # Create the table widgets and add them in the horizontal layout
 
 
