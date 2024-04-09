@@ -187,12 +187,12 @@ class MainWindow(QtWidgets.QMainWindow):
     def on_edit_button_clicked(self, index):
         edit_connection = EditConnection(index)
         if edit_connection.exec_() == QDialog.Accepted:
-            self.observer.table_widgets[index].update_method_label()
-            self.observer.table_widgets[index].update_device_name()
+            self.observer.table_widgets[index]["widget"].update_method_label()
+            self.observer.table_widgets[index]["widget"].update_device_name()
 
 
     def on_drop_down_menu_selected(self, device_number, position):
-        current_table = self.observer.table_widgets[device_number]
+        current_table = self.observer.table_widgets[device_number]["widget"]
         if position == 1:
             current_table.action_menu.setCurrentIndex(0)
             current_table.show_register_dialog() # Show the message box for adding registers

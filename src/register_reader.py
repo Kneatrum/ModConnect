@@ -34,9 +34,12 @@ class Observer:
         self.connected_devices = []
 
     
-    def add_table_widget(self, index, table_view):
-        if table_view not in self.table_widgets:
-            self.table_widgets[index] = table_view
+    def add_table_widget(self, index, status, widget):
+        if widget not in self.table_widgets:
+            temp_dict = {}
+            temp_dict["status"] = status
+            temp_dict["widget"] = widget
+            self.table_widgets[index] = temp_dict
 
     def remove_table_widget(self, index):
         del self.table_widgets[index]
