@@ -6,6 +6,7 @@ from pymodbus.payload import BinaryPayloadDecoder
 from pymodbus.constants import Endian
 from pymodbus.exceptions import ModbusIOException
 from modbus_group_boxes import RtuGroupBox, TcpGroupBox
+from pymodbus.exceptions import ConnectionException
 from constants import REGISTER_NAME, REGISTER_ADDRESS, REGISTER_PREFIX, TCP_METHOD, RTU_METHOD, \
                         HOST, PORT, SERIAL_PORT, BAUD_RATE, PARITY, STOP_BITS, BYTESIZE, \
                         FUNCTION_CODE, REGISTER_QUANTITY
@@ -500,7 +501,11 @@ class TableWidget(QWidget):
                             self.register_data += response.registers
                     except ModbusIOException as e:
                         self.register_data.extend(e)
+                        # return None
+                    except ConnectionException:
+                        print("Device disconnected.")
                         return None
+
             elif self.list_of_registers[register][FUNCTION_CODE] == 2:
                 address = self.list_of_registers[register].get(REGISTER_ADDRESS)
                 quantity = self.list_of_registers[register].get(REGISTER_QUANTITY)
@@ -512,8 +517,11 @@ class TableWidget(QWidget):
                             print(response)
                         else:
                             self.register_data += response.registers
-                    except ModbusIOException as exception:
-                        self.register_data.extend("Comm Error")
+                    except ModbusIOException as e:
+                        self.register_data.extend(e)
+                        # return None
+                    except ConnectionException:
+                        print("Device disconnected.")
                         return None
             elif self.list_of_registers[register][FUNCTION_CODE] == 3:
                 address = self.list_of_registers[register].get(REGISTER_ADDRESS)
@@ -526,8 +534,11 @@ class TableWidget(QWidget):
                             print(response)
                         else:
                             self.register_data += response.registers
-                    except ModbusIOException as exception:
-                        self.register_data.extend("Comm Error")
+                    except ModbusIOException as e:
+                        self.register_data.extend(e)
+                        # return None
+                    except ConnectionException:
+                        print("Device disconnected.")
                         return None
             elif self.list_of_registers[register][FUNCTION_CODE] == 4:
                 address = self.list_of_registers[register].get(REGISTER_ADDRESS)
@@ -540,8 +551,11 @@ class TableWidget(QWidget):
                             print(response)
                         else:   
                             self.register_data += response.registers
-                    except ModbusIOException as exception:
-                        self.register_data.extend("Comm Error")
+                    except ModbusIOException as e:
+                        self.register_data.extend(e)
+                        # return None
+                    except ConnectionException:
+                        print("Device disconnected.")
                         return None
         return self.register_data
     
