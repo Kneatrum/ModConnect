@@ -1,7 +1,8 @@
 """
 This module implements the observer pattern in reading and updating the register table or table widget.
 """
-
+from pymodbus.exceptions import ConnectionException
+from pymodbus.exceptions import ModbusIOException
 from PyQt5.QtCore import QRunnable, QObject, pyqtSignal
 from time import perf_counter
 import time
@@ -48,8 +49,21 @@ class Observer:
         # Reading register data.
         result_dict = {}
         read_start = perf_counter()
-        for device in self.connected_devices:
-            result_dict[device.device_number] =   device.read_registers()
+        for key in self.table_widgets:
+            if self.table_widgets[key]["status"] == True:
+                try:
+                    response = self.table_widgets[key]["widget"].read_registers()
+                    if response:
+                        result_dict[key] = self.table_widgets[key]["widget"].read_registers()
+                    else:
+                        print("No response after reading registers")
+                except ModbusIOException:
+                    print("Failed to perform Modbus operation due to IO exception.")
+                except ConnectionException:
+                    print("Failed to connect to Modbus device.")
+                    self.table_widgets[key]["status"] = False
+                    self.table_widgets[key]["widget"].set_connection_status(False)
+                        
         read_end = perf_counter()
         print(f"Reading registers :{read_end - read_start}" )
         return result_dict
