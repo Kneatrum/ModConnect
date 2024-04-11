@@ -146,23 +146,7 @@ class MainWindow(QtWidgets.QMainWindow):
         print("Time :", stop_time - start_time)
 
 
-    def monitor_connected_devices(self):
-        while self.main_thread.is_alive():
-            if not self.ready_to_poll_event.is_set():
-                if len(self.observer.connected_devices) > 0:
-                    self.ready_to_poll_event.set()
-                elif len(self.observer.connected_devices) == 0:
-                    self.ready_to_poll_event.clear()
 
-            for device in self.observer.table_widgets.values():
-                if device not in self.observer.connected_devices:
-                    if device.selected_connection and device.selected_connection.is_connected():
-                        self.observer.connected_devices.append(device)
-                else:
-                    if device.selected_connection and not device.selected_connection.is_connected():
-                        self.observer.connected_devices.remove(device)
-            # print("\t\t\t\t\tConnected devices : ", len(self.observer.connected_devices))
-            time.sleep(0.5)
 
 
 
