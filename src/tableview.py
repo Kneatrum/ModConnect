@@ -212,6 +212,12 @@ class TableWidget(QWidget):
         self.update_register_table()
 
 
+    def change_action_item(self, action_index, new_action_text):
+        self.action_menu.clear()
+        self.action_items[action_index] = new_action_text
+        self.action_menu.addItems(self.action_items) 
+
+
     def on_cell_changed(self, row, column):
         """
         This method allows the user to assign a custom name to a register.
