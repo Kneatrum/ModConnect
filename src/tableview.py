@@ -282,9 +282,18 @@ class TableWidget(QWidget):
 
 
 
-    def set_conection_status(self,text,background_color):
-        self.connection_status_label.setText(text)
-        self.connection_status_label.setStyleSheet("background-color: " + background_color + "; padding: 25px;")
+    def set_connection_status(self,status):
+        connected = "Connected"
+        disconnected = "Disconnected"
+        light_green = "rgb(144, 238, 144)"
+        gray = "rgb(219,220,220)"
+
+        if status == True:
+            self.connection_status_label.setText(connected)
+            self.connection_status_label.setStyleSheet("background-color: " + light_green + "; padding: 25px;")
+        else:
+            self.connection_status_label.setText(disconnected)
+            self.connection_status_label.setStyleSheet("background-color: " + gray + "; padding: 25px;")
 
 
 
