@@ -127,6 +127,17 @@ class MainWindow(QtWidgets.QMainWindow):
         
         """
         start_time = time.perf_counter()
+        """
+        This portion of the code checks how many devices are connected. If the number of devices is 0, we stop polling.
+        """
+        connected_devices = 0
+        for key in self.observer.table_widgets:
+            if self.observer.table_widgets[key]["status"] == True:
+                connected_devices += 1
+        if connected_devices == 0:
+            self.stop_polling()
+
+
         # The key of the dictionary represents the device number.
         print(f"Results {result}")
         if result is not None:
