@@ -203,16 +203,18 @@ class MainWindow(QtWidgets.QMainWindow):
                 print(f"Is device connected? :{current_table.selected_connection.is_connected()}")
             else:
                 print("No device connected")
-        elif position == 3:
-            current_table.action_menu.setCurrentIndex(0)
-            result = current_table.connect_to_device()
-            if result:
-                current_table.set_connection_status(True)
-                self.observer.table_widgets[device_number]["status"] = result
-                self.ready_to_poll_event.set()
-            else:
-                current_table.set_connection_status(False)
-                current_table.notification.set_warning_message("Connection Failure", result)
+        elif position == CONNECT_ID: # Connect/Disconnect
+            current_text = current_table.action_menu.currentText()
+            if current_text == CONNECT:
+                result = current_table.connect_to_device()
+                if result:
+                    current_table.change_action_item(position, DISCONNECT)
+                    current_table.set_connection_status(True)
+                    self.observer.table_widgets[device_number][STATUS] = result
+                    self.ready_to_poll_event.set()
+                else:
+                    current_table.set_connection_status(False)
+                    current_table.notification.set_warning_message("Connection Failure", result)
 
 
     def add_widgets_to_horizontal_layout(self):
