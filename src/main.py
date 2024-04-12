@@ -141,7 +141,6 @@ class MainWindow(QtWidgets.QMainWindow):
 
 
         # The key of the dictionary represents the device number.
-        print(f"Results {result}")
         if result is not None:
             for device_number in result.keys():
                 # The value of the dictionary is a list of the register results for this particular device number.
@@ -193,6 +192,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def on_drop_down_menu_selected(self, device_number, position):
         current_table = self.observer.table_widgets[device_number][WIDGET]
+
         if position == ADD_REGISTERS_ID: # Add Registers
             # current_table.action_menu.setCurrentIndex(SELECT_ACTION_ID)
             current_table.show_register_dialog() # Show the message box for adding registers
@@ -215,6 +215,17 @@ class MainWindow(QtWidgets.QMainWindow):
                 else:
                     current_table.set_connection_status(False)
                     current_table.notification.set_warning_message("Connection Failure", result)
+            elif current_text ==  DISCONNECT: # Disconnect device
+                current_table.selected_connection.client.close()
+                current_table.set_connection_status(False)
+                self.observer.table_widgets[device_number][STATUS] = False
+                current_table.change_action_item(position, CONNECT)
+                self.ready_to_poll_event.clear()
+            current_table.action_menu.setCurrentIndex(SELECT_ACTION_ID)
+        elif position == HIDE_DEVICE_ID: # Hide device
+            pass
+        elif position == DELETE_DEVICE_ID: # Delete device
+            pass
 
 
     def add_widgets_to_horizontal_layout(self):

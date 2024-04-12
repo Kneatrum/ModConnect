@@ -284,7 +284,15 @@ class TableWidget(QWidget):
             self.drop_down_menu_clicked.emit(device_number, position)
         elif current_index == CONNECT_ID: # If the selected option is Connect/Disconnect (index 3)
             position = current_index
-            self.action_menu.setCurrentIndex(0)
+            # self.action_menu.setCurrentIndex(SELECT_ACTION_ID)
+            self.drop_down_menu_clicked.emit(device_number, position)
+        elif current_index == HIDE_DEVICE_ID: # If the selected option is Hide device (index 4)
+            position = current_index
+            self.action_menu.setCurrentIndex(SELECT_ACTION_ID)
+            self.drop_down_menu_clicked.emit(device_number, position)
+        elif current_index == DELETE_DEVICE_ID: # If the selected option is Delete device (index 5)
+            position = current_index
+            self.action_menu.setCurrentIndex(SELECT_ACTION_ID)
             self.drop_down_menu_clicked.emit(device_number, position)
             
 
