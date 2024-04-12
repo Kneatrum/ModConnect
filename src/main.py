@@ -212,8 +212,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 else:
                     current_table.notification.set_warning_message("Connection Failure", result)
             elif current_text ==  DISCONNECT: # Disconnect device
-                current_table.selected_connection.client.close()
-                current_table.set_connection_status(False)
+                current_table.disconnect_from_device()
                 self.ready_to_poll_event.clear()
             current_table.action_menu.setCurrentIndex(SELECT_ACTION_ID)
         elif position == HIDE_DEVICE_ID: # Hide device

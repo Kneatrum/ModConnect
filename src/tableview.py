@@ -484,7 +484,10 @@ class TableWidget(QWidget):
         except Exception as e:
             return e
 
-     
+    
+    def disconnect_from_device(self):
+        self.selected_connection.client.close()
+        self.set_connection_status(False)
 
 
     def __set_selected_connection(self):
