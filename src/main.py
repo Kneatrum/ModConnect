@@ -10,6 +10,8 @@ from register_reader import Observer, Worker
 import threading
 import time
 from notifications import Notification
+from constants import STATUS, WIDGET, DISCONNECT, CONNECT, SELECT_ACTION_ID, ADD_REGISTERS_ID, REMOVE_REGISTERS_ID, \
+                        CONNECT_ID, HIDE_DEVICE_ID, DELETE_DEVICE_ID
 
 from PyQt5.QtWidgets import  QScrollArea, QWidget,  QAction, \
     QVBoxLayout, QDialog, QHBoxLayout,  QTableWidget, \
