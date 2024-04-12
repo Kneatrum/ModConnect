@@ -6,7 +6,6 @@ from pymodbus.exceptions import ModbusIOException
 from PyQt5.QtCore import QRunnable, QObject, pyqtSignal
 from time import perf_counter
 import time
-from constants import CONNECT_ID, CONNECT, STATUS, WIDGET
 
 class WorkerSignals(QObject):
     finished = pyqtSignal()
@@ -36,12 +35,9 @@ class Observer:
         self.connected_devices = []
 
     
-    def add_table_widget(self, index, status, widget):
+    def add_table_widget(self, index, widget):
         if widget not in self.table_widgets:
-            temp_dict = {}
-            temp_dict[STATUS] = status
-            temp_dict[WIDGET] = widget
-            self.table_widgets[index] = temp_dict
+            self.table_widgets[index] = widget
 
     def remove_table_widget(self, index):
         del self.table_widgets[index]
@@ -50,21 +46,19 @@ class Observer:
         # Reading register data.
         result_dict = {}
         read_start = perf_counter()
-        for key in self.table_widgets:
-            if self.table_widgets[key][STATUS] == True:
+        for key, device in self.table_widgets.items():
+            if device.connection_status == True:
                 try:
-                    response = self.table_widgets[key][WIDGET].read_registers()
+                    response = device.read_registers()
                     if response:
-                        result_dict[key] = self.table_widgets[key][WIDGET].read_registers()
+                        result_dict[key] = device.read_registers()
                     else:
                         print("No response after reading registers")
                 except ModbusIOException:
                     print("Failed to perform Modbus operation due to IO exception.")
                 except ConnectionException:
                     print("Failed to connect to Modbus device.")
-                    self.table_widgets[key][STATUS] = False
-                    self.table_widgets[key][WIDGET].set_connection_status(False)
-                    self.table_widgets[key][WIDGET].change_action_item(CONNECT_ID, CONNECT)
+                    device.set_connection_status(False)
                         
         read_end = perf_counter()
         print(f"Reading registers :{read_end - read_start}" )

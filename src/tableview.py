@@ -299,15 +299,17 @@ class TableWidget(QWidget):
 
 
     def set_connection_status(self,status):
-        light_green = "rgb(144, 238, 144)"
-        gray = "rgb(219,220,220)"
 
         if status == True:
-            self.connection_status_label.setText(CONNECT)
-            self.connection_status_label.setStyleSheet("background-color: " + light_green + "; padding: 25px;")
+            self.connection_status = True
+            self.connection_status_label.setText(CONNECTED)
+            self.connection_status_label.setStyleSheet("background-color: " + LIGHT_GREEN + "; padding: 25px;")
+            self.change_action_item(CONNECT_ID, DISCONNECT)
         else:
-            self.connection_status_label.setText(DISCONNECT)
-            self.connection_status_label.setStyleSheet("background-color: " + gray + "; padding: 25px;")
+            self.connection_status = False
+            self.connection_status_label.setText(DISCONNECTED)
+            self.connection_status_label.setStyleSheet("background-color: " + GRAY + "; padding: 25px;")
+            self.change_action_item(CONNECT_ID, CONNECT)
 
 
 
@@ -476,6 +478,7 @@ class TableWidget(QWidget):
         """
         try:
             if self.selected_connection.client.connect():
+                self.set_connection_status(True)
                 return True
         except Exception as e:
             return e

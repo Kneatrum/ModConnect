@@ -133,8 +133,8 @@ class MainWindow(QtWidgets.QMainWindow):
         This portion of the code checks how many devices are connected. If the number of devices is 0, we stop polling.
         """
         connected_devices = 0
-        for key in self.observer.table_widgets:
-            if self.observer.table_widgets[key][STATUS] == True:
+        for device in self.observer.table_widgets.values():
+            if device.connection_status == True:
                 connected_devices += 1
         if connected_devices == 0:
             self.stop_polling()
@@ -145,7 +145,7 @@ class MainWindow(QtWidgets.QMainWindow):
             for device_number in result.keys():
                 # The value of the dictionary is a list of the register results for this particular device number.
                 register_list = result[device_number]
-                row_count = self.observer.table_widgets[device_number][WIDGET].table_widget.rowCount()
+                row_count = self.observer.table_widgets[device_number].table_widget.rowCount()
 
                 # This happens as a precaution. Ideally, the number of registers should match the number of rows in the table widget.
                 if len(register_list) < row_count:
@@ -154,7 +154,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
                 # Create a loop to iterate over the QtableWidget's rows and update the value column with the read registers.
                 for row in range(row_count):
-                    self.observer.table_widgets[device_number][WIDGET].table_widget.setItem(row, VALUE_COLUMN, QTableWidgetItem(str(register_list[row])))
+                    self.observer.table_widgets[device_number].table_widget.setItem(row, VALUE_COLUMN, QTableWidgetItem(str(register_list[row])))
             stop_time = time.perf_counter()
             print("Time :", stop_time - start_time)
         else:
@@ -186,12 +186,12 @@ class MainWindow(QtWidgets.QMainWindow):
     def on_edit_button_clicked(self, index):
         edit_connection = EditConnection(index)
         if edit_connection.exec_() == QDialog.Accepted:
-            self.observer.table_widgets[index][WIDGET].update_method_label()
-            self.observer.table_widgets[index][WIDGET].update_device_name()
+            self.observer.table_widgets[index].update_method_label()
+            self.observer.table_widgets[index].update_device_name()
 
 
     def on_drop_down_menu_selected(self, device_number, position):
-        current_table = self.observer.table_widgets[device_number][WIDGET]
+        current_table = self.observer.table_widgets[device_number]
 
         if position == ADD_REGISTERS_ID: # Add Registers
             # current_table.action_menu.setCurrentIndex(SELECT_ACTION_ID)
@@ -208,9 +208,6 @@ class MainWindow(QtWidgets.QMainWindow):
             if current_text == CONNECT:
                 result = current_table.connect_to_device()
                 if result:
-                    current_table.change_action_item(position, DISCONNECT)
-                    current_table.set_connection_status(True)
-                    self.observer.table_widgets[device_number][STATUS] = result
                     self.ready_to_poll_event.set()
                 else:
                     current_table.set_connection_status(False)
@@ -218,8 +215,6 @@ class MainWindow(QtWidgets.QMainWindow):
             elif current_text ==  DISCONNECT: # Disconnect device
                 current_table.selected_connection.client.close()
                 current_table.set_connection_status(False)
-                self.observer.table_widgets[device_number][STATUS] = False
-                current_table.change_action_item(position, CONNECT)
                 self.ready_to_poll_event.clear()
             current_table.action_menu.setCurrentIndex(SELECT_ACTION_ID)
         elif position == HIDE_DEVICE_ID: # Hide device
@@ -248,7 +243,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 widget.edit_connection_button_clicked.connect(self.on_edit_button_clicked)
                 widget.drop_down_menu_clicked.connect(self.on_drop_down_menu_selected)
                 widget.modbus_method_label
-                self.observer.add_table_widget(temp_index, False, widget)
+                self.observer.add_table_widget(temp_index, widget)
                 self.horizontal_box.addWidget(widget) # Create the table widgets and add them in the horizontal layout
             return True
         return None
@@ -262,7 +257,7 @@ class MainWindow(QtWidgets.QMainWindow):
         widget.edit_connection_button_clicked.connect(self.on_edit_button_clicked)
         widget.drop_down_menu_clicked.connect(self.on_drop_down_menu_selected)
         widget.modbus_method_label
-        self.observer.add_table_widget(saved_devices, False, widget)
+        self.observer.add_table_widget(saved_devices, widget)
         self.horizontal_box.addWidget(widget) # Create the table widgets and add them in the horizontal layout
 
 
