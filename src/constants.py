@@ -125,3 +125,9 @@ DELETE_DEVICE_ID = 5
 
 STATUS = "status"
 WIDGET = "widget"
+
+CONNECTED = "Connected"
+DISCONNECTED = "Disconnected"
+
+LIGHT_GREEN = "rgb(144, 238, 144)"
+GRAY = "rgb(219,220,220)"

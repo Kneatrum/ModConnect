@@ -11,7 +11,8 @@ from constants import REGISTER_NAME, REGISTER_ADDRESS, REGISTER_PREFIX, TCP_METH
                         HOST, PORT, SERIAL_PORT, BAUD_RATE, PARITY, STOP_BITS, BYTESIZE, \
                         FUNCTION_CODE, REGISTER_QUANTITY, ACTION_ITEMS, DISCONNECT, \
                         CONNECT, SELECT_ACTION_ID, ADD_REGISTERS_ID, REMOVE_REGISTERS_ID, \
-                        CONNECT_ID, HIDE_DEVICE_ID, DELETE_DEVICE_ID
+                        CONNECT_ID, HIDE_DEVICE_ID, DELETE_DEVICE_ID, CONNECTED, DISCONNECTED, \
+                        LIGHT_GREEN, GRAY
 
 from notifications import Notification
 
@@ -87,7 +88,7 @@ class TableWidget(QWidget):
 
 
         # Create the connection status Qlabel
-        self.connection_status_label = QLabel("Disconnected",self)
+        self.connection_status_label = QLabel(DISCONNECTED,self)
         self.connection_status_label.setStyleSheet("background-color: rgb(212, 212, 212); padding: 25px;")
         self.connection_status_label.setFixedSize(150, 30)
                 
