@@ -9,7 +9,9 @@ from modbus_group_boxes import RtuGroupBox, TcpGroupBox
 from pymodbus.exceptions import ConnectionException
 from constants import REGISTER_NAME, REGISTER_ADDRESS, REGISTER_PREFIX, TCP_METHOD, RTU_METHOD, \
                         HOST, PORT, SERIAL_PORT, BAUD_RATE, PARITY, STOP_BITS, BYTESIZE, \
-                        FUNCTION_CODE, REGISTER_QUANTITY
+                        FUNCTION_CODE, REGISTER_QUANTITY, ACTION_ITEMS, DISCONNECT, \
+                        CONNECT, SELECT_ACTION_ID, ADD_REGISTERS_ID, REMOVE_REGISTERS_ID, \
+                        CONNECT_ID, HIDE_DEVICE_ID, DELETE_DEVICE_ID
 
 from notifications import Notification
 
@@ -138,7 +140,7 @@ class TableWidget(QWidget):
         self.actions_label = QLabel("Actions",self)
         self.selected_option = 0
         # Add a dropdown menu and add actions to it
-        self.action_items = ["Select an action","Add Registers", "Remove register", "Connect", "Quit"] # Create a list of actions
+        self.action_items = ACTION_ITEMS # Create a list of actions
         self.action_menu = QComboBox() 
         self.action_menu.addItems(self.action_items) 
         self.action_menu.setCurrentIndex(0)
@@ -272,15 +274,15 @@ class TableWidget(QWidget):
 
     def __on_drop_down_menu_current_index_changed(self, device_number, position):
         current_index = self.action_menu.currentIndex()
-        if current_index == 1: # If the selectec option is Add registers (index 1)
+        if current_index == ADD_REGISTERS_ID: # If the selected option is Add registers (index 1)
             position = current_index
-            self.action_menu.setCurrentIndex(0)
+            self.action_menu.setCurrentIndex(SELECT_ACTION_ID)
             self.drop_down_menu_clicked.emit(device_number, position)
-        elif current_index == 2: # If the selectec option is Delete registers (index 2)
+        elif current_index == REMOVE_REGISTERS_ID: # If the selected option is Delete registers (index 2)
             position = current_index
-            self.action_menu.setCurrentIndex(0)
+            self.action_menu.setCurrentIndex(SELECT_ACTION_ID)
             self.drop_down_menu_clicked.emit(device_number, position)
-        elif current_index == 3: # If the selected option is Connect (index 3)
+        elif current_index == CONNECT_ID: # If the selected option is Connect/Disconnect (index 3)
             position = current_index
             self.action_menu.setCurrentIndex(0)
             self.drop_down_menu_clicked.emit(device_number, position)
@@ -289,16 +291,14 @@ class TableWidget(QWidget):
 
 
     def set_connection_status(self,status):
-        connected = "Connected"
-        disconnected = "Disconnected"
         light_green = "rgb(144, 238, 144)"
         gray = "rgb(219,220,220)"
 
         if status == True:
-            self.connection_status_label.setText(connected)
+            self.connection_status_label.setText(CONNECT)
             self.connection_status_label.setStyleSheet("background-color: " + light_green + "; padding: 25px;")
         else:
-            self.connection_status_label.setText(disconnected)
+            self.connection_status_label.setText(DISCONNECT)
             self.connection_status_label.setStyleSheet("background-color: " + gray + "; padding: 25px;")
 
 

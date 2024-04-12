@@ -6,6 +6,7 @@ from pymodbus.exceptions import ModbusIOException
 from PyQt5.QtCore import QRunnable, QObject, pyqtSignal
 from time import perf_counter
 import time
+from constants import CONNECT_ID, CONNECT, STATUS, WIDGET
 
 class WorkerSignals(QObject):
     finished = pyqtSignal()
@@ -38,8 +39,8 @@ class Observer:
     def add_table_widget(self, index, status, widget):
         if widget not in self.table_widgets:
             temp_dict = {}
-            temp_dict["status"] = status
-            temp_dict["widget"] = widget
+            temp_dict[STATUS] = status
+            temp_dict[WIDGET] = widget
             self.table_widgets[index] = temp_dict
 
     def remove_table_widget(self, index):
@@ -50,19 +51,20 @@ class Observer:
         result_dict = {}
         read_start = perf_counter()
         for key in self.table_widgets:
-            if self.table_widgets[key]["status"] == True:
+            if self.table_widgets[key][STATUS] == True:
                 try:
-                    response = self.table_widgets[key]["widget"].read_registers()
+                    response = self.table_widgets[key][WIDGET].read_registers()
                     if response:
-                        result_dict[key] = self.table_widgets[key]["widget"].read_registers()
+                        result_dict[key] = self.table_widgets[key][WIDGET].read_registers()
                     else:
                         print("No response after reading registers")
                 except ModbusIOException:
                     print("Failed to perform Modbus operation due to IO exception.")
                 except ConnectionException:
                     print("Failed to connect to Modbus device.")
-                    self.table_widgets[key]["status"] = False
-                    self.table_widgets[key]["widget"].set_connection_status(False)
+                    self.table_widgets[key][STATUS] = False
+                    self.table_widgets[key][WIDGET].set_connection_status(False)
+                    self.table_widgets[key][WIDGET].change_action_item(CONNECT_ID, CONNECT)
                         
         read_end = perf_counter()
         print(f"Reading registers :{read_end - read_start}" )

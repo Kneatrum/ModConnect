@@ -132,7 +132,7 @@ class MainWindow(QtWidgets.QMainWindow):
         """
         connected_devices = 0
         for key in self.observer.table_widgets:
-            if self.observer.table_widgets[key]["status"] == True:
+            if self.observer.table_widgets[key][STATUS] == True:
                 connected_devices += 1
         if connected_devices == 0:
             self.stop_polling()
@@ -144,7 +144,7 @@ class MainWindow(QtWidgets.QMainWindow):
             for device_number in result.keys():
                 # The value of the dictionary is a list of the register results for this particular device number.
                 register_list = result[device_number]
-                row_count = self.observer.table_widgets[device_number]["widget"].table_widget.rowCount()
+                row_count = self.observer.table_widgets[device_number][WIDGET].table_widget.rowCount()
 
                 # This happens as a precaution. Ideally, the number of registers should match the number of rows in the table widget.
                 if len(register_list) < row_count:
@@ -153,7 +153,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
                 # Create a loop to iterate over the QtableWidget's rows and update the value column with the read registers.
                 for row in range(row_count):
-                    self.observer.table_widgets[device_number]["widget"].table_widget.setItem(row, VALUE_COLUMN, QTableWidgetItem(str(register_list[row])))
+                    self.observer.table_widgets[device_number][WIDGET].table_widget.setItem(row, VALUE_COLUMN, QTableWidgetItem(str(register_list[row])))
             stop_time = time.perf_counter()
             print("Time :", stop_time - start_time)
         else:
@@ -185,18 +185,18 @@ class MainWindow(QtWidgets.QMainWindow):
     def on_edit_button_clicked(self, index):
         edit_connection = EditConnection(index)
         if edit_connection.exec_() == QDialog.Accepted:
-            self.observer.table_widgets[index]["widget"].update_method_label()
-            self.observer.table_widgets[index]["widget"].update_device_name()
+            self.observer.table_widgets[index][WIDGET].update_method_label()
+            self.observer.table_widgets[index][WIDGET].update_device_name()
 
 
     def on_drop_down_menu_selected(self, device_number, position):
-        current_table = self.observer.table_widgets[device_number]["widget"]
-        if position == 1:
-            current_table.action_menu.setCurrentIndex(0)
+        current_table = self.observer.table_widgets[device_number][WIDGET]
+        if position == ADD_REGISTERS_ID: # Add Registers
+            # current_table.action_menu.setCurrentIndex(SELECT_ACTION_ID)
             current_table.show_register_dialog() # Show the message box for adding registers
             current_table.list_of_registers = self.file_handler.get_registers_to_read(device_number) # Update the list of registers.
-        elif position == 2:
-            current_table.action_menu.setCurrentIndex(0)
+        elif position == REMOVE_REGISTERS_ID: # Remove Registers
+            # current_table.action_menu.setCurrentIndex(SELECT_ACTION_ID)
             if current_table.selected_connection:
                 print(f"Is device connected? :{current_table.selected_connection.is_connected()}")
             else:
