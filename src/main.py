@@ -201,11 +201,11 @@ class MainWindow(QtWidgets.QMainWindow):
         current_table = self.observer.table_widgets[device_number]
 
         if position == ADD_REGISTERS_ID: # Add Registers
-            # current_table.action_menu.setCurrentIndex(SELECT_ACTION_ID)
+            current_table.action_menu.setCurrentIndex(SELECT_ACTION_ID)
             current_table.show_register_dialog() # Show the message box for adding registers
             current_table.list_of_registers = self.file_handler.get_registers_to_read(device_number) # Update the list of registers.
         elif position == REMOVE_REGISTERS_ID: # Remove Registers
-            # current_table.action_menu.setCurrentIndex(SELECT_ACTION_ID)
+            current_table.action_menu.setCurrentIndex(SELECT_ACTION_ID)
             if current_table.selected_connection:
                 print(f"Is device connected? :{current_table.selected_connection.is_connected()}")
             else:
@@ -221,7 +221,7 @@ class MainWindow(QtWidgets.QMainWindow):
             elif current_text ==  DISCONNECT: # Disconnect device
                 current_table.disconnect_from_device()
                 if not self.check_for_connected_devices():
-                self.ready_to_poll_event.clear()
+                    self.ready_to_poll_event.clear()
             current_table.action_menu.setCurrentIndex(SELECT_ACTION_ID)
         elif position == HIDE_DEVICE_ID: # Hide device
             pass
@@ -239,31 +239,27 @@ class MainWindow(QtWidgets.QMainWindow):
             layout: the horizontal layout or None
         """
         self.observer.table_widgets.clear()
-        saved_devices = self.file_handler.get_device_count()
-        if saved_devices:
+        device_tags = self.file_handler.get_int_device_tags()
+        if device_tags:
             # Create a central widget
             # Create a horizontal layout to add the table widgets
-            for index in range(saved_devices):
-                temp_index = index + 1
-                widget = tablewidget(temp_index) # Create and instance of our table widget. Adding 1 to prevent having device_0
+            for device_tag in device_tags:
+                widget = tablewidget(device_tag) # Create and instance of our table widget. Adding 1 to prevent having device_0
                 widget.edit_connection_button_clicked.connect(self.on_edit_button_clicked)
                 widget.drop_down_menu_clicked.connect(self.on_drop_down_menu_selected)
                 widget.modbus_method_label
-                self.observer.add_table_widget(temp_index, widget)
+                self.observer.add_table_widget(device_tag, widget)
                 self.horizontal_box.addWidget(widget) # Create the table widgets and add them in the horizontal layout
             return True
         return None
     
 
-    def add_single_widget(self):
-        saved_devices = self.file_handler.get_device_count()
-        if not saved_devices:
-            return None
-        widget = tablewidget(saved_devices) # Create and instance of our table widget. Adding 1 to prevent having device_0
+    def add_single_widget(self, new_device_number):
+        widget = tablewidget(new_device_number) # Create and instance of our table widget. Adding 1 to prevent having device_0
         widget.edit_connection_button_clicked.connect(self.on_edit_button_clicked)
         widget.drop_down_menu_clicked.connect(self.on_drop_down_menu_selected)
         widget.modbus_method_label
-        self.observer.add_table_widget(saved_devices, widget)
+        self.observer.add_table_widget(new_device_number, widget)
         self.horizontal_box.addWidget(widget) # Create the table widgets and add them in the horizontal layout
 
 
