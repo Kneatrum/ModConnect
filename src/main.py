@@ -178,6 +178,10 @@ class MainWindow(QtWidgets.QMainWindow):
             
 
     def on_new_button_clicked(self):
+        device_count = self.file_handler.get_device_count()
+        if device_count >= self.file_handler.max_devices:
+            self.notification.set_warning_message(f"{self.file_handler.max_devices} maximum devices.", "You have reached the maximum number of devices")
+            return False
         dialog = AddNewDevice()
         if dialog.exec_() == QDialog.Accepted:
             self.add_single_widget()
