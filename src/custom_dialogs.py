@@ -31,7 +31,7 @@ class AddNewDevice(QDialog):
         # Create the main Vertical layout
         self.device_setup_main_layout = QVBoxLayout()
         
-        self.device_number = self.file_handler.get_device_count() + 1
+        self.device_number = None
 
         # Create a horizontal layout for the Modbus options (radio buttons)
         modbus_options_layout = QHBoxLayout()
@@ -170,9 +170,11 @@ class AddNewDevice(QDialog):
             tcp_client_dict[PORT] = temp_port_value
             tcp_client_dict[HOST] = ipv4_address_value
             temp_dict = {SLAVE_ADDRESS: slave_address_value, DEVICE_NAME: device_name_value, DEFAULT_METHOD: {}, CONNECTION_PARAMETERS: {RTU_PARAMETERS: {}, TCP_PARAMETERS:tcp_client_dict}, REGISTERS:{}}
-            temp_dict = {f'{DEVICE_PREFIX}{self.device_number}': temp_dict}
 
-            self.file_handler.add_device(temp_dict)
+
+            result = self.file_handler.add_device(temp_dict)
+            if result > 0:
+                self.device_number = result
 
         elif self.modbus_rtu_check_box.isChecked() and not self.modbus_tcp_check_box.isChecked():
             temp_dict = {}
@@ -190,9 +192,11 @@ class AddNewDevice(QDialog):
             rtu_client_dict[TIMEOUT] = self.modbus_rtu_group_box.timeout_options.currentText()
 
             temp_dict = {SLAVE_ADDRESS: slave_address, DEVICE_NAME: device_name, DEFAULT_METHOD: {}, CONNECTION_PARAMETERS: {RTU_PARAMETERS: rtu_client_dict, TCP_PARAMETERS:{}}, REGISTERS:{}}
-            temp_dict = {f'{DEVICE_PREFIX}{self.device_number}': temp_dict}
 
-            self.file_handler.add_device(temp_dict)
+
+            result = self.file_handler.add_device(temp_dict)
+            if result > 0:
+                self.device_number = result
 
         elif self.modbus_rtu_check_box.isChecked() and self.modbus_tcp_check_box.isChecked():
             temp_dict = {}
@@ -213,9 +217,10 @@ class AddNewDevice(QDialog):
             tcp_client_dict[PORT] = self.modbus_tcp_group_box.port.text()
 
             temp_dict = {SLAVE_ADDRESS: slave_address, DEVICE_NAME: device_name, DEFAULT_METHOD: {}, CONNECTION_PARAMETERS: {RTU_PARAMETERS: rtu_client_dict, TCP_PARAMETERS: tcp_client_dict}, REGISTERS:{}}
-            temp_dict = {f'{DEVICE_PREFIX}{self.device_number}': temp_dict}
 
-            self.file_handler.add_device(temp_dict)
+            result = self.file_handler.add_device(temp_dict)
+            if result > 0:
+                self.device_number = result
 
         self.accept()
 
