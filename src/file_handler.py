@@ -33,6 +33,7 @@ class FileHandler:
     def __init__(self):
         self.file_path = resource_path(FILE_PATH)
         self.directory = os.path.dirname(self.file_path)
+        self.max_devices = MAX_DEVICES
 
 
     def data_directory_exists(self) -> bool:

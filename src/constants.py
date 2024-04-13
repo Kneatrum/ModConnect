@@ -131,3 +131,5 @@ DISCONNECTED = "Disconnected"
 
 LIGHT_GREEN = "rgb(144, 238, 144)"
 GRAY = "rgb(219,220,220)"
+
+MAX_DEVICES = 5
