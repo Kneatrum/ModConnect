@@ -213,6 +213,7 @@ class MainWindow(QtWidgets.QMainWindow):
                     current_table.notification.set_warning_message("Connection Failure", result)
             elif current_text ==  DISCONNECT: # Disconnect device
                 current_table.disconnect_from_device()
+                if not self.check_for_connected_devices():
                 self.ready_to_poll_event.clear()
             current_table.action_menu.setCurrentIndex(SELECT_ACTION_ID)
         elif position == HIDE_DEVICE_ID: # Hide device
@@ -258,6 +259,14 @@ class MainWindow(QtWidgets.QMainWindow):
         self.observer.add_table_widget(saved_devices, widget)
         self.horizontal_box.addWidget(widget) # Create the table widgets and add them in the horizontal layout
 
+
+
+
+    def check_for_connected_devices(self):
+        for device in self.observer.table_widgets.values():
+            if device.connection_status == True:
+                return True
+        return False
 
 
 if __name__ == '__main__':
