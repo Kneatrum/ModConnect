@@ -445,9 +445,44 @@ class FileHandler:
             data = self.get_raw_device_data()
             data.update(user_input)
             if self.save_device_data(data):
-                return True
-            return False
+                    return new_tag
+                return 0
 
+
+
+
+    def generate_new_device_tag(self, prefix_activated=False):
+        """
+        Generate a new and unique device tag.
+
+        args:
+            prefix_activated (bool): Will be False by default or if no parameter is passed in.
+            
+                If True, the new device tag will be of this format: 'device_x' where x is an integer)
+            
+                If False, the new device tag will just be an integer x.
+
+                x will always be a unique number
+
+        """
+        new_device_number = None
+        existing_tags = self.get_int_device_tags()
+
+        if not existing_tags:
+            new_device_number = 1
+        else:
+            for number in range(1, MAX_DEVICES + 1):
+                if not number in existing_tags:
+                    new_device_number = number
+                    break
+        
+        if isinstance(new_device_number, int):
+            if prefix_activated:
+                return f'{DEVICE_PREFIX}{new_device_number}'
+            else:
+                return new_device_number
+        else:
+            return None
 
 
 
