@@ -485,6 +485,11 @@ class FileHandler:
             return None
 
 
+    def get_int_device_tags(self):
+        string_device_tags = self.get_string_device_tags()
+        if string_device_tags:
+            return [int(re.findall(r'\d+', item)[0]) for item in string_device_tags if re.findall(r'\d+', item)]
+        else: return None
 
     def delete_register(self, device_number, register_address) -> bool:
         pass
