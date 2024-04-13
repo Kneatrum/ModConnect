@@ -429,22 +429,36 @@ class FileHandler:
 
 
 
-    """
-    This method receives a dictionary representing a new device from the user
-    and appends it to the existing configuration or writes it directly to
-    the file if it's a new device.
-    """
-    def add_device(self, user_input) -> bool:
-        # If there is no existing device, write the new device into the json file.
-        if self.get_device_count() == 0:
-            if self.save_device_data(user_input):
-                return True
-            return False
-        # There are existing devices, so we need to read the whole configuration file and append the new one to it, then save it again.
-        else:
+    def add_device(self, user_input) -> int:
+        """
+        This method receives a dictionary representing a new device from the user
+        
+        and appends it to the existing configuration or writes it directly to
+        
+        the file if it's a new device.
+        """
+     
+        device_count = self.get_device_count()
+        
+        if device_count >= MAX_DEVICES:
+            print("You have reached the maximum number of devices")
+            return 0
+
+        new_tag = self.generate_new_device_tag()
+
+        if device_count < 1:
+            if new_tag:
+                user_input = {f'{DEVICE_PREFIX}{new_tag}': user_input}
+                if self.save_device_data(user_input):
+                    return new_tag
+                return 0
+
+        elif device_count < MAX_DEVICES:
             data = self.get_raw_device_data()
-            data.update(user_input)
-            if self.save_device_data(data):
+            if new_tag:
+                user_input = {f'{DEVICE_PREFIX}{new_tag}': user_input}
+                data.update(user_input)
+                if self.save_device_data(data):
                     return new_tag
                 return 0
 
