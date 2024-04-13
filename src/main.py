@@ -184,7 +184,9 @@ class MainWindow(QtWidgets.QMainWindow):
             return False
         dialog = AddNewDevice()
         if dialog.exec_() == QDialog.Accepted:
-            self.add_single_widget()
+            new_device = dialog.device_number
+            if new_device is not None:
+                self.add_single_widget(new_device)
 
 
     def on_edit_button_clicked(self, index):
