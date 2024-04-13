@@ -183,12 +183,30 @@ class FileHandler:
         data = self.get_raw_device_data()
         if not data:
             return 0
-        count = 0
-        for key in data:
-            # Increase the counter if the key contains the device prefix (device_) and the device prefix is followed by some digits.
-            if re.match(DEVICE_PREFIX + r'(\d+)', key):
-                count += 1
-        return count
+        device_count = len(data.keys())
+        return device_count
+
+
+    def get_string_device_tags(self):
+        """
+        This method returns all devices keys that are registered.
+
+        arguments: 
+            None
+
+        returns:
+            device_keys (list): A list containing all device keys.
+        """
+        # If the path for our data does not exist, return
+        if not self.data_path_exists():
+            print("Data file not found")
+            return 0
+        # Read all data from the stored json file
+        data = self.get_raw_device_data()
+        if not data:
+            return None
+        device_keys = data.keys()
+        return device_keys
 
 
     
