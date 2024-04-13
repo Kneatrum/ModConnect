@@ -188,6 +188,7 @@ class MainWindow(QtWidgets.QMainWindow):
         if edit_connection.exec_() == QDialog.Accepted:
             self.observer.table_widgets[index].update_method_label()
             self.observer.table_widgets[index].update_device_name()
+            self.observer.table_widgets[index].set_selected_connection()
 
 
     def on_drop_down_menu_selected(self, device_number, position):

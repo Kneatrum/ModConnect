@@ -68,7 +68,7 @@ class TableWidget(QWidget):
         self.connection_methods = self.__get_available_connection_methods(self.device_number)
         self.connection_status = False
         self.set_default_modbus_method_if_not_set()
-        self.selected_connection = self.__set_selected_connection()
+        self.selected_connection = self.set_selected_connection()
         self.list_of_registers = self.file_handler.get_registers_to_read(self.device_number)
 
         self.register_data = []
@@ -490,7 +490,7 @@ class TableWidget(QWidget):
         self.set_connection_status(False)
 
 
-    def __set_selected_connection(self):
+    def set_selected_connection(self):
         """
         This method checks for the default modbus connection and sets the appropriate connection method
 
