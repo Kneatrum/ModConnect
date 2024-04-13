@@ -70,6 +70,7 @@ class TableWidget(QWidget):
         self.set_default_modbus_method_if_not_set()
         self.selected_connection = self.set_selected_connection()
         self.list_of_registers = self.file_handler.get_registers_to_read(self.device_number)
+        self.hidden_status = False
 
         self.register_data = []
 
