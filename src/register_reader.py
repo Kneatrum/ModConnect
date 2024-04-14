@@ -47,7 +47,7 @@ class Observer:
         result_dict = {}
         read_start = perf_counter()
         for key, device in self.table_widgets.items():
-            if device.connection_status == True:
+            if device.connection_status == True and device.hiddend_status == False:
                 try:
                     response = device.read_registers()
                     if response:
