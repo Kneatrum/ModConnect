@@ -54,6 +54,7 @@ UNITS = 'units'
 GAIN = 'gain'
 DATA_TYPE = 'data_type'
 ACCESS_TYPE = 'access_type'
+HIDDEN_STATUS = 'hidden_status'
 
 
 

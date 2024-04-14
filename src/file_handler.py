@@ -12,7 +12,7 @@ from constants import SLAVE_ADDRESS, \
         DEVICE_PREFIX, REGISTERS, REGISTER_ADDRESS, \
         REGISTER_NAME, REGISTER_PREFIX, FILE_PATH, \
         FUNCTION_CODE, REGISTER_TEMPLATE, DEFAULT_METHOD, \
-        REGISTER_QUANTITY, MAX_DEVICES, resource_path
+        REGISTER_QUANTITY, MAX_DEVICES, HIDDEN_STATUS, resource_path
 
 
 
@@ -489,6 +489,30 @@ class FileHandler:
         del data[delete_tag]
         self.save_device_data(data)
         
+
+    def update_hidden_status(self, device_number, new_status):
+        device_tag = f'{DEVICE_PREFIX}{device_number}'
+        data = self.get_raw_device_data()
+        if not data:
+            return None
+        old_status = data[device_tag].get(HIDDEN_STATUS)
+        # print("Old status",old_status)
+        if old_status is not None and old_status != new_status:
+            data[device_tag][HIDDEN_STATUS] = new_status
+            # print("New status",data[device_tag][HIDDEN_STATUS])
+            self.save_device_data(data)
+
+
+    def get_hidden_status(self, device_number):
+        device_tag = f'{DEVICE_PREFIX}{device_number}'
+        data = self.get_raw_device_data()
+        if not data:
+            return None
+        status = data[device_tag].get(HIDDEN_STATUS)
+        if status is not None:
+            return status
+        return None
+
 
     def generate_new_device_tag(self, prefix_activated=False):
         """

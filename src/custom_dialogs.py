@@ -15,7 +15,7 @@ from constants import SLAVE_ADDRESS, \
         TCP_PARAMETERS, DEVICE_PREFIX, BYTESIZE, \
         TIMEOUT, PARITY, STOP_BITS, BYTESIZE, \
         DEFAULT_METHOD, SERIAL_PORT, REGISTERS,\
-        TCP_METHOD, RTU_METHOD
+        TCP_METHOD, RTU_METHOD, HIDDEN_STATUS
 
 
 
@@ -148,6 +148,8 @@ class AddNewDevice(QDialog):
 
     def submit_user_input(self) -> dict:
         # Check which radio button is selected (Modbus TCP or Modbus RTU)
+        hidden_status = False
+
         if self.modbus_tcp_check_box.isChecked() and not self.modbus_rtu_check_box.isChecked(): 
             temp_dict = {}
             tcp_client_dict = {}
@@ -169,7 +171,7 @@ class AddNewDevice(QDialog):
             temp_port_value = int(port_value)
             tcp_client_dict[PORT] = temp_port_value
             tcp_client_dict[HOST] = ipv4_address_value
-            temp_dict = {SLAVE_ADDRESS: slave_address_value, DEVICE_NAME: device_name_value, DEFAULT_METHOD: {}, CONNECTION_PARAMETERS: {RTU_PARAMETERS: {}, TCP_PARAMETERS:tcp_client_dict}, REGISTERS:{}}
+            temp_dict = {SLAVE_ADDRESS: slave_address_value, DEVICE_NAME: device_name_value, DEFAULT_METHOD: {}, HIDDEN_STATUS: hidden_status, CONNECTION_PARAMETERS: {RTU_PARAMETERS: {}, TCP_PARAMETERS:tcp_client_dict}, REGISTERS:{}}
 
 
             result = self.file_handler.add_device(temp_dict)
@@ -191,7 +193,7 @@ class AddNewDevice(QDialog):
             rtu_client_dict[BYTESIZE] = self.modbus_rtu_group_box.byte_size_options.currentText()
             rtu_client_dict[TIMEOUT] = self.modbus_rtu_group_box.timeout_options.currentText()
 
-            temp_dict = {SLAVE_ADDRESS: slave_address, DEVICE_NAME: device_name, DEFAULT_METHOD: {}, CONNECTION_PARAMETERS: {RTU_PARAMETERS: rtu_client_dict, TCP_PARAMETERS:{}}, REGISTERS:{}}
+            temp_dict = {SLAVE_ADDRESS: slave_address, DEVICE_NAME: device_name, DEFAULT_METHOD: {}, HIDDEN_STATUS: hidden_status, CONNECTION_PARAMETERS: {RTU_PARAMETERS: rtu_client_dict, TCP_PARAMETERS:{}}, REGISTERS:{}}
 
 
             result = self.file_handler.add_device(temp_dict)
@@ -216,7 +218,7 @@ class AddNewDevice(QDialog):
             tcp_client_dict[HOST] = self.modbus_tcp_group_box.ip_address.text()
             tcp_client_dict[PORT] = self.modbus_tcp_group_box.port.text()
 
-            temp_dict = {SLAVE_ADDRESS: slave_address, DEVICE_NAME: device_name, DEFAULT_METHOD: {}, CONNECTION_PARAMETERS: {RTU_PARAMETERS: rtu_client_dict, TCP_PARAMETERS: tcp_client_dict}, REGISTERS:{}}
+            temp_dict = {SLAVE_ADDRESS: slave_address, DEVICE_NAME: device_name, DEFAULT_METHOD: {}, HIDDEN_STATUS: hidden_status, CONNECTION_PARAMETERS: {RTU_PARAMETERS: rtu_client_dict, TCP_PARAMETERS: tcp_client_dict}, REGISTERS:{}}
 
             result = self.file_handler.add_device(temp_dict)
             if result > 0:
