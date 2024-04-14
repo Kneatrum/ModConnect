@@ -226,7 +226,7 @@ class MainWindow(QtWidgets.QMainWindow):
         elif position == HIDE_DEVICE_ID: # Hide device
             pass
         elif position == DELETE_DEVICE_ID: # Delete device
-            pass
+            self.delete_widget(device_number)
 
 
     def add_widgets_to_horizontal_layout(self):
@@ -263,6 +263,10 @@ class MainWindow(QtWidgets.QMainWindow):
         self.horizontal_box.addWidget(widget) # Create the table widgets and add them in the horizontal layout
 
 
+    def delete_widget(self, device_number):
+        self.observer.table_widgets[device_number].setParent(None)
+        self.observer.remove_table_widget(device_number)
+        self.file_handler.delete_device(device_number)
 
 
     def check_for_connected_devices(self):

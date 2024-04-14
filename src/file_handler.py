@@ -481,7 +481,14 @@ class FileHandler:
                 return 0
 
 
-
+    def delete_device(self, device_number):
+        data = self.get_raw_device_data()
+        if not data:
+            return None
+        delete_tag = f'{DEVICE_PREFIX}{device_number}'
+        del data[delete_tag]
+        self.save_device_data(data)
+        
 
     def generate_new_device_tag(self, prefix_activated=False):
         """
