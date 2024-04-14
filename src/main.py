@@ -230,6 +230,9 @@ class MainWindow(QtWidgets.QMainWindow):
             self.hide_widget(device_number)
             self.file_handler.update_hidden_status(device_number, True)
         elif position == DELETE_DEVICE_ID: # Delete device
+            if self.observer.table_widgets[device_number].connection_status == True:
+                self.notification.set_warning_message("Device is connected!", "Please disconnect before deleting the device.")
+                return
             self.delete_widget(device_number)
 
 
