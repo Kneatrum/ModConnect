@@ -224,7 +224,7 @@ class MainWindow(QtWidgets.QMainWindow):
                     self.ready_to_poll_event.clear()
             current_table.action_menu.setCurrentIndex(SELECT_ACTION_ID)
         elif position == HIDE_DEVICE_ID: # Hide device
-            pass
+            self.hide_widget(device_number)
         elif position == DELETE_DEVICE_ID: # Delete device
             self.delete_widget(device_number)
 
@@ -267,6 +267,11 @@ class MainWindow(QtWidgets.QMainWindow):
         self.observer.table_widgets[device_number].setParent(None)
         self.observer.remove_table_widget(device_number)
         self.file_handler.delete_device(device_number)
+
+
+    def hide_widget(self, device_number):
+        self.observer.table_widgets[device_number].hide()
+        self.observer.table_widgets[device_number].hidden_status = True
 
 
     def check_for_connected_devices(self):
