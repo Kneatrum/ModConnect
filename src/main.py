@@ -224,6 +224,9 @@ class MainWindow(QtWidgets.QMainWindow):
                     self.ready_to_poll_event.clear()
             current_table.action_menu.setCurrentIndex(SELECT_ACTION_ID)
         elif position == HIDE_DEVICE_ID: # Hide device
+            if self.observer.table_widgets[device_number].connection_status == True:
+                self.notification.set_warning_message("Device is connected!", "Please disconnect before hiding the device.")
+                return
             self.hide_widget(device_number)
             self.file_handler.update_hidden_status(device_number, True)
         elif position == DELETE_DEVICE_ID: # Delete device
