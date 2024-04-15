@@ -514,6 +514,29 @@ class FileHandler:
         return None
 
 
+    
+    def get_hidden_devices(self):
+        """
+        Returns a list of all hidden devices.
+
+        args: 
+            None
+
+        returns: 
+            hidden_devices (list): a list of all hidden device numbers.
+
+        """
+        hidden_devices = []
+        data = self.get_raw_device_data()
+        if not data:
+            return None
+        for key in data.keys():
+            if data[key].get(HIDDEN_STATUS) is not None and data[key].get(HIDDEN_STATUS) == True:
+                hidden_devices.append(int(re.findall(r'\d+', key)[0]))
+        return hidden_devices
+
+
+
     def generate_new_device_tag(self, prefix_activated=False):
         """
         Generate a new and unique device tag.

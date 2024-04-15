@@ -34,6 +34,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.notification = Notification()
 
         self.file_handler.create_path_if_not_exists()
+        self.hidden_devices = self.file_handler.get_hidden_devices()
         
         # Initializing the main window
 
@@ -81,6 +82,21 @@ class MainWindow(QtWidgets.QMainWindow):
         # Display all the registered devices on the screen
         self.initialize_ui()
 
+
+        
+        spacer = QWidget()
+        spacer.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        self.toolbar.addWidget(spacer)
+
+        self.toolbar.addSeparator()
+        hidden_widgets = QLabel('Hidden Widgets')
+        # hidden_widgets.setStyleSheet("background-color: lightgray; padding: 5px;")  # Set background color and padding
+        self.toolbar.addWidget(hidden_widgets)
+        self.toolbar.addSeparator()
+        
+        for device_number in self.hidden_devices:
+            self.add_hidden_device_to_toolbar(device_number)
+        # hidden_widgets.triggered.connect(self.stop_polling)
 
         self.main_thread = threading.main_thread()
         self.ready_to_poll_event =  threading.Event()
@@ -162,6 +178,13 @@ class MainWindow(QtWidgets.QMainWindow):
 
 
 
+    def on_checkbox_state_changed(self):
+        checkbox = self.sender()
+        name = checkbox.text()
+        for device in self.observer.table_widgets.values():
+            if device.device_name == name:
+                self.show_widget(device.device_number)
+                checkbox.setParent(None)
 
 
 
@@ -229,6 +252,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 return
             self.hide_widget(device_number)
             self.file_handler.update_hidden_status(device_number, True)
+            self.add_hidden_device_to_toolbar(device_number)
         elif position == DELETE_DEVICE_ID: # Delete device
             if self.observer.table_widgets[device_number].connection_status == True:
                 self.notification.set_warning_message("Device is connected!", "Please disconnect before deleting the device.")
@@ -278,8 +302,27 @@ class MainWindow(QtWidgets.QMainWindow):
 
 
     def hide_widget(self, device_number):
+        self.hidden_devices.append(device_number)
         self.observer.table_widgets[device_number].hide()
         self.observer.table_widgets[device_number].hidden_status = True
+
+
+    def show_widget(self, device_number):
+        widget = tablewidget(device_number) # Create and instance of our table widget. Adding 1 to prevent having device_0
+        widget.edit_connection_button_clicked.connect(self.on_edit_button_clicked)
+        widget.drop_down_menu_clicked.connect(self.on_drop_down_menu_selected)
+        self.observer.add_table_widget(device_number, widget)
+        self.horizontal_box.addWidget(widget) # Create the table widgets and add them in the horizontal layout
+        self.observer.table_widgets[device_number].hidden_status = False
+        self.file_handler.update_hidden_status(device_number, False)
+
+
+    def add_hidden_device_to_toolbar(self, device_number):
+        device_checkbox = QCheckBox(self.observer.table_widgets[device_number].device_name)
+        device_checkbox.setChecked(True)
+        device_checkbox.stateChanged.connect(self.on_checkbox_state_changed)
+        self.toolbar.addWidget(device_checkbox)
+        self.toolbar.addSeparator()
 
 
     def check_for_connected_devices(self):
