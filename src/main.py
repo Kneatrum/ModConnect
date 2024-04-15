@@ -317,7 +317,7 @@ class MainWindow(QtWidgets.QMainWindow):
         device_checkbox.setChecked(True)
         device_checkbox.stateChanged.connect(self.on_checkbox_state_changed)
         self.toolbar.addWidget(device_checkbox)
-        self.toolbar.addSeparator()
+        # self.toolbar.addSeparator()
 
 
     def check_for_connected_devices(self):
