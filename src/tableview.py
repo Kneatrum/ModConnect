@@ -242,6 +242,7 @@ class TableWidget(QWidget):
             if self.rtu_checkbox.isChecked():
                 self.rtu_checkbox.setChecked(False)
                 self.file_handler.set_default_modbus_method(self.device_number, TCP_METHOD)
+                self.set_selected_connection()
                 print(f"Connection status changed")
                 self.update_method_label()
 
@@ -251,6 +252,7 @@ class TableWidget(QWidget):
             if self.tcp_checkbox.isChecked():
                 self.tcp_checkbox.setChecked(False)
                 self.file_handler.set_default_modbus_method(self.device_number, RTU_METHOD)
+                self.set_selected_connection()
                 self.update_method_label()
                     
 
