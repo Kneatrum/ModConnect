@@ -15,7 +15,7 @@ from constants import STATUS, WIDGET, DISCONNECT, CONNECT, SELECT_ACTION_ID, ADD
 
 from PyQt5.QtWidgets import  QScrollArea, QWidget,  QAction, \
     QVBoxLayout, QDialog, QHBoxLayout,  QTableWidget, \
-    QTableWidgetItem,  QToolBar
+    QTableWidgetItem,  QToolBar, QCheckBox, QLabel, QSizePolicy
 
 from constants import resource_path
 
