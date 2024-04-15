@@ -68,8 +68,8 @@ class TableWidget(QWidget):
         self.connection_methods = self.__get_available_connection_methods(self.device_number)
         self.connection_status = False
         self.set_default_modbus_method_if_not_set()
-        self.selected_connection = None
-        self.set_selected_connection()
+        self.active_connection = None
+        self.set_active_connection()
         self.list_of_registers = self.file_handler.get_registers_to_read(self.device_number)
         hidden_status = self.file_handler.get_hidden_status(self.device_number)
         self.hidden_status = hidden_status if hidden_status is not None else False
@@ -242,7 +242,7 @@ class TableWidget(QWidget):
             if self.rtu_checkbox.isChecked():
                 self.rtu_checkbox.setChecked(False)
                 self.file_handler.set_default_modbus_method(self.device_number, TCP_METHOD)
-                self.set_selected_connection()
+                self.set_active_connection()
                 print(f"Connection status changed")
                 self.update_method_label()
 
@@ -252,7 +252,7 @@ class TableWidget(QWidget):
             if self.tcp_checkbox.isChecked():
                 self.tcp_checkbox.setChecked(False)
                 self.file_handler.set_default_modbus_method(self.device_number, RTU_METHOD)
-                self.set_selected_connection()
+                self.set_active_connection()
                 self.update_method_label()
                     
 
@@ -483,7 +483,7 @@ class TableWidget(QWidget):
             bool: True if connected successfully or False otherwise
         """
         try:
-            if self.selected_connection.client.connect():
+            if self.active_connection.client.connect():
                 self.set_connection_status(True)
                 return True
         except Exception as e:
@@ -491,11 +491,11 @@ class TableWidget(QWidget):
 
     
     def disconnect_from_device(self):
-        self.selected_connection.client.close()
+        self.active_connection.client.close()
         self.set_connection_status(False)
 
 
-    def set_selected_connection(self):
+    def set_active_connection(self):
         """
         This method checks for the default modbus connection and sets the appropriate connection method
 
@@ -516,7 +516,7 @@ class TableWidget(QWidget):
         else:
             print("Default method has not been set")
             return None
-        self.selected_connection = modbus_object
+        self.active_connection = modbus_object
     
 
     def read_registers(self):
@@ -528,7 +528,7 @@ class TableWidget(QWidget):
                 quantity = self.list_of_registers[register].get(REGISTER_QUANTITY)
                 if address is not None or address == 0:
                     try:
-                        response = self.selected_connection.client.read_coils(address, quantity, unit=self.slave_address)
+                        response = self.active_connection.client.read_coils(address, quantity, unit=self.slave_address)
                         if response.isError():
                             self.register_data.extend(temp*quantity)
                             print("Error", response)
@@ -546,7 +546,7 @@ class TableWidget(QWidget):
                 quantity = self.list_of_registers[register].get(REGISTER_QUANTITY)
                 if address is not None or address == 0:
                     try:
-                        response = self.selected_connection.client.read_discrete_inputs(address, quantity, unit=self.slave_address)
+                        response = self.active_connection.client.read_discrete_inputs(address, quantity, unit=self.slave_address)
                         if response.isError():
                             self.register_data.extend(temp*quantity)
                             print("Error", response)
@@ -563,7 +563,7 @@ class TableWidget(QWidget):
                 quantity = self.list_of_registers[register].get(REGISTER_QUANTITY)
                 if address is not None or address == 0:
                     try:
-                        response = self.selected_connection.client.read_holding_registers(address, quantity, unit=self.slave_address)
+                        response = self.active_connection.client.read_holding_registers(address, quantity, unit=self.slave_address)
                         if response.isError():
                             self.register_data.extend(temp*quantity)
                             print("Error", response)
@@ -580,7 +580,7 @@ class TableWidget(QWidget):
                 quantity = self.list_of_registers[register].get(REGISTER_QUANTITY)
                 if address is not None or address == 0:
                     try:
-                        response = self.selected_connection.client.read_input_registers(address, quantity, unit=self.slave_address)
+                        response = self.active_connection.client.read_input_registers(address, quantity, unit=self.slave_address)
                         if response.isError():
                             self.register_data.extend(temp*quantity)
                             print("Error", response)
