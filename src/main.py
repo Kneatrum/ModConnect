@@ -56,28 +56,23 @@ class MainWindow(QtWidgets.QMainWindow):
         self.setGeometry(100, 100, 1100, 1100)
 
 
-        customWidget = QWidget()
-        # customWidget.setFixedHeight(30)  # Set the desired height for the toolbar
-        # Create a toolbar and set the custom widget as its widget
-        toolbar = QToolBar()
-        toolbar.setStyleSheet("QToolBar { border: 0px; }")  # Remove border
-        toolbar.addWidget(customWidget)
-        toolbar.setToolButtonStyle(Qt.ToolButtonTextBesideIcon)  # Display icons and text labels side by side
-        self.addToolBar(toolbar)
+        self.toolbar = QToolBar()
+        self.toolbar.setToolButtonStyle(Qt.ToolButtonTextBesideIcon)  # Display icons and text labels side by side
+        self.addToolBar(self.toolbar)
         # Create actions for the toolbar
         add_new_device_action = QAction(QIcon(resource_path('resources/more.png')),'Add New Device', self)
         add_new_device_action.triggered.connect(self.on_new_button_clicked)
-        toolbar.addAction(add_new_device_action)
+        self.toolbar.addAction(add_new_device_action)
 
-        toolbar.addSeparator()
+        self.toolbar.addSeparator()
 
         start_polling_action = QAction(QIcon(resource_path('resources/play-button.png')), 'Start Polling', self)
         start_polling_action.triggered.connect(self.start_ui_refresh)
-        toolbar.addAction(start_polling_action)
+        self.toolbar.addAction(start_polling_action)
 
         stop_polling_action = QAction(QIcon(resource_path('resources/stop-button.png')), 'Stop Polling', self)
         stop_polling_action.triggered.connect(self.stop_polling)
-        toolbar.addAction(stop_polling_action)
+        self.toolbar.addAction(stop_polling_action)
         
         # Display all the registered devices on the screen
         self.initialize_ui()
