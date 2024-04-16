@@ -229,7 +229,7 @@ class FileHandler:
         
         device = f'{DEVICE_PREFIX}{device_number}'
         count = len(data[device][REGISTERS])
-        print(count)
+        return count
 
 
     def get_register_attributes(self, device_number: int, list_of_attributes: list) -> dict:
