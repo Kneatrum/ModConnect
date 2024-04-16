@@ -226,17 +226,10 @@ class FileHandler:
         data = self.get_raw_device_data()
         if not data:
             return None
-        # First find the device with the device number.
-        count = 0
-        for key in data:
-            device = DEVICE_PREFIX + f'{device_number}'
-            if re.search(device, key):
-                # Now count the number of registers in the device
-                for reg in data[device][REGISTERS]:
-                    # Increment the count variable if we find this pattern (register_x) where x is a number.
-                    if re.match(REGISTER_PREFIX + r'(\d+)', reg):
-                        count += 1
-        return count
+        
+        device = f'{DEVICE_PREFIX}{device_number}'
+        count = len(data[device][REGISTERS])
+        print(count)
 
 
     def get_register_attributes(self, device_number: int, list_of_attributes: list) -> dict:
