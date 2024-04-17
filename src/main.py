@@ -89,8 +89,9 @@ class MainWindow(QtWidgets.QMainWindow):
         self.toolbar.addWidget(hidden_widgets)
         self.toolbar.addSeparator()
         
-        for device_number in self.hidden_devices:
-            self.add_hidden_device_to_toolbar(device_number)
+        if self.hidden_devices is not None:
+            for device_number in self.hidden_devices:
+                self.add_hidden_device_to_toolbar(device_number)
         # hidden_widgets.triggered.connect(self.stop_polling)
 
         self.main_thread = threading.main_thread()
