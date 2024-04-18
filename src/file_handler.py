@@ -434,15 +434,11 @@ class FileHandler:
         data = self.get_raw_device_data()
         if not data:
             return None
-        device = DEVICE_PREFIX + f'{device_number}'
-        for register in data[device][REGISTERS]:
-            print("Register {0}".format(register))
-            if data[device][REGISTERS][register][REGISTER_ADDRESS] == int(register_address):
-                data[device][REGISTERS][register][REGISTER_NAME] = register_name
-                
-                # Save the new configuration
-                if self.save_device_data(data):
-                    return True
+        device = f'{DEVICE_PREFIX}{device_number}'
+        data[device][REGISTERS][register_address][REGISTER_NAME] = register_name
+        # Save the new configuration
+        if self.save_device_data(data):
+            return True
         return False
 
 
