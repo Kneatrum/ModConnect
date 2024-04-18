@@ -404,6 +404,7 @@ class TableWidget(QWidget):
         user_input = self.get_user_input()
         self.file_handler.update_register_details(self.device_number, user_input)
         self.update_register_table()
+        self.update_registers_to_read()
         self.register_setup_dialog.accept()
         self.table_widget.update()
 
