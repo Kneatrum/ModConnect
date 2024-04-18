@@ -301,10 +301,7 @@ class FileHandler:
                 result = dict()
                 # Loop through all the registers looking for one that has a quantity that is not None.
                 for register in data[device][REGISTERS]:
-                    if data[device][REGISTERS][register].get(REGISTER_QUANTITY) is not None:
                         temp_dict = {}
-                        temp_dict[REGISTER_ADDRESS] = data[device][REGISTERS][register].get(REGISTER_ADDRESS)
-                        temp_dict[REGISTER_QUANTITY] = data[device][REGISTERS][register].get(REGISTER_QUANTITY)
                         temp_dict[FUNCTION_CODE] = data[device][REGISTERS][register].get(FUNCTION_CODE)
                         result[register] = temp_dict
                 return result
@@ -379,32 +376,26 @@ class FileHandler:
         returns:
             bool: True if the the register was added successfully or false otherwise
         """
-        existing_register_count = self.get_register_count(device_number)
         data = self.get_raw_device_data()
         if not data:
             return None
-        device = DEVICE_PREFIX + f'{device_number}'
+        device = f'{DEVICE_PREFIX}{device_number}'
+        existing_addresses =  self.get_existing_register_addresses(device_number)
+        print("User input", user_input)
         quantity = int(user_input[REGISTER_QUANTITY]) 
-
-        for i in range(quantity) :
-            temp_dict = dict()
-
-            # If the existing register count is 1 for example, the next should be 2. Hence the additional of 1
-            temp_key = REGISTER_PREFIX + str(existing_register_count + i + 1) 
-            
-            # Make a temporary copy of the registers template
-            temp_register_template = copy.copy(REGISTER_TEMPLATE)
-
-            # Assign values to the keys that we are interested in for now 
-            if i == 0: 
-                temp_register_template[REGISTER_QUANTITY] = quantity # Add the quantity to the first register only.
-            else: 
-                temp_register_template[REGISTER_QUANTITY] = None # The rest of the register quantity should be None.
-            temp_register_template[REGISTER_ADDRESS] =  user_input[REGISTERS][REGISTER_ADDRESS] + i  # If the user wants to read say 10 registers after register 1000, this line of code increments the addresses to register number 1011
-            temp_register_template[FUNCTION_CODE] = user_input[REGISTERS][FUNCTION_CODE]
-            temp_dict[temp_key] = temp_register_template
-            data[device][REGISTERS].update(temp_dict)
-
+        start_address = int(user_input[REGISTER_ADDRESS]) 
+        for i in range(quantity):
+            address = start_address + i
+            if address not in existing_addresses:
+                temp_dict = dict()
+                temp_register_template = copy.copy(REGISTER_TEMPLATE)
+                temp_register_template[FUNCTION_CODE] = user_input[FUNCTION_CODE]
+                temp_dict[address] = temp_register_template
+                data[device][REGISTERS].update(temp_dict)
+            else:
+                # Show a notification to the user that some registers were existing  and have been discarded
+                print(f'Register {address} is a duplicate and has been discarded')
+        
         # Finally, save the new configuration
         with open(self.file_path, 'w') as file:
             json.dump(data, file, indent=4)

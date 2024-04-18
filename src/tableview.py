@@ -26,7 +26,6 @@ class TableWidget(QWidget):
 
     REGISTER_PROPERTIES = {
         'register_name': "", 
-        'address': 0,
         'function_code': 1,
         'units': "",
         'gain': 1,
@@ -410,13 +409,10 @@ class TableWidget(QWidget):
         # This function gets the user input values and the default values from the constructor function and sends them to interface.py
     def get_user_input(self) -> dict:
         user_input = {} # An empty dictionary to store user input
-        self.REGISTER_PROPERTIES['address'] = int(self.reg_address.text())
-        self.REGISTER_PROPERTIES['function_code'] = self.READ_FUNCTION_CODES[self.function_code.currentText()]
-
         self.register_quantity = self.reg_quantity.text()
-        user_input["device"] = self.device_number
         user_input['quantity'] = self.register_quantity
-        user_input["registers"] = self.REGISTER_PROPERTIES
+        user_input['address'] = int(self.reg_address.text())
+        user_input["function_code"] = self.READ_FUNCTION_CODES[self.function_code.currentText()]
         return user_input
 
         

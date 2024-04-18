@@ -59,8 +59,6 @@ HIDDEN_STATUS = 'hidden_status'
 
 
 REGISTER_TEMPLATE = {
-    REGISTER_ADDRESS: 0,
-    REGISTER_QUANTITY: None,
     REGISTER_NAME: "",
     FUNCTION_CODE: 0,
     UNITS: "N/A",
