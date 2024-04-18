@@ -63,13 +63,15 @@ class TableWidget(QWidget):
         self.device_name = self.file_handler.get_device_name(self.device_number)
         self.slave_address = self.file_handler.get_slave_address(self.device_number)
         self.modbus_method_label = ""
-        self.table_widget_default_attrs = [REGISTER_NAME, REGISTER_ADDRESS]
         self.connection_methods = self.__get_available_connection_methods(self.device_number)
         self.connection_status = False
         self.set_default_modbus_method_if_not_set()
         self.active_connection = None
         self.set_active_connection()
-        self.list_of_registers = self.file_handler.get_registers_to_read(self.device_number)
+
+        self.registers_to_read = dict()
+        self.update_registers_to_read()
+
         hidden_status = self.file_handler.get_hidden_status(self.device_number)
         self.hidden_status = hidden_status if hidden_status is not None else False
 
@@ -431,13 +433,13 @@ class TableWidget(QWidget):
 
         The attributes are passed in form of a list.
         """
-        results = self.file_handler.get_register_attributes(self.device_number, self.table_widget_default_attrs)
+        results = self.file_handler.get_register_attributes(self.device_number, REGISTER_NAME)
         if results:
             self.table_widget.setRowCount(0)
-            for index in range(len(results)):
+            for index, register in enumerate(results):
                 self.table_widget.insertRow(index)
-                self.table_widget.setItem(index, NAME_COLUMN, QTableWidgetItem(results[REGISTER_PREFIX + str(index + 1)][REGISTER_NAME]))
-                self.table_widget.setItem(index, ADDRESS_COLUMN, QTableWidgetItem(str(results[REGISTER_PREFIX + str(index + 1)][REGISTER_ADDRESS]))) # Convert address to a string for it to be displayed.
+                self.table_widget.setItem(index, NAME_COLUMN, QTableWidgetItem(results[register][REGISTER_NAME]))
+                self.table_widget.setItem(index, ADDRESS_COLUMN, QTableWidgetItem(register)) # Convert address to a string for it to be displayed.
 
 
     def update_register_data(self):
@@ -515,13 +517,87 @@ class TableWidget(QWidget):
         self.active_connection = modbus_object
     
 
+    def update_registers_to_read(self):
+        input_dict = self.file_handler.get_registers_to_read(self.device_number)
+        self.registers_to_read = self.extract_register_patterns(input_dict)
+
+
+
+    def extract_register_patterns(self, input_dict):
+        """
+        This lovely method looks for a pattern of contiguous registers that share a common function code for batch reading which saves time.
+
+        args:
+            input_dict (dict): A dictionary of registers obtained from the register JSON file in the data directory.
+
+        returns:
+            output_dict (dict): A dictionary containing groups of registers that share a common function code, represented by the starting register.
+
+        example:
+            input_dict = {
+                '10': {'function_code': 3}, 
+                '11': {'function_code': 3}, 
+                '12': {'function_code': 3}, 
+                '13': {'function_code': 4}, 
+                '14': {'function_code': 2}, 
+                '15': {'function_code': 2}, 
+                '16': {'function_code': 1}
+            }
+
+            output_dict = {
+                10: {'function_code': 3, 'quantity': 3}, 
+                13: {'function_code': 4, 'quantity': 1}, 
+                14: {'function_code': 2, 'quantity': 2}, 
+                16: {'function_code': 1, 'quantity': 1}
+            }
+
+
+        """
+        new_list_of_registers = {int(key): value for key, value in input_dict.items()}
+        
+        current_fx = 0
+        current_key = 0
+        quantity = 1
+        output_dict = {}
+
+        for index, current_register in enumerate(new_list_of_registers):
+            temp_dict = {}
+            if index == 0:
+                previous_fx = current_fx = new_list_of_registers[current_register][FUNCTION_CODE]
+                current_key = previous_register = current_register
+                temp_dict[FUNCTION_CODE] = current_fx
+                temp_dict[REGISTER_QUANTITY] = quantity
+                output_dict[current_key] = temp_dict
+            else:
+                current_fx = new_list_of_registers[current_register][FUNCTION_CODE]
+                if previous_register + 1 == current_register and previous_fx == current_fx:
+                    quantity += 1
+                    temp_dict[FUNCTION_CODE] = current_fx
+                    temp_dict[REGISTER_QUANTITY] = quantity
+                    output_dict[current_key] = temp_dict
+                    previous_register = current_register
+                    previous_fx = current_fx
+
+                else:
+                    current_fx = new_list_of_registers[current_register][FUNCTION_CODE]
+                    quantity = 1
+                    current_key = current_register
+                    temp_dict[FUNCTION_CODE] = current_fx
+                    temp_dict[REGISTER_QUANTITY] = quantity
+                    output_dict[current_key] = temp_dict
+                    previous_register = current_register
+                    previous_fx = current_fx
+        return output_dict
+
+
+
+
     def read_registers(self):
         self.register_data.clear()
         temp = ["Error"]
-        for register in self.list_of_registers:
-            if self.list_of_registers[register][FUNCTION_CODE]  == 1:
-                address = self.list_of_registers[register].get(REGISTER_ADDRESS)
-                quantity = self.list_of_registers[register].get(REGISTER_QUANTITY)
+        for address, attributes, in self.registers_to_read.items():
+            if attributes[FUNCTION_CODE]  == 1:
+                quantity = attributes[REGISTER_QUANTITY]
                 if address is not None or address == 0:
                     try:
                         response = self.active_connection.client.read_coils(address, quantity, unit=self.slave_address)
@@ -537,9 +613,8 @@ class TableWidget(QWidget):
                         print("Device disconnected.")
                         raise
 
-            elif self.list_of_registers[register][FUNCTION_CODE] == 2:
-                address = self.list_of_registers[register].get(REGISTER_ADDRESS)
-                quantity = self.list_of_registers[register].get(REGISTER_QUANTITY)
+            elif attributes[FUNCTION_CODE] == 2:
+                quantity = attributes[REGISTER_QUANTITY]
                 if address is not None or address == 0:
                     try:
                         response = self.active_connection.client.read_discrete_inputs(address, quantity, unit=self.slave_address)
@@ -554,9 +629,8 @@ class TableWidget(QWidget):
                     except ConnectionException:
                         print("Device disconnected.")
                         raise
-            elif self.list_of_registers[register][FUNCTION_CODE] == 3:
-                address = self.list_of_registers[register].get(REGISTER_ADDRESS)
-                quantity = self.list_of_registers[register].get(REGISTER_QUANTITY)
+            elif attributes[FUNCTION_CODE] == 3:
+                quantity = attributes[REGISTER_QUANTITY]
                 if address is not None or address == 0:
                     try:
                         response = self.active_connection.client.read_holding_registers(address, quantity, unit=self.slave_address)
@@ -571,9 +645,8 @@ class TableWidget(QWidget):
                     except ConnectionException:
                         print("Device disconnected.")
                         raise
-            elif self.list_of_registers[register][FUNCTION_CODE] == 4:
-                address = self.list_of_registers[register].get(REGISTER_ADDRESS)
-                quantity = self.list_of_registers[register].get(REGISTER_QUANTITY)
+            elif attributes[FUNCTION_CODE] == 4:
+                quantity = attributes[REGISTER_QUANTITY]
                 if address is not None or address == 0:
                     try:
                         response = self.active_connection.client.read_input_registers(address, quantity, unit=self.slave_address)

@@ -232,7 +232,7 @@ class FileHandler:
         return count
 
 
-    def get_register_attributes(self, device_number: int, list_of_attributes: list) -> dict:
+    def get_register_attributes(self, device_number: int, *args) -> dict:
         """
         This method returns a dictionary containing a list of the 
         specified register attributes
@@ -254,19 +254,16 @@ class FileHandler:
         if not data:
             return None
         # First find the device with the device number.
-        for key in data:
-            device = DEVICE_PREFIX + f'{device_number}'
-            if re.search(device, key):
-                # Now count the number of registers in the device
-                # We may not need to use a dictionary here. Maybe a list of the addresses is enough.
-                result = dict()
-                for register in data[device][REGISTERS]:
-                    temp_dict = {}
-                    for register_attribute in list_of_attributes:
-                        temp_dict[register_attribute] = data[device][REGISTERS][register][register_attribute]
-                    result[register] = temp_dict
-                return result
-        return None
+        device = f'{DEVICE_PREFIX}{device_number}'
+
+        result = {}
+        for address in data[device][REGISTERS]:
+            temp_dict = {} 
+            for register_attribute in args:
+                temp_dict[register_attribute] = data[device][REGISTERS][address][register_attribute]
+            result[address] = temp_dict
+        return result
+   
 
 
     def get_registers_to_read(self, device_number: int) -> dict:
@@ -363,6 +360,31 @@ class FileHandler:
 
     def update_connection_params(self, device_number) -> bool: 
         pass
+
+
+    def get_existing_register_addresses(self, device_number):
+        """
+        This method returns all devices keys that are registered.
+
+        arguments: 
+            None
+
+        returns:
+            device_keys (list): A list containing all device keys.
+        """
+        # If the path for our data does not exist, return
+        if not self.data_path_exists():
+            print("Data file not found")
+            return 0
+        # Read all data from the stored json file
+        data = self.get_raw_device_data()
+        if not data:
+            return None
+        
+        device = f'{DEVICE_PREFIX}{device_number}'
+        address_tags = data[device][REGISTERS].keys()
+        return  [int(re.findall(r'\d+', address_tag)[0]) for address_tag in address_tags if re.findall(r'\d+', address_tag)]
+
 
 
     def update_register_details(self, device_number, user_input) -> bool:
