@@ -268,22 +268,20 @@ class FileHandler:
 
     def get_registers_to_read(self, device_number: int) -> dict:
         """
-        This method returns a dictionary containing register batches.
-
-        A register batch is marked by a sigle register with the quantity not equal to None.
-
-        The quantity will be used to reade the respective registers in batches.
-
+        This method returns a dictionary registers and their attributes. 
+        
         args:
-            device_number: This is used as the unique identifier for the stored devices.
+            device_number (int): This is used as the unique identifier for the stored devices.
 
         returns:
-            dictionary: A dictionary containing the register attributes.
+            result (dict): A dictionary containing the register address as the key and function codes as the value.
 
         Example:
-        register_1: {address: 1, quantity: 10, function_code: 3}
-        register_11: {address: 11, quantity: 5, function_code: 4}
-        register_16: {address: 16, quantity: 5, function_code: 3}
+            result = {
+                '10': {'function_code': 3}, 
+                '11': {'function_code': 3}, 
+                '12': {'function_code': 3} 
+            }
         """
         if not self.data_path_exists():
             print("Data path not found")
@@ -291,18 +289,14 @@ class FileHandler:
         data = self.get_raw_device_data()
         if not data:
             return None
-        # First find the device with the device number.
-        for key in data:
-            device = DEVICE_PREFIX + f'{device_number}'
-            if re.search(device, key):
-                result = dict()
-                # Loop through all the registers looking for one that has a quantity that is not None.
-                for register in data[device][REGISTERS]:
-                        temp_dict = {}
-                        temp_dict[FUNCTION_CODE] = data[device][REGISTERS][register].get(FUNCTION_CODE)
-                        result[register] = temp_dict
-                return result
-        return None
+
+        device = f'{DEVICE_PREFIX}{device_number}'
+        result = dict()
+        for register in data[device][REGISTERS]:
+                temp_dict = {}
+                temp_dict[FUNCTION_CODE] = data[device][REGISTERS][register].get(FUNCTION_CODE)
+                result[register] = temp_dict
+        return result
 
 
     def get_connection_params(self, device_number: int) -> dict: 
