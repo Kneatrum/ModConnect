@@ -574,8 +574,31 @@ class FileHandler:
             return [int(re.findall(r'\d+', item)[0]) for item in string_device_tags if re.findall(r'\d+', item)]
         else: return None
 
-    def delete_register(self, device_number, register_address) -> bool:
-        pass
+    def delete_registers(self, device_number, addresses) -> bool:
+        """
+        This method receives a list of addresses and deletes them.
+
+        arguments:
+            device_number (int): The unique device number whose registers we want to delete
+
+            addresses (list): A list of registers to delete
+        
+        """
+        if not isinstance(device_number, int) and device_number > 0:
+            print("Please enter a positive number.")
+            return False
+        
+        
+        device = f'{DEVICE_PREFIX}{device_number}'
+
+        data = self.get_raw_device_data()
+        if not data:
+            return False
+        
+        for address in addresses:
+            del data[device][REGISTERS][str(address)]
+
+        self.save_device_data(data)
 
 
     def __save_connection_params(self, device_number) -> bool: ######################
