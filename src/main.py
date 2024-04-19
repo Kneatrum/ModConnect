@@ -224,11 +224,7 @@ class MainWindow(QtWidgets.QMainWindow):
             current_table.show_register_dialog() # Show the message box for adding registers
             current_table.list_of_registers = self.file_handler.get_registers_to_read(device_number) # Update the list of registers.
         elif position == REMOVE_REGISTERS_ID: # Remove Registers
-            current_table.action_menu.setCurrentIndex(SELECT_ACTION_ID)
-            if current_table.active_connection:
-                print(f"Is device connected? :{current_table.active_connection.is_connected()}")
-            else:
-                print("No device connected")
+            current_table.delete_registers()
         elif position == CONNECT_ID: # Connect/Disconnect
             current_text = current_table.action_menu.currentText()
             if current_text == CONNECT:

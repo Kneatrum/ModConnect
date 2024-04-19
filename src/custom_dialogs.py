@@ -1,9 +1,9 @@
 
 from file_handler import FileHandler
 from  modbus_group_boxes import RtuGroupBox, TcpGroupBox 
-
+from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import  QPushButton,  QVBoxLayout, QLabel, QLineEdit, \
-    QDialog, QHBoxLayout, QCheckBox, QSizePolicy
+    QDialog, QHBoxLayout, QCheckBox, QSizePolicy, QFrame, QSpacerItem
 
 from notifications import Notification
 import re
@@ -455,5 +455,5 @@ class DeleteRegisters(QDialog):
         # Logic to delete based on checkbox state
         if self.registers_to_delete:
             print("Registers to delete", self.registers_to_delete)
-            # if self.file_handler.delete_registers(self.device_number, self.registers_to_delete):
+            self.file_handler.delete_registers(self.device_number, self.registers_to_delete)
             self.accept()

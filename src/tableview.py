@@ -15,6 +15,7 @@ from constants import REGISTER_NAME, REGISTER_ADDRESS, REGISTER_PREFIX, TCP_METH
                         LIGHT_GREEN, GRAY
 
 from notifications import Notification
+from custom_dialogs import DeleteRegisters
 
 NAME_COLUMN = 0
 ADDRESS_COLUMN = 1
@@ -675,9 +676,15 @@ class TableWidget(QWidget):
             f'{connection_params[RTU_METHOD].get(STOP_BITS)}'
 
 
-    def delete_register(self):
-        print("Delete register")
-        pass
+    def delete_registers(self) -> bool:
+        dialog = DeleteRegisters(self.device_number)
+        if dialog.exec_() == QDialog.Accepted:
+            self.update_registers_to_read()
+            self.update_register_table()
+            return True
+        else:
+            self.notification.set_warning_message("Failure!", "Deletion of registers failed.")
+            return False
 
     def delete_device(self):
         print("Delete register")
