@@ -357,3 +357,103 @@ class EditConnection(QDialog):
                 self.accept()
             else:
                 print("Error saving")
+
+
+class DeleteRegisters(QDialog):
+    def __init__(self, device_number):
+        super().__init__()
+
+        self.setWindowTitle("Delete Registers")
+        self.setFixedWidth(400)
+        # self.setGeometry(100, 100, 300, 300)  # Set the initial size and position of the dialog
+        self.file_handler = FileHandler()
+        self.existing_registers = self.file_handler.get_existing_register_addresses(device_number)
+
+        # Checkboxes
+        self.checkboxes = []
+        self.checkbox_layout = QVBoxLayout()
+        self.device_number = device_number
+        self.register_count = self.file_handler.get_register_count(self.device_number)
+        self.registers_to_delete = []
+
+        # Select all checkbox
+        self.select_all_checkbox = QCheckBox("Select All")
+        self.select_all_checkbox.setLayoutDirection(Qt.RightToLeft)
+        self.select_all_checkbox.stateChanged.connect(self.select_all_checkboxes)
+        self.checkbox_layout.addWidget(self.select_all_checkbox)
+
+        # Create a horizontal line
+        horizontal_line = QFrame()
+        horizontal_line.setFrameShape(QFrame.HLine)
+        horizontal_line.setFrameShadow(QFrame.Sunken)
+        self.checkbox_layout.addWidget(horizontal_line)
+        self.checkbox_layout.addSpacing(10)
+        
+
+
+        for register in self.existing_registers:  # Change 5 to the number of checkboxes you want
+            self.checkbox = QCheckBox(f"Register {register}")
+            self.checkbox.setProperty('register', register)
+            self.checkbox.stateChanged.connect(self.add_register_to_list)
+            self.checkboxes.append(self.checkbox)
+            self.checkbox_layout.addWidget(self.checkbox)
+
+
+        # Buttons
+        self.cancel_button = QPushButton("Cancel")
+        self.cancel_button.clicked.connect(self.cancel)
+        self.delete_button = QPushButton("Delete")
+        self.delete_button.clicked.connect(self.delete_registers)
+
+        button_layout = QHBoxLayout()
+        button_layout.addWidget(self.cancel_button)
+        button_layout.addWidget(self.delete_button)
+
+        # Main layout
+        main_layout = QVBoxLayout()
+        main_layout.addLayout(self.checkbox_layout)
+        
+        # Create a horizontal line
+        checkbox_button_separator = QFrame()
+        checkbox_button_separator.setFrameShape(QFrame.HLine)
+        checkbox_button_separator.setFrameShadow(QFrame.Sunken)
+
+        main_layout.addSpacing(20)
+        main_layout.addWidget(checkbox_button_separator)
+        main_layout.addSpacing(20)
+        main_layout.addLayout(button_layout)
+
+        spacer = QSpacerItem(20, 40, vPolicy=QSizePolicy.Expanding)
+        main_layout.addItem(spacer)
+
+        self.setLayout(main_layout)
+
+
+    def add_register_to_list(self, state):
+        checkbox = self.sender()  # Get the checkbox that emitted the signal
+        register = checkbox.property('register')  # Retrieve the register information
+        if state == Qt.Checked:
+            if register not in self.registers_to_delete:
+                self.registers_to_delete.append(register)
+        else:
+            if register in self.registers_to_delete:
+                self.registers_to_delete.remove(register)
+        
+        
+
+    def select_all_checkboxes(self, state):
+        for checkbox in self.checkboxes:
+            checkbox.setChecked(state == 2)
+        # add all registers to list
+
+
+    def cancel(self):
+        self.reject()
+
+
+    def delete_registers(self):
+        # Logic to delete based on checkbox state
+        if self.registers_to_delete:
+            print("Registers to delete", self.registers_to_delete)
+            # if self.file_handler.delete_registers(self.device_number, self.registers_to_delete):
+            self.accept()
