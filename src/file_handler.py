@@ -361,10 +361,10 @@ class FileHandler:
         This method returns all devices keys that are registered.
 
         arguments: 
-            None
+            device_number (int): The unique device number
 
         returns:
-            device_keys (list): A list containing all device keys.
+            addresses (list): A list containing all the registers in a particular device
         """
         # If the path for our data does not exist, return
         if not self.data_path_exists():
@@ -376,9 +376,9 @@ class FileHandler:
             return None
         
         device = f'{DEVICE_PREFIX}{device_number}'
-        address_tags = data[device][REGISTERS].keys()
-        address_tags = [int(value) for value in address_tags]
-        return  address_tags
+        addresses = data[device][REGISTERS].keys()
+        addresses = [int(value) for value in addresses]
+        return  addresses
 
 
 
