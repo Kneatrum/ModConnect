@@ -377,7 +377,8 @@ class FileHandler:
         
         device = f'{DEVICE_PREFIX}{device_number}'
         address_tags = data[device][REGISTERS].keys()
-        return  [int(re.findall(r'\d+', address_tag)[0]) for address_tag in address_tags if re.findall(r'\d+', address_tag)]
+        address_tags = [int(value) for value in address_tags]
+        return  address_tags
 
 
 
