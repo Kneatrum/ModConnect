@@ -436,8 +436,8 @@ class TableWidget(QWidget):
         The attributes are passed in form of a list.
         """
         results = self.file_handler.get_register_attributes(self.device_number, REGISTER_NAME)
+        self.table_widget.setRowCount(0)
         if results:
-            self.table_widget.setRowCount(0)
             for index, register in enumerate(results):
                 self.table_widget.insertRow(index)
                 self.table_widget.setItem(index, NAME_COLUMN, QTableWidgetItem(results[register][REGISTER_NAME]))
