@@ -288,7 +288,7 @@ class MainWindow(QtWidgets.QMainWindow):
         widget.edit_connection_button_clicked.connect(self.on_edit_button_clicked)
         widget.drop_down_menu_clicked.connect(self.on_drop_down_menu_selected)
         self.observer.add_table_widget(new_device_number, widget)
-        self.horizontal_box.addWidget(widget) # Create the table widgets and add them in the horizontal layout
+        self.horizontal_box.insertWidget(tablewidget_count + 1, widget) # Add the new widget after the last widget in the horizontal layout
 
 
     def delete_widget(self, device_number):
