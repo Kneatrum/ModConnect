@@ -168,6 +168,7 @@ class TableWidget(QWidget):
         self.table_widget.setColumnWidth(VALUE_COLUMN, 120) # Set the width of the "Value" column to 100
         self.table_widget.cellChanged.connect(self.on_cell_changed)
         self.table_widget.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff) 
+        self.table_widget.setStyleSheet("QTableWidget { border: 1px light gray; }")
         
         # Create a horizontal layout to hold action label and combo box vlayouy and connection status label
         self.left_group_box = QGroupBox()
