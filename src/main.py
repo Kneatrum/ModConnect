@@ -283,6 +283,7 @@ class MainWindow(QtWidgets.QMainWindow):
     
 
     def add_single_widget(self, new_device_number):
+        tablewidget_count = self.horizontal_box.count() - 2 # There are two spacers in the horizontal layout that we are going to ignore.
         widget = tablewidget(new_device_number) # Create and instance of our table widget. Adding 1 to prevent having device_0
         widget.edit_connection_button_clicked.connect(self.on_edit_button_clicked)
         widget.drop_down_menu_clicked.connect(self.on_drop_down_menu_selected)
