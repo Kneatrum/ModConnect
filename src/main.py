@@ -304,11 +304,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
 
     def show_widget(self, device_number):
-        widget = tablewidget(device_number) # Create and instance of our table widget. Adding 1 to prevent having device_0
-        widget.edit_connection_button_clicked.connect(self.on_edit_button_clicked)
-        widget.drop_down_menu_clicked.connect(self.on_drop_down_menu_selected)
-        self.observer.add_table_widget(device_number, widget)
-        self.horizontal_box.addWidget(widget) # Create the table widgets and add them in the horizontal layout
+        self.add_single_widget(device_number)
         self.observer.table_widgets[device_number].hidden_status = False
         self.file_handler.update_hidden_status(device_number, False)
 
