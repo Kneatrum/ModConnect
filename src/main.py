@@ -281,7 +281,6 @@ class MainWindow(QtWidgets.QMainWindow):
         widget = tablewidget(new_device_number) # Create and instance of our table widget. Adding 1 to prevent having device_0
         widget.edit_connection_button_clicked.connect(self.on_edit_button_clicked)
         widget.drop_down_menu_clicked.connect(self.on_drop_down_menu_selected)
-        widget.modbus_method_label
         self.observer.add_table_widget(new_device_number, widget)
         self.horizontal_box.addWidget(widget) # Create the table widgets and add them in the horizontal layout
 
