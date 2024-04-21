@@ -265,6 +265,8 @@ class MainWindow(QtWidgets.QMainWindow):
         if device_tags:
             # Create a central widget
             # Create a horizontal layout to add the table widgets
+            beginning_spacer_item = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
+            self.horizontal_box.addSpacerItem(beginning_spacer_item)
             for device_tag in device_tags:
                 widget = tablewidget(device_tag) # Create and instance of our table widget. Adding 1 to prevent having device_0
                 widget.edit_connection_button_clicked.connect(self.on_edit_button_clicked)
@@ -273,6 +275,9 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.observer.add_table_widget(device_tag, widget)
                 if widget.hidden_status == False:
                     self.horizontal_box.addWidget(widget) # Create the table widgets and add them in the horizontal layout
+            # Add a spacer item at the end
+            end_spacer_item = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
+            self.horizontal_box.addSpacerItem(end_spacer_item)
             return True
         return None
     
