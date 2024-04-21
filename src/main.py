@@ -283,12 +283,26 @@ class MainWindow(QtWidgets.QMainWindow):
     
 
     def add_single_widget(self, new_device_number):
-        tablewidget_count = self.horizontal_box.count() - 2 # There are two spacers in the horizontal layout that we are going to ignore.
-        widget = tablewidget(new_device_number) # Create and instance of our table widget. Adding 1 to prevent having device_0
-        widget.edit_connection_button_clicked.connect(self.on_edit_button_clicked)
-        widget.drop_down_menu_clicked.connect(self.on_drop_down_menu_selected)
-        self.observer.add_table_widget(new_device_number, widget)
-        self.horizontal_box.insertWidget(tablewidget_count + 1, widget) # Add the new widget after the last widget in the horizontal layout
+        tablewidget_count = self.horizontal_box.count()
+        if tablewidget_count == 0:
+            beginning_spacer_item = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
+            self.horizontal_box.addSpacerItem(beginning_spacer_item)
+            end_spacer_item = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
+            self.horizontal_box.addSpacerItem(end_spacer_item)
+
+            widget = tablewidget(new_device_number) # Create and instance of our table widget. Adding 1 to prevent having device_0
+            widget.edit_connection_button_clicked.connect(self.on_edit_button_clicked)
+            widget.drop_down_menu_clicked.connect(self.on_drop_down_menu_selected)
+            self.observer.add_table_widget(new_device_number, widget)
+            self.horizontal_box.insertWidget(1, widget) # Add the new widget after the last widget in the horizontal layout
+
+        elif tablewidget_count >= 2:
+            tablewidget_count -= 2 # There are two spacers in the horizontal layout that we are going to ignore.
+            widget = tablewidget(new_device_number) # Create and instance of our table widget. Adding 1 to prevent having device_0
+            widget.edit_connection_button_clicked.connect(self.on_edit_button_clicked)
+            widget.drop_down_menu_clicked.connect(self.on_drop_down_menu_selected)
+            self.observer.add_table_widget(new_device_number, widget)
+            self.horizontal_box.insertWidget(tablewidget_count + 1, widget) # Add the new widget after the last widget in the horizontal layout
 
 
     def delete_widget(self, device_number):
