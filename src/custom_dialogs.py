@@ -267,7 +267,7 @@ class EditConnection(QDialog):
             self.tcp_initial_parameters[TCP_METHOD][SLAVE_ADDRESS] = self.file_handler.get_slave_address(self.device_number)
             self.tcp_initial_parameters[TCP_METHOD][DEVICE_NAME] = self.file_handler.get_device_name(self.device_number)
             self.tcp_groupbox.tcp_custom_name.setText(self.tcp_initial_parameters[TCP_METHOD].get(DEVICE_NAME))
-            self.tcp_groupbox.tcp_slave_id.setText(self.tcp_initial_parameters[TCP_METHOD].get(SLAVE_ADDRESS))
+            self.tcp_groupbox.tcp_slave_id.setText(str(self.tcp_initial_parameters[TCP_METHOD].get(SLAVE_ADDRESS)))
             self.tcp_groupbox.ip_address.setText(self.tcp_initial_parameters[TCP_METHOD].get(HOST))
             self.tcp_groupbox.port.setText(str(self.tcp_initial_parameters[TCP_METHOD].get(PORT)))
         if not RTU_METHOD in self.tcp_initial_parameters:
