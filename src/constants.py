@@ -68,7 +68,7 @@ REGISTER_TEMPLATE = {
 }
 
 # Modbus RTU settings
-PARITY_ITEMS = ["None","Even","Odd","Mark","Space"]
+PARITY_ITEMS = ['N','E','O','M','S'] # N=None, E=Even, O=Odd, M=Mark, S=Space
 STOP_BIT_ITEMS = ["1","1.5","2"]
 BAUD_RATE_ITEMS = ["9600","14400","19200","38400","57600","115200"]
 BYTESIZE_ITEMS = ["8","7"]
