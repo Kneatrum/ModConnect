@@ -1,22 +1,22 @@
 import sys
-from PyQt5.QtCore import Qt, QThreadPool, QCoreApplication
+from PyQt5.QtCore import Qt, QThreadPool, QCoreApplication, QTimer, QThread
 from PyQt5 import QtWidgets
 from PyQt5.QtGui import QIcon
 from file_handler import FileHandler 
 from tableview import TableWidget as tablewidget
 from custom_dialogs import EditConnection, AddNewDevice
-from register_reader import Observer, Worker
+from register_reader import Observer, DeviceWorker, PollCoordinator
 import threading
-import time
 from notifications import Notification
 from constants import STATUS, WIDGET, DISCONNECT, CONNECT, SELECT_ACTION_ID, ADD_REGISTERS_ID, REMOVE_REGISTERS_ID, \
-                        CONNECT_ID, HIDE_DEVICE_ID, DELETE_DEVICE_ID
+                        CONNECT_ID, HIDE_DEVICE_ID, DELETE_DEVICE_ID, MAX_DEVICES
 
 from PyQt5.QtWidgets import  QScrollArea, QWidget,  QAction, \
     QVBoxLayout, QDialog, QHBoxLayout,  QTableWidget, \
     QTableWidgetItem,  QToolBar, QCheckBox, QLabel, QSizePolicy, QSpacerItem
 
 from constants import resource_path
+from time import perf_counter
 
 # Constant that stores the index of the column that displays the value of the read registers.
 VALUE_COLUMN = 2
@@ -40,13 +40,18 @@ class MainWindow(QtWidgets.QMainWindow):
         self.main_widget = None
         self.observer = Observer()
         self.threadpool = QThreadPool()
-        # self.connected_devices = []
+        self.thread_manager_pool = QThreadPool()
+        self.worker_dict = {}
+        self.ready_for_reconnect = False
+        self.device_list_ready_to_refresh = []   
+        self.start_signal_count = 0
+        self.finish_signal_count = 0
+        self.connected_device_count = 0
 
-        self.worker = Worker(self.observer.read_all_registers)
-        self.worker.signals.result.connect(self.refresh_gui)
-        # Stop the worker thread when the application is stopped.
-        QCoreApplication.instance().aboutToQuit.connect(self.worker.stop)
-
+        self.poll_mode = "synchronized"  # or "independent"
+        self.global_interval_ms = 1000   # default
+        self.coordinator_thread = None
+        self.coordinator = None
 
         
 
@@ -96,6 +101,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.main_thread = threading.main_thread()
         self.ready_to_poll_event =  threading.Event()
         self.polling_stopped =  threading.Event()
+        self.polling_stopped.set() # Polling is stopped by default when the application has started.
 
 
 
@@ -113,64 +119,110 @@ class MainWindow(QtWidgets.QMainWindow):
 
 
     def stop_polling(self):
-        self.worker.stop()
-        self.polling_stopped.set()
 
+        # Stop workers first
+        for device_number, (thread, worker) in self.worker_dict.items():
+            worker.stop()
+
+        # Then stop coordinator
+        if self.coordinator:
+            self.coordinator.stop()
+
+        # Now quit threads
+        if self.coordinator_thread:
+            self.coordinator_thread.quit()
+            self.coordinator_thread.wait(2000)
+
+        for device_number, (thread, worker) in self.worker_dict.items():
+            thread.quit()
+            thread.wait(2000)
+
+        self.worker_dict.clear()
+        self.coordinator = None
+        self.coordinator_thread = None
 
     def start_tasks(self):
-        if self.polling_stopped.is_set():
-            self.worker = Worker(self.observer.read_all_registers)
-            self.worker.signals.result.connect(self.refresh_gui)
-            self.polling_stopped.clear()
-        self.threadpool.start(self.worker)
-
-
-    def refresh_gui(self, result):
-        """
-        This method is responsible for updating the GUI with the register results
-
-        arguments:
-            result (dict): This is a dictionary containing the device number and a list of its registers.
-
-            Example: 
-                {1: [2238, 2238, 2238], 2: [2221, 2221, 2221]}
-
-        returns:
-            None
-        
-        """
-        start_time = time.perf_counter()
-        """
-        This portion of the code checks how many devices are connected. If the number of devices is 0, we stop polling.
-        """
-        connected_devices = 0
+        # Create workers
         for device in self.observer.table_widgets.values():
-            if device.connection_status == True:
-                connected_devices += 1
-        if connected_devices == 0:
-            self.stop_polling()
+            if device.connection_status:
 
+                thread = QThread()
+                worker = DeviceWorker(device)
 
-        # The key of the dictionary represents the device number.
-        if result is not None:
-            for device_number in result.keys():
-                # The value of the dictionary is a list of the register results for this particular device number.
-                register_list = result[device_number]
-                row_count = self.observer.table_widgets[device_number].table_widget.rowCount()
+                worker.moveToThread(thread)
+                thread.started.connect(worker.run)
 
-                # This happens as a precaution. Ideally, the number of registers should match the number of rows in the table widget.
-                if len(register_list) < row_count:
-                    print("Registers are less than the number of rows in the table.")
-                    row_count = len(register_list)
+                thread.start()
 
-                # Create a loop to iterate over the QtableWidget's rows and update the value column with the read registers.
-                for row in range(row_count):
-                    self.observer.table_widgets[device_number].table_widget.setItem(row, VALUE_COLUMN, QTableWidgetItem(str(register_list[row])))
-            stop_time = time.perf_counter()
-            print("Time :", stop_time - start_time)
+                self.worker_dict[device.device_number] = (thread, worker)
+
+        if not self.worker_dict:
+            return
+
+        if self.poll_mode == "independent":
+
+            for device_number, (thread, worker) in self.worker_dict.items():
+                worker.result.connect(self.update_device_table)
+                worker.trigger()  # Start continuous polling
+                # For independent mode, you can modify worker to auto-loop
+
         else:
-            print("No results were transmitted.")
+            # SYNCHRONIZED MODE
 
+            workers = {k: w for k, (t, w) in self.worker_dict.items()}
+
+            self.coordinator_thread = QThread()
+            self.coordinator = PollCoordinator(
+                workers,
+                self.global_interval_ms
+            )
+
+            self.coordinator.moveToThread(self.coordinator_thread)
+            self.coordinator_thread.started.connect(self.coordinator.run)
+            self.coordinator.synchronized_snapshot.connect(
+                self.handle_synchronized_snapshot
+            )
+
+            self.coordinator_thread.start()
+
+    def handle_synchronized_snapshot(self, data_dict, timestamp):
+
+        # Update GUI
+        for device_number, register_data in data_dict.items():
+            table = self.observer.table_widgets[device_number]
+
+            for row, value in enumerate(register_data):
+                table.table_widget.setItem(
+                    row,
+                    VALUE_COLUMN,
+                    QTableWidgetItem(str(value))
+                )
+
+        # Future: log timestamp + data_dict
+        print(f"Synchronized sample at {timestamp}")
+
+    def count_starts(self):
+        self.start_signal_count += 1
+        
+
+    def count_finish(self):
+        self.finish_signal_count += 1        
+        
+
+    def update_device_table(self, device_number, register_data):
+
+        table = self.observer.table_widgets[device_number]
+
+        for row, value in enumerate(register_data):
+            table.table_widget.setItem(
+                row,
+                VALUE_COLUMN,
+                QTableWidgetItem(str(value))
+            )
+
+    def resume_polling(self):
+        self.stop_polling()
+        self.start_ui_refresh()
 
 
     def on_checkbox_state_changed(self):
@@ -188,10 +240,11 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def start_ui_refresh(self):
         # self.connected_devices = self.main_central_widget.findChildren(QTableWidget)
-        if self.ready_to_poll_event.is_set():
-            self.start_tasks()
-        else:
-            self.notification.set_warning_message("No connected devices", "Please connect to a device first")
+        if not self.worker_dict and not self.coordinator:
+            if self.ready_to_poll_event.is_set():
+                self.start_tasks()
+            else:
+                self.notification.set_warning_message("No connected devices", "Please connect to a device first")
 
             
 
@@ -208,6 +261,8 @@ class MainWindow(QtWidgets.QMainWindow):
 
 
     def on_edit_button_clicked(self, index):
+        print(f"Type of index: {type(index)}")
+        print(f"Edit button clicked for device {index}")
         edit_connection = EditConnection(index)
         if edit_connection.exec_() == QDialog.Accepted:
             self.observer.table_widgets[index].update_method_label()
@@ -229,7 +284,11 @@ class MainWindow(QtWidgets.QMainWindow):
             if current_text == CONNECT:
                 result = current_table.connect_to_device()
                 if result:
-                    self.ready_to_poll_event.set()
+                    if self.ready_for_reconnect == True:
+                        self.ready_for_reconnect = False
+                        self.resume_polling()
+                    else:
+                        self.ready_to_poll_event.set()
                 else:
                     current_table.notification.set_warning_message("Connection Failure", result)
             elif current_text ==  DISCONNECT: # Disconnect device
@@ -271,7 +330,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 widget = tablewidget(device_tag) # Create and instance of our table widget. Adding 1 to prevent having device_0
                 widget.edit_connection_button_clicked.connect(self.on_edit_button_clicked)
                 widget.drop_down_menu_clicked.connect(self.on_drop_down_menu_selected)
-                widget.modbus_method_label
+                # widget.modbus_method_label
                 self.observer.add_table_widget(device_tag, widget)
                 if widget.hidden_status == False:
                     self.horizontal_box.addWidget(widget) # Create the table widgets and add them in the horizontal layout
