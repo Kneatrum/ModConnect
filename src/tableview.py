@@ -16,6 +16,7 @@ from constants import REGISTER_NAME, REGISTER_ADDRESS, REGISTER_PREFIX, TCP_METH
 
 from notifications import Notification
 from custom_dialogs import DeleteRegisters
+from time import perf_counter
 
 NAME_COLUMN = 0
 ADDRESS_COLUMN = 1
@@ -484,10 +485,13 @@ class TableWidget(QWidget):
             bool: True if connected successfully or False otherwise
         """
         try:
-            if self.active_connection.client.connect():
-                self.set_connection_status(True)
-                return True
+            self.active_connection.client.connect()
+            self.set_connection_status(True)
+            print(f"Successfully connected to device {self.device_number} using {self.file_handler.get_default_modbus_method(self.device_number)}" )
+            return True
         except Exception as e:
+            self.active_connection.client.close()
+            print(f"Failed to connect to device {self.device_number} using {self.file_handler.get_default_modbus_method(self.device_number)}. Error: {e}")
             return e
 
     
@@ -595,77 +599,158 @@ class TableWidget(QWidget):
 
 
 
-    def read_registers(self):
-        self.register_data.clear()
-        temp = ["Error"]
-        for address, attributes, in self.registers_to_read.items():
-            if attributes[FUNCTION_CODE]  == 1:
-                quantity = attributes[REGISTER_QUANTITY]
-                if address is not None or address == 0:
-                    try:
-                        response = self.active_connection.client.read_coils(address, quantity, unit=self.slave_address)
-                        if response.isError():
-                            self.register_data.extend(temp*quantity)
-                            print("Error", response)
-                        else:
-                            self.register_data += response.registers
-                    except ModbusIOException as e:
-                        self.register_data.extend(e)
-                        raise
-                    except ConnectionException:
-                        print("Device disconnected.")
-                        raise
 
-            elif attributes[FUNCTION_CODE] == 2:
-                quantity = attributes[REGISTER_QUANTITY]
-                if address is not None or address == 0:
+    def read_registers(self):
+
+        if not self.connection_status:
+            return []
+
+        read_start = perf_counter()
+        self.register_data.clear()
+
+        grouped = {}
+
+        
+        # Group registers by function code
+        for address, attributes in self.registers_to_read.items():
+
+            if address is None:
+                continue
+
+            function_code = attributes[FUNCTION_CODE]
+            quantity = attributes[REGISTER_QUANTITY]
+
+            grouped.setdefault(function_code, []).append(
+                (address, quantity)
+            )
+
+
+        # Process each function group
+        for function_code, entries in grouped.items():
+
+            entries.sort(key=lambda x: x[0])
+
+
+            # Merge contiguous / overlapping ranges
+            merged_blocks = []
+
+            current_start = entries[0][0]
+            current_end = current_start + entries[0][1]
+
+            for address, quantity in entries[1:]:
+
+                block_end = address + quantity
+
+                if address <= current_end:
+                    current_end = max(current_end, block_end)
+                else:
+                    merged_blocks.append((current_start, current_end))
+                    current_start = address
+                    current_end = block_end
+
+            merged_blocks.append((current_start, current_end))
+
+            
+            # Execute merged blocks with chunk safety
+            for block_start, block_end in merged_blocks:
+
+                total_quantity = block_end - block_start
+
+                # Determine max allowed per request
+                if function_code in (3, 4):
+                    max_chunk = 125
+                elif function_code in (1, 2):
+                    max_chunk = 2000
+                else:
+                    continue
+
+                
+                #  Split into safe chunks
+                chunk_start = block_start
+
+                while chunk_start < block_end:
+
+                    chunk_quantity = min(
+                        max_chunk,
+                        block_end - chunk_start
+                    )
+
                     try:
-                        response = self.active_connection.client.read_discrete_inputs(address, quantity, unit=self.slave_address)
+
+                        client = self.active_connection.client
+
+                        if function_code == 1:
+                            response = client.read_coils(
+                                chunk_start,
+                                chunk_quantity,
+                                slave=self.slave_address
+                            )
+
+                        elif function_code == 2:
+                            response = client.read_discrete_inputs(
+                                chunk_start,
+                                chunk_quantity,
+                                slave=self.slave_address
+                            )
+
+                        elif function_code == 3:
+                            response = client.read_holding_registers(
+                                chunk_start,
+                                chunk_quantity,
+                                slave=self.slave_address
+                            )
+
+                        elif function_code == 4:
+                            response = client.read_input_registers(
+                                chunk_start,
+                                chunk_quantity,
+                                slave=self.slave_address
+                            )
+
                         if response.isError():
-                            self.register_data.extend(temp*quantity)
-                            print("Error", response)
+                            self.register_data.extend(
+                                ["Error"] * chunk_quantity
+                            )
+                            chunk_start += chunk_quantity
+                            continue
+
+                        # Extract correct data container
+                        if function_code in (1, 2):
+                            values = response.bits[:chunk_quantity]
                         else:
-                            self.register_data += response.registers
-                    except ModbusIOException as e:
-                        self.register_data.extend(e)
-                        raise
-                    except ConnectionException:
-                        print("Device disconnected.")
-                        raise
-            elif attributes[FUNCTION_CODE] == 3:
-                quantity = attributes[REGISTER_QUANTITY]
-                if address is not None or address == 0:
-                    try:
-                        response = self.active_connection.client.read_holding_registers(address, quantity, unit=self.slave_address)
-                        if response.isError():
-                            self.register_data.extend(temp*quantity)
-                            print("Error", response)
-                        else:
-                            self.register_data += response.registers
-                    except ModbusIOException as e:
-                        self.register_data.extend(e)
-                        raise
-                    except ConnectionException:
-                        print("Device disconnected.")
-                        raise
-            elif attributes[FUNCTION_CODE] == 4:
-                quantity = attributes[REGISTER_QUANTITY]
-                if address is not None or address == 0:
-                    try:
-                        response = self.active_connection.client.read_input_registers(address, quantity, unit=self.slave_address)
-                        if response.isError():
-                            self.register_data.extend(temp*quantity)
-                            print("Error", response)
-                        else:   
-                            self.register_data += response.registers
-                    except ModbusIOException as e:
-                        self.register_data.extend(e)
-                        raise
-                    except ConnectionException:
-                        print("Device disconnected.")
-                        raise
+                            values = response.registers[:chunk_quantity]
+
+                        
+                        # Map chunk data back to logical registers
+                        for address, quantity in entries:
+
+                            if chunk_start <= address < chunk_start + chunk_quantity:
+
+                                offset = address - chunk_start
+                                slice_end = offset + quantity
+
+                                self.register_data.extend(
+                                    values[offset:slice_end]
+                                )
+
+                    except (ModbusIOException, ConnectionException):
+
+                        self.set_connection_status(False)
+                        self.register_data.extend(
+                            ["Error"] * chunk_quantity
+                        )
+
+                    chunk_start += chunk_quantity
+
+        read_end = perf_counter()
+
+        print(
+            f"Device {self.device_number} optimized read: "
+            f"{read_end - read_start:.4f}s"
+        )
+
         return self.register_data
-    
+
     def get_tcp_connection_string(self, connection_params):
         return f'{connection_params[TCP_METHOD].get(HOST)}:{connection_params[TCP_METHOD].get(PORT)}'
 
