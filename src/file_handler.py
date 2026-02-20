@@ -150,7 +150,10 @@ class FileHandler:
         if not data:
             return None
         device = DEVICE_PREFIX + f'{device_number}'
-        return data.get(device, {}).get(SLAVE_ADDRESS, None)
+        slave_address = data.get(device, {}).get(SLAVE_ADDRESS, None)
+        if slave_address is not None:
+            return int(slave_address)
+        return -1
     
 
     def get_device_name(self, device_number) -> str:
