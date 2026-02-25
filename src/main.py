@@ -291,7 +291,8 @@ class MainWindow(QtWidgets.QMainWindow):
                     else:
                         self.ready_to_poll_event.set()
                 else:
-                    current_table.notification.set_warning_message("Connection Failure", result)
+                    # current_table.notification.set_warning_message("Connection Failure", result)
+                    print(f"Failed to connect to device {device_number}.")
             elif current_text ==  DISCONNECT: # Disconnect device
                 current_table.disconnect_from_device()
                 if not self.check_for_connected_devices():
