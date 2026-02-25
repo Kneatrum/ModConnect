@@ -340,6 +340,8 @@ class EditConnection(QDialog):
                 if device_data[device][SLAVE_ADDRESS] is not slave_address:
                     device_data[device][SLAVE_ADDRESS] = slave_address
                 if device_data[device][CONNECTION_PARAMETERS][RTU_METHOD][SERIAL_PORT] is not serial_port:
+                    if serial_port == NO_COM_PORTS:
+                        serial_port = ""
                     device_data[device][CONNECTION_PARAMETERS][RTU_METHOD][SERIAL_PORT] = serial_port
                 if device_data[device][CONNECTION_PARAMETERS][RTU_METHOD][BAUD_RATE] is not baud_rate:
                     device_data[device][CONNECTION_PARAMETERS][RTU_METHOD][BAUD_RATE] = baud_rate
