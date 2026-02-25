@@ -126,19 +126,16 @@ class TableWidget(QWidget):
         check_box_h_layout.addWidget(self.rtu_checkbox)
         
 
-        # Create the connection status Qlabel
-        # self.modbus_connection_label = QLabel(self.modbus_method_label)
-        connection_params = self.file_handler.get_connection_params(self.device_number)
-        default_method = self.file_handler.get_default_modbus_method(self.device_number)
+        self.default_method = self.file_handler.get_default_modbus_method(self.device_number)
         modbus_protocols = self.file_handler.get_modbus_protocol(self.device_number)
         
-        if default_method == TCP_METHOD:
+        if self.default_method == TCP_METHOD:
             # Constructing the following string. 127.0.0.1:502 
-            self.modbus_method_label = self.get_tcp_connection_string(connection_params)
+            self.modbus_method_label = self.get_tcp_connection_string(self.connection_params)
             self.tcp_checkbox.setChecked(True)
-        elif default_method == RTU_METHOD:
+        elif self.default_method == RTU_METHOD:
             # Constructing the following string. 9600,COM1,N,1,8,1.0
-            self.modbus_method_label  = self.get_rtu_connection_string(connection_params)
+            self.modbus_method_label  = self.get_rtu_connection_string(self.connection_params)
             self.rtu_checkbox.setChecked(True)
 
         # If there is only one option, disable the checkboxes
@@ -302,8 +299,8 @@ class TableWidget(QWidget):
 
     def update_method_label(self):
         connection_params = self.file_handler.get_connection_params(self.device_number)
-        default_method = self.file_handler.get_default_modbus_method(self.device_number)
-        if TCP_METHOD in default_method:
+        self.default_method = self.file_handler.get_default_modbus_method(self.device_number)
+        if TCP_METHOD in self.default_method:
             message = self.get_tcp_connection_string(connection_params)
             self.modbus_connection_label.setText(message)
             self.modbus_connection_label.setStyleSheet("color: gray;")
@@ -381,8 +378,8 @@ class TableWidget(QWidget):
             return None
         
         if len(modbus_protocols) > 1:
-            default_method = self.file_handler.get_default_modbus_method(self.device_number)
-            if not default_method:
+            self.default_method = self.file_handler.get_default_modbus_method(self.device_number)
+            if not self.default_method:
                 # Set the default method to TCP if it is not set.
                 self.file_handler.set_default_modbus_method(self.device_number, TCP_METHOD)
         elif len(modbus_protocols) == 1:
