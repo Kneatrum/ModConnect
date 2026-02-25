@@ -268,6 +268,7 @@ class MainWindow(QtWidgets.QMainWindow):
             self.observer.table_widgets[index].update_method_label()
             self.observer.table_widgets[index].update_device_name()
             self.observer.table_widgets[index].set_active_connection()
+            self.observer.table_widgets[index].on_connection_settings_updated()
 
 
     def on_drop_down_menu_selected(self, device_number, position):

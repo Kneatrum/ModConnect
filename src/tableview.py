@@ -279,6 +279,17 @@ class TableWidget(QWidget):
                 print(f"Connection status changed")
                 self.update_method_label()
 
+    def on_connection_settings_updated(self):
+        self.connection_params = self.file_handler.get_connection_params(self.device_number)
+        self.stored_serial_port = self.connection_params.get(RTU_METHOD, {}).get(SERIAL_PORT)
+        self.available_ports = SerialPorts.get_available_ports()
+        self.stored_com_port_missing = self.stored_serial_port not in self.available_ports if self.stored_serial_port else False
+
+        self.modbus_connection_setting_button.setIcon(QIcon())
+        self.modbus_connection_setting_button.setToolTip("")
+        self.modbus_connection_setting_button.setStyleSheet("Color: gray;")
+        self.set_active_connection()
+        self.update_method_label()
 
     def on_rtu_connection_status_changed(self):
         if self.rtu_checkbox.isChecked():
