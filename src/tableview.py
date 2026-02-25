@@ -109,7 +109,7 @@ class TableWidget(QWidget):
         # Create the connection status Qlabel
         self.connection_status_label = QLabel(DISCONNECTED,self)
         self.connection_status_label.setStyleSheet("background-color: rgb(212, 212, 212); padding: 25px;")
-        self.connection_status_label.setFixedSize(150, 30)
+        self.connection_status_label.setFixedSize(150, 35)
                 
         # Set the object name of the connection status label
         self.connection_status_label.setObjectName("connection_status_label_device_" + str(self.device_number))
@@ -177,7 +177,7 @@ class TableWidget(QWidget):
         self.action_menu = QComboBox() 
         self.action_menu.addItems(self.action_items) 
         self.action_menu.setCurrentIndex(0)
-        self.action_menu.setFixedSize(150, 30)
+        self.action_menu.setFixedSize(150, 32)
         view = self.action_menu.view() # Get the view of the combo box
         view.setRowHidden(0, True) # Hide the first row of the combo box view
         self.action_menu.currentIndexChanged.connect(lambda position=self.selected_option, device_number=self.device_number:self.__on_drop_down_menu_current_index_changed(device_number, position)) # Trigger an action when the user selects an option
@@ -220,8 +220,12 @@ class TableWidget(QWidget):
 
         first_column.addLayout(check_box_h_layout)
         first_column.addLayout(connection_h_layout)
+        first_column.setSpacing(25)
+        first_column.setContentsMargins(10, 10, 10, 10)
         second_column.addLayout(con_status_h_layout)
         second_column.addLayout(action_status_combo_box_h_layout)
+        second_column.setSpacing(12)
+        second_column.setContentsMargins(10, 10, 10, 10)
 
         self.left_group_box.setLayout(first_column)
         self.right_group_box.setLayout(second_column)
