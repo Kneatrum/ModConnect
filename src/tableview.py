@@ -1,5 +1,6 @@
-from PyQt5.QtCore import Qt, pyqtSignal
+from PyQt5.QtCore import QSize, Qt, pyqtSignal
 from PyQt5.QtWidgets import QWidget,  QGroupBox, QWidget,  QPushButton, QTableWidget, QVBoxLayout, QLabel, QLineEdit, QComboBox, QDialog,QHBoxLayout, QTableWidgetItem, QCheckBox, QSpacerItem, QSizePolicy
+from PyQt5.QtGui import QIcon
 from file_handler import FileHandler
 from modbus_clients import ModbusTCP, ModbusRTU
 from pymodbus.payload import BinaryPayloadDecoder
@@ -17,6 +18,9 @@ from constants import REGISTER_NAME, REGISTER_ADDRESS, REGISTER_PREFIX, TCP_METH
 from notifications import Notification
 from custom_dialogs import DeleteRegisters
 from time import perf_counter
+
+from serial_ports import SerialPorts
+from constants import resource_path
 
 NAME_COLUMN = 0
 ADDRESS_COLUMN = 1
@@ -79,7 +83,16 @@ class TableWidget(QWidget):
 
         self.register_data = []
 
-        self.modbus_connection_label = QLabel("")
+        self.connection_params = self.file_handler.get_connection_params(self.device_number)
+        self.stored_com_port_missing = False
+        self.stored_serial_port = self.connection_params.get(RTU_METHOD, {}).get(SERIAL_PORT)
+        self.available_ports = SerialPorts.get_available_ports()
+        self.stored_com_port_missing = self.stored_serial_port not in self.available_ports if self.stored_serial_port else False
+        
+        self.modbus_connection_setting_button = QPushButton("")
+        self.modbus_connection_setting_button.setFixedHeight(35)
+        problem_icon = QIcon(resource_path("../resources/problem.png"))
+    
         # Add a label for the register group or device group
         if not self.device_name:
             self.device_name = "Device " + str(self.device_number) # Create an initial name "Device " + the index of the register group. For example, Device 1
@@ -132,13 +145,29 @@ class TableWidget(QWidget):
         if not modbus_protocols or  len(modbus_protocols) == 1:
             self.rtu_checkbox.setDisabled(True)
             self.tcp_checkbox.setDisabled(True)
-         
-        self.modbus_connection_label.setText(self.modbus_method_label)
-        self.modbus_connection_label.setStyleSheet("Color: gray;")
+        
+        if self.stored_serial_port:
+            # If stored COM port is not on the computer's port list
+            # set a warning
+            if self.stored_com_port_missing:
+                self.modbus_connection_setting_button.setText(f"{self.modbus_method_label}")
+                self.modbus_connection_setting_button.setIcon(problem_icon)
+                self.modbus_connection_setting_button.setIconSize(QSize(28, 28))
+                self.modbus_connection_setting_button.setStyleSheet("Color: #D27D2D;")
+                self.modbus_connection_setting_button.setToolTip(f"The serial port {self.stored_serial_port} is not available.\nReconnect the device or change the \nserial port by clicking on this button.")
+            else:
+                self.modbus_connection_setting_button.setText(f"{self.modbus_method_label}")
+                self.modbus_connection_setting_button.setStyleSheet("Color: gray;")
+        else:
+            self.modbus_connection_setting_button.setText(self.modbus_method_label)
+            if self.default_method == RTU_METHOD:
+                # If it's an RTU connection and there is no stored COM port, 
+                # set the color of the connection strin to orange
+                self.modbus_connection_setting_button.setStyleSheet("Color: #D27D2D;")
+            else:
+                self.modbus_connection_setting_button.setStyleSheet("Color: gray;")
 
-        self.edit_connection_button = QPushButton('...')
-        self.edit_connection_button.setFixedSize(30, 30)
-        self.edit_connection_button.clicked.connect(lambda checked, idx=self.device_number: self.on_edit_connection_button_clicked(idx))
+        self.modbus_connection_setting_button.clicked.connect(lambda checked, idx=self.device_number: self.on_edit_connection_button_clicked(idx))
 
 
         # Create a vertical box layout for the qlabel and combo box
