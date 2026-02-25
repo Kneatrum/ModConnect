@@ -213,8 +213,7 @@ class TableWidget(QWidget):
 
         
         connection_h_layout = QHBoxLayout()
-        connection_h_layout.addWidget(self.modbus_connection_label)
-        connection_h_layout.addWidget(self.edit_connection_button)
+        connection_h_layout.addWidget(self.modbus_connection_setting_button)
 
         
 
@@ -306,12 +305,12 @@ class TableWidget(QWidget):
         self.default_method = self.file_handler.get_default_modbus_method(self.device_number)
         if TCP_METHOD in self.default_method:
             message = self.get_tcp_connection_string(connection_params)
-            self.modbus_connection_label.setText(message)
-            self.modbus_connection_label.setStyleSheet("color: gray;")
-        if RTU_METHOD in default_method:
+            self.modbus_connection_setting_button.setText(message)
+            self.modbus_connection_setting_button.setStyleSheet("color: gray;")
+        if RTU_METHOD in self.default_method:
             message = self.get_rtu_connection_string(connection_params)
-            self.modbus_connection_label.setText(message)
-            self.modbus_connection_label.setStyleSheet("color: gray;")
+            self.modbus_connection_setting_button.setText(message)
+            self.modbus_connection_setting_button.setStyleSheet("color: gray;")
 
 
     def update_device_name(self):
