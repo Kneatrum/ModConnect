@@ -9,7 +9,7 @@ from notifications import Notification
 import re
 
 
-from constants import SLAVE_ADDRESS, \
+from constants import NO_COM_PORTS, SLAVE_ADDRESS, \
         BAUD_RATE, PORT, DEVICE_NAME, HOST, \
         CONNECTION_PARAMETERS, RTU_PARAMETERS, \
         TCP_PARAMETERS, DEVICE_PREFIX, BYTESIZE, \

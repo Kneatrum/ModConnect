@@ -132,3 +132,5 @@ GRAY = "rgb(219,220,220)"
 
 MAX_DEVICES = 5
 MAX_REGISTERS = 20
+
+NO_COM_PORTS = "No COM ports available"

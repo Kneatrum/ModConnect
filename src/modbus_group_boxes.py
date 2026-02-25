@@ -5,7 +5,7 @@ from PyQt5.QtWidgets import  QGroupBox, QVBoxLayout, QLabel, \
     QLineEdit, QComboBox, QHBoxLayout
 
 
-from constants import PARITY_ITEMS, STOP_BIT_ITEMS, BAUD_RATE_ITEMS, \
+from constants import NO_COM_PORTS, PARITY_ITEMS, STOP_BIT_ITEMS, BAUD_RATE_ITEMS, \
         BYTESIZE_ITEMS, TIMEOUT_ITEMS
 
 
@@ -47,7 +47,7 @@ class RtuGroupBox(QGroupBox):
             self.com_ports.addItems(self.com_port_items)  # Add com ports to the dropdown list for "Modbus RTU"
             com_ports_layout.addWidget(self.com_ports)  # Add com ports to the widget for "Modbus RTU"
         else: 
-            self.com_ports.addItems(["No ports available"])  # Add com ports to the dropdown list for "Modbus RTU"
+            self.com_ports.addItem(NO_COM_PORTS)  # Add com ports to the dropdown list for "Modbus RTU"
             com_ports_layout.addWidget(self.com_ports)  # Add com ports to the widget for "Modbus RTU"
         # Create a Horizontal layout and add a dropdown list of the com ports for "Modbus RTU"
         baud_rate_layout = QHBoxLayout()
