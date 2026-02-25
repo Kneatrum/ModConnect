@@ -802,7 +802,7 @@ class TableWidget(QWidget):
 
     def get_rtu_connection_string(self, connection_params):
         return f'{connection_params[RTU_METHOD].get(BAUD_RATE)}, '\
-            f'{connection_params[RTU_METHOD].get(SERIAL_PORT)}, '\
+            f'{connection_params[RTU_METHOD].get(SERIAL_PORT) if connection_params[RTU_METHOD].get(SERIAL_PORT) else "[None]"}, '\
             f'{connection_params[RTU_METHOD].get(BYTESIZE)}, '\
             f'{connection_params[RTU_METHOD].get(PARITY)[0]}, '\
             f'{connection_params[RTU_METHOD].get(STOP_BITS)}'
