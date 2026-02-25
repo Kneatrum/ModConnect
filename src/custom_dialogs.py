@@ -282,8 +282,13 @@ class EditConnection(QDialog):
             self.rtu_initial_parameters[RTU_METHOD][SLAVE_ADDRESS] = self.file_handler.get_slave_address(self.device_number)
             self.rtu_initial_parameters[RTU_METHOD][DEVICE_NAME] = self.file_handler.get_device_name(self.device_number)
             self.rtu_groupbox.rtu_custom_name.setText(self.rtu_initial_parameters[RTU_METHOD].get(DEVICE_NAME))
-            self.rtu_groupbox.rtu_slave_id.setText(self.rtu_initial_parameters[RTU_METHOD].get(SLAVE_ADDRESS))
-            self.rtu_groupbox.com_ports.setCurrentIndex(self.rtu_groupbox.com_port_items.index(self.rtu_initial_parameters[RTU_METHOD].get(SERIAL_PORT)))
+            self.rtu_groupbox.rtu_slave_id.setText(str(self.rtu_initial_parameters[RTU_METHOD].get(SLAVE_ADDRESS)))
+            serial_port = self.rtu_initial_parameters[RTU_METHOD].get(SERIAL_PORT)
+            if serial_port:
+                if serial_port in self.rtu_groupbox.com_port_items:
+                    self.rtu_groupbox.com_ports.setCurrentIndex(self.rtu_groupbox.com_port_items.index(serial_port))
+                else:
+                    self.rtu_groupbox.com_ports.setCurrentIndex(0)
             self.rtu_groupbox.baud_rates.setCurrentText(self.rtu_initial_parameters[RTU_METHOD].get(BAUD_RATE))
             self.rtu_groupbox.parity_options.setCurrentText(self.rtu_initial_parameters[RTU_METHOD].get(PARITY))
             self.rtu_groupbox.stop_bits_options.setCurrentText(self.rtu_initial_parameters[RTU_METHOD].get(STOP_BITS))
