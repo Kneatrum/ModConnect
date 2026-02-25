@@ -524,6 +524,12 @@ class TableWidget(QWidget):
         returns:
             bool: True if connected successfully or False otherwise
         """
+        if self.default_method == RTU_METHOD and not self.stored_serial_port:
+            self.notification.set_warning_message("Invalid COM port", "Please connect an RTU device \nand select a COM port.")
+            return False 
+        if self.stored_com_port_missing:
+            self.notification.set_warning_message("Serial Port Not Found.", f"The stored serial port {self.stored_serial_port} is not available. Please reconnect the device or edit the connection settings.")
+            return False
         try:
             self.active_connection.client.connect()
             self.set_connection_status(True)
@@ -531,8 +537,8 @@ class TableWidget(QWidget):
             return True
         except Exception as e:
             self.active_connection.client.close()
-            print(f"Failed to connect to device {self.device_number} using {self.file_handler.get_default_modbus_method(self.device_number)}. Error: {e}")
-            return e
+            self.notification.set_warning_message("Failed to connect to device.", f"The stored serial port failed to connect with error {e}. Please try again or reconnect the device.")
+            return False
 
     
     def disconnect_from_device(self):
