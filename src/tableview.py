@@ -173,7 +173,7 @@ class TableWidget(QWidget):
         self.actions_label = QLabel("Actions",self)
         self.selected_option = 0
         # Add a dropdown menu and add actions to it
-        self.action_items = ACTION_ITEMS # Create a list of actions
+        self.action_items = ACTION_ITEMS.copy() # Create a list of actions
         self.action_menu = QComboBox() 
         self.action_menu.addItems(self.action_items) 
         self.action_menu.setCurrentIndex(0)
