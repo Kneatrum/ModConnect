@@ -76,20 +76,39 @@ class MainWindow(QtWidgets.QMainWindow):
     # ------------------------------------------------------------------
 
     def _build_toolbar(self):
+        SPACE_AFTER_ADD    = 100  # px between "Add New Device" and "Start Polling"
+        SPACE_BETWEEN_POLL = 20   # px between "Start Polling" and "Stop Polling"
+
         self.toolbar = QToolBar()
-        self.toolbar.setToolButtonStyle(Qt.ToolButtonTextBesideIcon)
+        self.toolbar.setToolButtonStyle(Qt.ToolButtonTextOnly)
+        self.toolbar.setMinimumHeight(48)
+        self.toolbar.setStyleSheet(
+            """
+            QToolButton {
+                padding-top: 6px;
+                padding-bottom: 6px;
+            }
+            """
+        )
         self.addToolBar(self.toolbar)
 
-        add_action = QAction(QIcon(resource_path('resources/more.png')), 'Add New Device', self)
+        add_action = QAction('Add New Device', self)
         add_action.triggered.connect(self.on_new_button_clicked)
         self.toolbar.addAction(add_action)
-        self.toolbar.addSeparator()
 
-        start_action = QAction(QIcon(resource_path('resources/play-button.png')), 'Start Polling', self)
+        gap_after_add = QWidget()
+        gap_after_add.setFixedWidth(SPACE_AFTER_ADD)
+        self.toolbar.addWidget(gap_after_add)
+
+        start_action = QAction('Start Polling', self)
         start_action.triggered.connect(self.start_ui_refresh)
         self.toolbar.addAction(start_action)
 
-        stop_action = QAction(QIcon(resource_path('resources/stop-button.png')), 'Stop Polling', self)
+        gap_between_poll = QWidget()
+        gap_between_poll.setFixedWidth(SPACE_BETWEEN_POLL)
+        self.toolbar.addWidget(gap_between_poll)
+
+        stop_action = QAction('Stop Polling', self)
         stop_action.triggered.connect(self.stop_polling)
         self.toolbar.addAction(stop_action)
 
@@ -104,7 +123,6 @@ class MainWindow(QtWidgets.QMainWindow):
         if self.hidden_devices:
             for device_number in self.hidden_devices:
                 self.add_hidden_device_to_toolbar(device_number)
-
     # ------------------------------------------------------------------
     # Initialization
     # ------------------------------------------------------------------
