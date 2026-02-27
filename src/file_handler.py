@@ -523,16 +523,16 @@ class FileHandler:
             None
 
         returns: 
-            hidden_devices (list): a list of all hidden device numbers.
+            hidden_devices (dict): a dictionary of all hidden device numbers as keys and device names as values.
 
         """
-        hidden_devices = []
+        hidden_devices = {}
         data = self.get_raw_device_data()
         if not data:
             return None
         for key in data.keys():
             if data[key].get(HIDDEN_STATUS) is not None and data[key].get(HIDDEN_STATUS) == True:
-                hidden_devices.append(int(re.findall(r'\d+', key)[0]))
+                hidden_devices[int(re.findall(r'\d+', key)[0])] = data[key].get(DEVICE_NAME)
         return hidden_devices
 
 

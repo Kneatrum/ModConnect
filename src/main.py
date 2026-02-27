@@ -121,8 +121,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self.toolbar.addSeparator()
 
         if self.hidden_devices:
-            for device_number in self.hidden_devices:
-                self.add_hidden_device_to_toolbar(device_number)
+            for _, device_name in self.hidden_devices.items():
+                self.add_hidden_device_to_toolbar(device_name)
     # ------------------------------------------------------------------
     # Initialization
     # ------------------------------------------------------------------
@@ -358,9 +358,9 @@ class MainWindow(QtWidgets.QMainWindow):
                     "Please disconnect before hiding the device.",
                 )
                 return
-            self.hide_widget(device_number)
+            self.hide_widget(device_number, current_table.device_name)
             self.file_handler.update_hidden_status(device_number, True)
-            self.add_hidden_device_to_toolbar(device_number)
+            self.add_hidden_device_to_toolbar(current_table.device_name)
 
         elif position == DELETE_DEVICE_ID:
             if self.observer.table_widgets[device_number].connection_status:
@@ -386,8 +386,9 @@ class MainWindow(QtWidgets.QMainWindow):
                 widget.edit_connection_button_clicked.connect(self.on_edit_button_clicked)
                 widget.drop_down_menu_clicked.connect(self.on_drop_down_menu_selected)
                 self.observer.add_table_widget(device_tag, widget)
-                if not widget.hidden_status:
-                    self.horizontal_box.addWidget(widget)
+                if  widget.hidden_status:
+                    widget.hide()
+                self.horizontal_box.addWidget(widget)
             end_spacer = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
             self.horizontal_box.addSpacerItem(end_spacer)
             return True
@@ -415,18 +416,19 @@ class MainWindow(QtWidgets.QMainWindow):
         self.observer.remove_table_widget(device_number)
         self.file_handler.delete_device(device_number)
 
-    def hide_widget(self, device_number):
-        self.hidden_devices.append(device_number)
+    def hide_widget(self, device_number, device_name):
+        self.hidden_devices[device_number] = device_name
         self.observer.table_widgets[device_number].hide()
         self.observer.table_widgets[device_number].hidden_status = True
 
     def show_widget(self, device_number):
-        self.add_single_widget(device_number)
+        self.observer.table_widgets[device_number].show()
         self.observer.table_widgets[device_number].hidden_status = False
         self.file_handler.update_hidden_status(device_number, False)
+        self.hidden_devices.pop(device_number, None)
 
-    def add_hidden_device_to_toolbar(self, device_number):
-        cb = QCheckBox(self.observer.table_widgets[device_number].device_name)
+    def add_hidden_device_to_toolbar(self, device_name):
+        cb = QCheckBox(device_name)
         cb.setChecked(True)
         cb.stateChanged.connect(self.on_checkbox_state_changed)
         self.toolbar.addWidget(cb)
