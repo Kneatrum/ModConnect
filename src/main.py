@@ -63,6 +63,10 @@ class MainWindow(QtWidgets.QMainWindow):
         self.setWindowTitle("ModConnect")
         self.setGeometry(100, 100, 1100, 1100)
 
+        # Set window icon      
+        modconnect_icon = QIcon(resource_path("../resources/ModConnect.ico"))
+        self.setWindowIcon(modconnect_icon)
+
         self._build_toolbar()
         self.initialize_ui()
 
