@@ -106,7 +106,6 @@ class FileHandler:
                 # Check if there is content in the file
                 content = file.read()
             if not content:
-                print("File is empty")
                 return {}
             data = json.loads(content)
             return data
