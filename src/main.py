@@ -421,6 +421,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self.file_handler.delete_device(device_number)
 
     def hide_widget(self, device_number, device_name):
+        if not self.hidden_devices:
+            self.hidden_devices = {}
         self.hidden_devices[device_number] = device_name
         self.observer.table_widgets[device_number].hide()
         self.observer.table_widgets[device_number].hidden_status = True
