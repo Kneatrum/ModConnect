@@ -48,7 +48,7 @@ The above python modules will be automatically installed in step 2 of the Instal
 
    ### Run the application:
 ```
-python main.py
+python src\main.py
 ```
    ### Adding a device.
    * Click on <kbd>Add New Device</kbd> button
