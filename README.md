@@ -42,14 +42,14 @@ The above python modules will be automatically installed in step 2 of the Instal
  ```
 2. Install dependencies:
  ```
- pip install -r requirements.txt
+ pip install -r ModConnect\requirements.txt
  ```
 
 # Usage
 
    ### Run the application:
 ```
-python src\main.py
+python ModConnect\src\main.py
 ```
    ### Adding a device.
    * Click on <kbd>Add New Device</kbd> button
