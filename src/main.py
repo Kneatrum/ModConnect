@@ -9,7 +9,7 @@ from register_reader import Observer, DeviceWorker, PollCoordinator
 import threading
 from notifications import Notification
 from constants import (
-    STATUS, WIDGET, DISCONNECT, CONNECT,
+    APP_NAME, STATUS, WIDGET, DISCONNECT, CONNECT,
     SELECT_ACTION_ID, ADD_REGISTERS_ID, REMOVE_REGISTERS_ID,
     CONNECT_ID, HIDE_DEVICE_ID, DELETE_DEVICE_ID, MAX_DEVICES,
     resource_path,
@@ -60,7 +60,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.coordinator        = None   # type: PollCoordinator | None
 
         # UI setup
-        self.setWindowTitle("ModConnect")
+        self.setWindowTitle(APP_NAME)
         self.setGeometry(100, 100, 1100, 1100)
 
         # Set window icon      

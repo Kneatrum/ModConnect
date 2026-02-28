@@ -3,6 +3,11 @@ This module stores all the constants used in the code.
 '''
 
 import os, sys
+from pathlib import Path
+from platformdirs import user_data_dir
+
+APP_NAME = "ModConnect"
+APP_AUTHOR = "Martin Mwiti"
 
 # https://stackoverflow.com/questions/31836104/pyinstaller-and-onefile-how-to-include-an-image-in-the-exe-file
 def resource_path(relative_path):
@@ -15,7 +20,21 @@ def resource_path(relative_path):
 
     return os.path.join(base_path, relative_path)
 
+def is_production():
+    return getattr(sys, "frozen", False)
 
+def get_data_dir():
+    if is_production():
+        # Installed executable → use OS-standard location
+        path = Path(user_data_dir(APP_NAME, APP_AUTHOR))
+    else:
+        # Development mode → keep data inside project
+        path = Path(__file__).resolve().parent / "data"
+
+    path.mkdir(parents=True, exist_ok=True)
+    return path
+def get_register_file():
+    return get_data_dir() / "register_map_file.json"
 # Variable to store the path to our json file which we use to store register data.
 FILE_PATH = ''
 
