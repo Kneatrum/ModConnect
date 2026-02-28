@@ -11,10 +11,14 @@ APP_AUTHOR = "Martin Mwiti"
 
 # https://stackoverflow.com/questions/31836104/pyinstaller-and-onefile-how-to-include-an-image-in-the-exe-file
 def resource_path(relative_path):
-    """ Get absolute path to resource, works for dev and for PyInstaller """
+    """ 
+        Get absolute path to resource, works for dev and for PyInstaller 
+        Use this command to create the executable: It works with _MEIPASS and not _MEIPASS2
+        pyinstaller --name <app-name> --onefile --add-data "<path-to-resources-folder>;<path-to-resources-folder>" --windowed --icon=<your-icon.ico> <your-main.py>
+    """
     try:
         # PyInstaller creates a temp folder and stores path in _MEIPASS
-        base_path = sys._MEIPASS2 # Or _MEIPASS
+        base_path = sys._MEIPASS # Or _MEIPASS2
     except Exception:
         base_path = os.path.abspath(".")
 
