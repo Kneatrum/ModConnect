@@ -72,10 +72,10 @@ python src\main.py
    * Click on the <kbd>Stop Polling</kbd> button.
 
 
-# Screenshot
-Note that the figures on the <kbd>Value</kbd> column are for demonstration purposes. 
+# Demo GIF
+The devices are for simulation purposes. 
 
-![alt text](resources/Capture.PNG)
+![alt text](resources/ModConnectDemo.gif)
 
 
 # Icon Attribution
