@@ -29,6 +29,7 @@ Developing a user-friendly Modbus tool that helps users to interface with severa
 * PyQt5 v5.15.10
 * pymodbus v3.6.2
 * pyserial v3.5
+* platformdirs 4.2.2
 
 The above python modules will be automatically installed in step 2 of the Installation Guide below.
 
