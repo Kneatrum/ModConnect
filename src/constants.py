@@ -36,16 +36,7 @@ def get_data_dir():
 def get_register_file():
     return get_data_dir() / "register_map_file.json"
 # Variable to store the path to our json file which we use to store register data.
-FILE_PATH = ''
-
-if os.name == 'nt':
-    # Set the default path for a windows system.
-    FILE_PATH = os.path.join(os.getcwd(), 'data', 'register_map_file.json')
-
-if os.name == 'posix':
-    # Set the default path for a linux system.
-    # TODO: Enter path for linux system.
-    FILE_PATH = ''
+FILE_PATH = get_register_file()
 
 
 # Json file constants.
