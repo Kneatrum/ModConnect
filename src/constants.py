@@ -7,7 +7,6 @@ from pathlib import Path
 from platformdirs import user_data_dir
 
 APP_NAME = "ModConnect"
-APP_AUTHOR = "Martin Mwiti"
 
 # https://stackoverflow.com/questions/31836104/pyinstaller-and-onefile-how-to-include-an-image-in-the-exe-file
 def resource_path(relative_path):
@@ -30,7 +29,7 @@ def is_production():
 def get_data_dir():
     if is_production():
         # Installed executable → use OS-standard location
-        path = Path(user_data_dir(APP_NAME, APP_AUTHOR))
+        path = Path(user_data_dir(APP_NAME, appauthor=False))
     else:
         # Development mode → keep data inside project
         path = Path(__file__).resolve().parent / "data"
